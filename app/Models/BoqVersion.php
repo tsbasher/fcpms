@@ -29,4 +29,8 @@ class BoqVersion extends ExtendedModel
     {
         return $this->belongsTo(Package::class, 'package_id', 'id');
     }
+    public function boq_version_details()
+    {
+        return $this->hasMany(BoqVersionDetails::class, 'boq_version_id', 'id');
+    }
 }

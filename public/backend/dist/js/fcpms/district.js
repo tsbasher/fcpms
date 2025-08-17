@@ -7,7 +7,6 @@ $(document).ready(function() {
             $.ajax({
                 url: url,
                 type: 'GET',
-                data: { division_id: divisionId },
                 success: function(data) {
                     debugger;
                     $('#district_id').empty();

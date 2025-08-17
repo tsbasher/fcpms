@@ -151,4 +151,15 @@ class BoqSubItemController extends Controller
             return response()->json($data);
         }
     }
+
+    public function getBoqSubItemsByBoqItem($boq_item_id)
+    {
+        if (!$boq_item_id) {
+            return response()->json([]);
+        }
+        $boq_sub_items = BoqSubItem::where('boq_item_id', $boq_item_id)
+            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->get();
+        return response()->json($boq_sub_items);
+    }
 }

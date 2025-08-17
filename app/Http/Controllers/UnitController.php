@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BoqItem;
+use App\Models\BoqSubItem;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -130,5 +132,17 @@ class UnitController extends Controller
             $data->message = 'An error occurred while deleting Unit.';
             return response()->json($data);
         }
+    }
+
+    public function getUnitByBoqItem($boq_item_id)
+    {
+        $unit = BoqItem::where('id', $boq_item_id)->with('unit')->first();
+        return response()->json($unit->unit);
+    }
+
+    public function getUnitByBoqSubItem($boq_sub_item_id)
+    {
+        $unit = BoqSubItem::where('id', $boq_sub_item_id)->with('unit')->first();
+        return response()->json($unit->unit);
     }
 }

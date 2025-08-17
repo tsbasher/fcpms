@@ -19,6 +19,8 @@ class Package extends ExtendedModel
         'name',
         'code',
         'alias',
+        'division_id',
+        'region_id',
         'district_id',
         'description',
         'bid_invitation_date',
@@ -38,6 +40,14 @@ class Package extends ExtendedModel
     {
         $permittedPackages = PermittedPackage::getAdminPermittedPackages();
         return $query->whereIn('id', $permittedPackages);
+    }
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'division_id', 'id');
+    }
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'region_id', 'id');
     }
     public function district()
     {

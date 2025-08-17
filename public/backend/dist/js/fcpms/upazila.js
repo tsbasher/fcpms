@@ -7,7 +7,6 @@ $(document).ready(function() {
             $.ajax({
                 url: url,
                 type: 'GET',
-                data: { district_id: districtId },
                 success: function(data) {
                     debugger;
                     $('#upazila_id').empty();

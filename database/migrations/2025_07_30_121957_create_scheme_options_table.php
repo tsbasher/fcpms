@@ -21,6 +21,7 @@ return new class extends Migration
             $table->tinyInteger('is_active')->default(1);
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('restrict');
             $table->timestamps();
         });
     }

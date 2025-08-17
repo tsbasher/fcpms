@@ -22,6 +22,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('has_sub_items')->default(false);
+
+            $table->foreign('boq_part_id')->references('id')->on('boq_parts')->onDelete('restrict');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('restrict');
+            $table->foreign('unit_id')->references('id')->on('units')->onDelete('restrict');
             $table->timestamps();
         });
     }

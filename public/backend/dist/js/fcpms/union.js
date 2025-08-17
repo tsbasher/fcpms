@@ -7,7 +7,6 @@ $(document).ready(function() {
             $.ajax({
                 url: url,
                 type: 'GET',
-                data: { upazila_id: upazilaId },
                 success: function(data) {
                     debugger;
                     $('#union_id').empty();

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\PermittedPackage;
 use App\Http\Controllers\Controller;
 use App\Models\District;
+use App\Models\Division;
 use App\Models\Package;
+use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -19,16 +21,34 @@ class PackageController extends Controller
      */
     public function index(Request $request)
     {
-         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted();
+        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted();
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
             // Get packages based on search criteria
-            $packages->where('name', 'ilike', "%{$search}%")->orWhere('code', 'ilike', "%{$search}%")->orWhere('alias', 'ilike', "%{$search}%");
+            $packages->where(function ($query) use ($search) {
+                $query->where('name', 'ilike', "%{$search}%")
+                    ->orWhere('code', 'ilike', "%{$search}%")
+                    ->orWhere('alias', 'ilike', "%{$search}%");
+            });
+        }
+        if ($request->has('division_id') && !empty($request->division_id)) {
+            $packages->where('division_id', $request->division_id);
+
+            $districts = District::where('division_id', $request->division_id)->get();
+        } else
+            $districts = [];
+        if ($request->has('region_id') && !empty($request->region_id)) {
+            $packages->where('region_id', $request->region_id);
+        }
+        if ($request->has('district_id') && !empty($request->district_id)) {
+            $packages->where('district_id', $request->district_id);
         }
         // Get all packages
         $packages = $packages->paginate();
+        $divisions = Division::all();
+        $regions =  Region::all();
         // dd($packages);
-        return view('backend.admin.packages.index', compact('packages'));
+        return view('backend.admin.packages.index', compact('packages', 'divisions', 'regions', 'districts'));
     }
 
     /**
@@ -36,8 +56,10 @@ class PackageController extends Controller
      */
     public function create()
     {
-        $districts = District::all();
-        return view('backend.admin.packages.create', compact('districts'));
+        $districts = [];
+        $divisions = Division::all();
+        $regions =  Region::all();
+        return view('backend.admin.packages.create', compact('districts', 'divisions', 'regions'));
     }
 
     /**
@@ -48,10 +70,12 @@ class PackageController extends Controller
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
         }
-        $v=Validator::make($request->all(), [
+        $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:packages,code',
             'alias' => 'nullable|string|max:50',
+            'division_id' => 'nullable|uuid|exists:divisions,id',
+            'region_id' => 'nullable|uuid|exists:regions,id',
             'district_id' => 'nullable|uuid|exists:districts,id',
             'description' => 'nullable|string',
             'bid_invitation_date' => 'nullable|date',
@@ -66,12 +90,14 @@ class PackageController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $package=Package::create([
-            'project_id'=>Auth::guard('admin')->user()->project_id,
+        $package = Package::create([
+            'project_id' => Auth::guard('admin')->user()->project_id,
             'name' => $request->name,
             'code' => $request->code,
             'alias' => $request->alias,
             'district_id' => $request->district_id,
+            'division_id' => $request->division_id,
+            'region_id' => $request->region_id,
             'description' => $request->description,
             'bid_invitation_date' => $request->bid_invitation_date,
             'bid_submission_date' => $request->bid_submission_date,
@@ -83,6 +109,8 @@ class PackageController extends Controller
             'actual_budget' => $request->actual_budget,
             'is_active' => $request->is_active,
         ]);
+        // Attach the current admin to the package
+        $package->admins()->attach(Auth::guard('admin')->user()->id);
         return redirect()->route('admin.packages.index')->with('success', 'Package created successfully.');
     }
 
@@ -99,9 +127,11 @@ class PackageController extends Controller
      */
     public function edit(Package $package)
     {
-        $districts = District::all();
-        $package=Package::permitted()->findOrFail($package->id);
-        return view('backend.admin.packages.edit', compact('package', 'districts'));
+        $divisions = Division::all();
+        $regions =  Region::all();
+        $districts = District::where('division_id', $package->division_id)->get();
+        $package = Package::permitted()->findOrFail($package->id);
+        return view('backend.admin.packages.edit', compact('package', 'districts', 'divisions', 'regions'));
     }
 
     /**
@@ -112,10 +142,12 @@ class PackageController extends Controller
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
         }
-        $v=Validator::make($request->all(), [
+        $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:packages,code,'.$package->id,
+            'code' => 'required|string|max:50|unique:packages,code,' . $package->id,
             'alias' => 'nullable|string|max:50',
+            'division_id' => 'nullable|uuid|exists:divisions,id',
+            'region_id' => 'nullable|uuid|exists:regions,id',
             'district_id' => 'nullable|uuid|exists:districts,id',
             'description' => 'nullable|string',
             'bid_invitation_date' => 'nullable|date',
@@ -130,10 +162,13 @@ class PackageController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
+        $package = Package::permitted()->findOrFail($package->id);
         $package->update([
             'name' => $request->name,
             'code' => $request->code,
             'alias' => $request->alias,
+            'division_id' => $request->division_id,
+            'region_id' => $request->region_id,
             'district_id' => $request->district_id,
             'description' => $request->description,
             'bid_invitation_date' => $request->bid_invitation_date,

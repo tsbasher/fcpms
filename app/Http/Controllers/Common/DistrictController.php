@@ -8,10 +8,14 @@ use Illuminate\Http\Request;
 
 class DistrictController extends Controller
 {
-    public function getDistrictsByDivision(Request $request)
+    public function getDistrictsByDivision($division_id)
     {
-        $divisionId = $request->input('division_id');
-        $districts = District::where('division_id', $divisionId)->get();
+        if (!$division_id) {
+            return response()->json([]);
+        }
+
+        $districts = District::where('division_id', $division_id)->get();
         return response()->json($districts);
     }
+    
 }

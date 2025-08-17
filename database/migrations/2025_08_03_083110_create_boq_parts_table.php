@@ -20,6 +20,7 @@ return new class extends Migration
             $table->uuid('project_id');
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('restrict');
             $table->timestamps();
         });
     }

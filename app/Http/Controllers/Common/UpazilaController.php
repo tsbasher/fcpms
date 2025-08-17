@@ -8,12 +8,14 @@ use Illuminate\Http\Request;
 
 class UpazilaController extends Controller
 {
-    public function getUpazilasByDistrict(Request $request)
+    public function getUpazilasByDistrict($district_id)
     {
-        $districtId = $request->input('district_id');
-       
-        $upazilas = Upazila::where('district_id', $districtId)->get();
-        
+        if(!$district_id) {
+            return response()->json([]);
+        }
+
+        $upazilas = Upazila::where('district_id', $district_id)->get();
+
         return response()->json($upazilas);
     }
 }

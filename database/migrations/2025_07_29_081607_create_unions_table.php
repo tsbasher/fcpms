@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('bn_name')->nullable();
             $table->string('url')->nullable();
+            $table->foreign('upazila_id')->references('id')->on('upazilas')->onDelete('restrict');
             $table->timestamps();
         });
     }

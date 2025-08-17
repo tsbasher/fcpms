@@ -49,14 +49,22 @@
                         </div>
 
                         <div class="col-md-6">
-
                             <div class="form-group">
-                                <label for="name">BOQ Version Name</label>
-                                <input type="text" required class="form-control" name="name" id="name" placeholder="Enter BOQ Version Name" value="{{ old('name') }}">
+                                <label for="boq_version_id">Copy BOQ Version</label>
+                                <select  class="form-control select2" name="boq_version_id" id="boq_version_id" placeholder="Enter BOQ Version" >
+                                    <option value="">Select BOQ Version</option>
+                                    @foreach ($versions as $version)
+                                    <option value="{{ $version->id }}" @if (old('boq_version_id')==$version->id) selected @endif>{{ $version->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="name">BOQ Version Name</label>
+                        <input type="text" required class="form-control" name="name" id="name" placeholder="Enter BOQ Version Name" value="{{ old('name') }}">
+                    </div>
                     <div class="form-group">
                         <label for="version_date">BOQ Version Date</label>
                         <input type="text" class="form-control datepicker" name="version_date" id="version_date" placeholder="Enter BOQ Version Date" value="{{ old('version_date') }}">
@@ -91,6 +99,7 @@
 <script src="{{ asset('backend/plugins/select2/js/select2.full.js') }}"></script>
 <script src="{{asset('backend/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
+    // let get_boq_versions_by_package_url = "{{ route('common.get_boq_versions_by_package', '*') }}";
     $(document).ready(function() {
         debugger;
         $('#description').summernote();
@@ -102,4 +111,5 @@
         });
     });
 </script>
+{{--<script src="{{ asset('backend/dist/js/fcpms/boq_version.js') }}"></script>--}}
 @endsection

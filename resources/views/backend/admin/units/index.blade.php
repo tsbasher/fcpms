@@ -107,7 +107,6 @@
 @section('script')
     <script src="{{ asset('backend/plugins/summernote/summernote-bs4.min.js') }}"></script>
 
-    {{-- <script src="{{ asset('backend/plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     
@@ -126,6 +125,7 @@
     <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
 
     <script type="text/javascript">
+        $(document).ready(function(){
         $(".delete_record").click(function() {
             var url = $(this).data('url');
 
@@ -202,9 +202,10 @@
             "lengthChange": false,
             "searching": false,
             "ordering": true,
-            "info": false,
+            "info": true,
             "autoWidth": false,
             "responsive": true,
+        });
         });
     </script>
 @endsection

@@ -228,7 +228,7 @@
         "lengthChange": false,
         "searching": false,
         "ordering": true,
-        "info": false,
+            "info": true,
         "autoWidth": false,
         "responsive": true,
     });

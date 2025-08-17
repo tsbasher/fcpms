@@ -53,6 +53,15 @@ F C P M S 2.0</span>
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{route('admin.regions.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.regions.index' || Route::currentRouteName() == 'admin.regions.create' || Route::currentRouteName() == 'admin.regions.edit') active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Regions
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{route('admin.packages.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.packages.index' || Route::currentRouteName() == 'admin.packages.create' || Route::currentRouteName() == 'admin.packages.edit') active @endif">
               <i class="nav-icon fas fa-th"></i>
@@ -124,6 +133,26 @@ F C P M S 2.0</span>
               <i class="nav-icon fas fa-th"></i>
               <p>
                 BOQ Versions
+              </p>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a href="{{route('admin.boq_version_details.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.boq_version_details.index' || Route::currentRouteName() == 'admin.boq_version_details.create' || Route::currentRouteName() == 'admin.boq_version_details.edit') active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                BOQ Versions Details
+              </p>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a href="{{route('admin.contractors.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.contractors.index' || Route::currentRouteName() == 'admin.contractors.create' || Route::currentRouteName() == 'admin.contractors.edit') active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Contractors
               </p>
             </a>
           </li>

@@ -149,13 +149,16 @@ class BoqItemController extends Controller
         }
     }
 
-    public function getBoqItemsByPart(Request $request)
+    public function getBoqItemsByPart($boq_part_id)
     {
-        $boq_part_id = $request->input('boq_part_id');
+        if (!$boq_part_id) {
+            return response()->json([]);
+        }
 
         $boq_items = BoqItem::where('boq_part_id', $boq_part_id)
             ->where('project_id', Auth::guard('admin')->user()->project_id)
             ->get();
         return response()->json($boq_items);
+    
     }
 }

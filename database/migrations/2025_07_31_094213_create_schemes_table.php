@@ -39,6 +39,12 @@ return new class extends Migration
             $table->tinyInteger('is_active')->default(1);
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('restrict');
+            $table->foreign('package_id')->references('id')->on('packages')->onDelete('restrict');
+            $table->foreign('division_id')->references('id')->on('divisions')->onDelete('restrict');
+            $table->foreign('district_id')->references('id')->on('districts')->onDelete('restrict');
+            $table->foreign('upazila_id')->references('id')->on('upazilas')->onDelete('restrict');
+            $table->foreign('union_id')->references('id')->on('unions')->onDelete('restrict');
             $table->timestamps();
         });
     }

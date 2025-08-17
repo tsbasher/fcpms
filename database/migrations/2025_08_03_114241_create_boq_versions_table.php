@@ -21,6 +21,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('restrict');
+            $table->foreign('package_id')->references('id')->on('packages')->onDelete('restrict');
             $table->timestamps();
         });
     }

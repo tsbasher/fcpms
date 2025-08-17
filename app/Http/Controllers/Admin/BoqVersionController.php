@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BoqVersion;
+use App\Models\BoqVersionDetails;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
@@ -41,7 +43,9 @@ class BoqVersionController extends Controller
     public function create()
     {
         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
-        return view('backend.admin.boq_versions.create', compact('packages'));
+        $versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+            ->get();
+        return view('backend.admin.boq_versions.create', compact('packages', 'versions'));
     }
 
     /**
@@ -62,15 +66,31 @@ class BoqVersionController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $data = $request->only([
-            'name',
-            'version_date',
-            'package_id',
-            'description',
-            'is_active',
-        ]);
-        $data['project_id'] = Auth::guard('admin')->user()->project_id;
-        BoqVersion::create($data);
+        DB::transaction(function () use ($request) {
+            $data = $request->only([
+                'name',
+                'version_date',
+                'package_id',
+                'description',
+                'is_active',
+            ]);
+            $data['project_id'] = Auth::guard('admin')->user()->project_id;
+            $new_version = BoqVersion::create($data);
+
+            if ($request->has('boq_version_id') && !empty($request->boq_version_id)) {
+
+                $boq_version_details = BoqVersionDetails::where('boq_version_id', $request->boq_version_id)->get();
+                foreach ($boq_version_details as $detail) {
+                    $d = $detail->toArray();
+                    $d['id'] = null;
+                    $d['boq_version_id'] = $new_version->id;
+                    $d['package_id'] = $new_version->package_id;
+                    BoqVersionDetails::create($d);
+                }
+
+
+            }
+        });
         return redirect()->route('admin.boq_versions.index')->with('success', 'BOQ Version created successfully.');
     }
 
@@ -145,5 +165,16 @@ class BoqVersionController extends Controller
             $data->message = 'An error occurred while deleting BOQ Version.';
             return response()->json($data);
         }
+    }
+
+    public function getBoqVersionsByPackage($package_id)
+    {
+        if ($package_id) {
+            $boqVersions = BoqVersion::where('package_id', $package_id)
+                ->where('project_id', Auth::guard('admin')->user()->project_id)
+                ->get();
+            return response()->json($boqVersions);
+        }
+        return response()->json([]);
     }
 }

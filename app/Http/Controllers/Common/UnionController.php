@@ -8,12 +8,13 @@ use Illuminate\Http\Request;
 
 class UnionController extends Controller
 {
-    public function getUnionsByUpazila(Request $request)
+    public function getUnionsByUpazila($upazila_id)
     {
-        $upazilaId = $request->input('upazila_id');
-        
-        $unions = Union::where('upazila_id', $upazilaId)->get();
-        
+        if (!$upazila_id) {
+            return response()->json([]);
+        }
+
+        $unions = Union::where('upazila_id', $upazila_id)->get();
         return response()->json($unions);
     }
 }

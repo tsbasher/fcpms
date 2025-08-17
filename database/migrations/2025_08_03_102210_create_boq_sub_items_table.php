@@ -22,6 +22,11 @@ return new class extends Migration
             $table->string('specification_no')->nullable();
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(1);
+            
+            $table->foreign('boq_part_id')->references('id')->on('boq_parts')->onDelete('restrict');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('restrict');
+            $table->foreign('unit_id')->references('id')->on('units')->onDelete('restrict');
+            $table->foreign('boq_item_id')->references('id')->on('boq_items')->onDelete('restrict');
             $table->timestamps();
         });
     }

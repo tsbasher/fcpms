@@ -16,6 +16,8 @@ return new class extends Migration
         $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->uuid('admin_id');
             $table->uuid('package_id');
+            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('restrict');
+            $table->foreign('package_id')->references('id')->on('packages')->onDelete('restrict');
             $table->timestamps();
         });
     }
