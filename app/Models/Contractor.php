@@ -29,6 +29,7 @@ class Contractor extends ExtendedModel
     
     public function packages()
     {
-        return $this->belongsToMany(Package::class, 'contractor_packages', 'contractor_id', 'package_id')->where('contractor_packages.project_id', Auth::guard('admin')->user()->project_id);
+        return $this->belongsToMany(Package::class, 'contractor_packages', 'contractor_id', 'package_id')->with('project')->where('contractor_packages.project_id', Auth::guard('admin')->user()->project_id);
     }
+
 }

@@ -1,5 +1,5 @@
-@extends('backend.admin.layouts.app')
-@section('title', 'Contractors')
+@extends('backend.user.layouts.app')
+@section('title', 'Bill')
 @section('style')
 
 <!-- DataTables -->
@@ -16,16 +16,17 @@
         <!-- general form elements -->
         <div class="card card-body bg-gray-light">
             <div class="card-header">
-                <h2 class="card-title ">Contractors</h2>
+                <h2 class="card-title ">Bill</h2>
                 <div class="card-tools">
-                    <a href="{{ route('admin.contractors.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
+                    <a href="{{ route('user.bills.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
                 </div>
             </div>
             <div class="card-body ">
 
-                <div class="row">
-                    <div class="col-md-8 offset-md-2">
-                        <form method="get">
+                <form method="get">
+                    <div class="row">
+
+                        <div class="col-md-8 offset-md-2">
                             <div class="form-group">
                                 <div class="input-group">
                                     <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
@@ -33,15 +34,16 @@
                                         <button type="submit" class="btn btn-default">
                                             <i class="fa fa-search"></i>
                                         </button>
-                                        <a href="{{ route('admin.contractors.index') }}" class="btn btn-default">
+                                        <a href="{{ route('user.bills.index') }}" class="btn btn-default">
                                             <i class="fas fa-sync-alt"></i>
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+
+                </form>
                 <div class="row">
                     <div class="col-md-12">
                         @if ($message = Session::get('error'))
@@ -54,42 +56,30 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-head-fixed" id="contractor-table">
+                    <table class="table table-bordered table-hover table-head-fixed" id="boq-version-table">
                         <thead>
                             <tr>
                                 <th style="width: 10px">#</th>
                                 <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Contact Person</th>
-                                <th>Packages</th>
+                                <th>BOQ Version</th>
+                                <th>Bill Date</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($contractors as $contractor)
+                            @foreach ($bills as $bill)
                             <tr>
                                 <td>{{ $loop->index + 1 }}</td>
-                                <td>{{ $contractor->company_name }}</td>
-                                <td>{{ $contractor->company_email }}</td>
-                                <td>{{ $contractor->company_phone }}</td>
-                                <td>{{ $contractor->contact_person_name }}</td>
-                                <td>{{$contractor->packages->pluck('name')->join(', ')}}</td>
+                                <td>{{ $bill->name }}</td>
+                                <td>{{$bill->boq_version?$bill->boq_version->name : ''}}</td>
+                                <td>{{ $bill->bill_date }}</td>
 
+                                <td><span class="badge bg-secondary" style="font-size: 100%">{{$bill->status}}</span></td>
                                 <td>
-                                    @if ($contractor->is_active == 1)
-                                    <span class="badge bg-success" style="font-size: 100%">Yes</span>
-                                    @else
-                                    <span class="badge bg-danger" style="font-size: 100%">No</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('admin.contractors.edit', $contractor->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
-                                    <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.contractors.destroy', $contractor->id) }}"><i class="fas fa-trash"></i></a>
-                                    <a href="{{ route('admin.contractors.add_package', $contractor->id) }}" id="add_package" class="btn btn-sm btn-success add_package"><i class="fa fa-plus"></i> Package</a>
-
-
+                                    <a href="{{ route('user.bills.edit', $bill->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                    <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('user.bills.destroy', $bill->id) }}"><i class="fas fa-trash"></i></a>
+                                    <a href="{{ route('user.bills.show', $bill->id) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
                                 </td>
                             </tr>
                             @endforeach
@@ -100,34 +90,12 @@
             <!-- /.card-body -->
 
             <div class="card-footer clearfix" style="background: #00000000">
-                {{ $contractors->links() }}
+                {{ $bills->links() }}
             </div>
         </div>
         <!-- /.card -->
     </div>
 </section>
-
-<div class="modal fade" id="modal-add-package">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add Package</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="add-package-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
 
 
 @endsection
@@ -223,26 +191,14 @@
         });
     });
 
-    $(".add_package").click(function(e) {
-        e.preventDefault();
-        var url = $(this).attr("href");
 
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                $("#add-package-body").html(data);
-            }
-        });
-        $("#modal-add-package").modal("show");
-    });
 
-    $('#contractor-table').DataTable({
+    $('#boq-version-table').DataTable({
         "paging": false,
         "lengthChange": false,
         "searching": false,
         "ordering": true,
-        "info": true,
+            "info": true,
         "autoWidth": false,
         "responsive": true,
     });

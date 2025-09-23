@@ -12,12 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('regions', function (Blueprint $table) {
+        Schema::create('bill_parts', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->string('name');
-            $table->string('bn_name')->nullable();
-            $table->string('url')->nullable();
+            $table->uuid('bill_id');
+            $table->uuid('scheme_id');
+            $table->uuid('boq_part_id');
             $table->timestamps();
+            $table->foreign('bill_id')->references('id')->on('bills')->onDelete('cascade');
+            $table->foreign('scheme_id')->references('id')->on('schemes')->onDelete('cascade');
+            $table->foreign('boq_part_id')->references('id')->on('boq_parts')->onDelete('cascade');
         });
     }
 
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('regions');
+        Schema::dropIfExists('bill_parts');
     }
 };

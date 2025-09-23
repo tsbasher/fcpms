@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->uuid('contractor_id');
             $table->uuid('project_id')->nullable();
+            $table->string('project_code')->nullable();
             $table->uuid('package_id')->nullable();
             $table->string('name');
             $table->string('email')->unique();
@@ -38,7 +39,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');

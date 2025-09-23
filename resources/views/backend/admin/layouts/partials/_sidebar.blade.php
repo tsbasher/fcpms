@@ -156,6 +156,15 @@ F C P M S 2.0</span>
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{route('admin.contractor_users.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.contractor_users.index' || Route::currentRouteName() == 'admin.contractor_users.create' || Route::currentRouteName() == 'admin.contractor_users.edit') active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Contractor Users
+              </p>
+            </a>
+          </li>
 {{--           
           <li class="nav-item">
             <a href="#" class="nav-link">

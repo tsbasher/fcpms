@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Contractor;
 use App\Models\Package;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
@@ -185,5 +187,33 @@ class ContractorController extends Controller
         $contractor->packages()->sync([$request->package_id => ['project_id' => Auth::guard('admin')->user()->project_id]]);
 
         return redirect()->route('admin.contractors.index')->with('success', 'Package added to contractor successfully.');
+    }
+    public function add_user($contractor_id)
+    {
+        $contractor = Contractor::findOrFail($contractor_id);
+        $users=User::where('contractor_id', $contractor->id)->where('project_id',Auth::guard('admin')->user()->project_id)->get();
+        return view('backend.admin.contractors.add_user', compact('contractor','users'));
+    }
+    public function store_user(Request $request, $contractor_id)
+    {
+        $v = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($v->fails()) {
+            return redirect()->back()->withErrors($v)->withInput();
+        }
+        $contractor = Contractor::findOrFail($contractor_id);
+        $userData = $request->only(['name', 'email', 'phone', 'password']);
+        $userData['password'] = Hash::make($userData['password']);
+        $userData['contractor_id'] = $contractor->id;
+        $userData['project_id'] = Auth::guard('admin')->user()->project_id;
+        $userData['package_id'] = $contractor->packages->first() ? $contractor->packages->first()->id : null;
+        $userData['is_active'] = 1; // Set default active status
+        $user = User::create($userData);
+        return redirect()->route('admin.contractors.index')->with('success', 'User added to contractor successfully.');
     }
 }

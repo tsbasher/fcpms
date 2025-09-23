@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PBMS | Login</title>
+    <title>FCPMS | Login</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -21,30 +21,30 @@
         <!-- /.login-logo -->
         <div class="card card-outline card-success">
             <div class="card-header text-center">
-                <a href="#" class="h1">
-                    <img src="{{ asset('backend/dist/img/logo.png') }}" style="width: 40vh">
-                </a>
+                {{-- <img src="{{asset('backend/dist/img/short_logo.png')}}" alt="Logo" class="img-fluid" style="width: 100px;"> --}}
+                <a href="#" class="h1"><b>FCPMS 2.0</b></a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Sign in to start your session</p>
                 @if ($errors->any())
-                    <span class="text-danger text-bold">
-                        @foreach ($errors->all() as $error)
-                            <p class="mb-0">{{ $error }}</p>
-                        @endforeach
-                    </span>
+                <span class="text-danger text-bold">
+                    @foreach ($errors->all() as $error)
+                        <p class="mb-0">{{ $error }}</p>
+                    @endforeach
+                  </span>
                 @endif
 
                 @if (session('success'))
                     <p>{{ session('success') }}</p>
                 @endif
                 @if (session('error'))
-                    <span class="text-danger  text-bold"> {{ session('error') }}</span>
+                   <span class="text-danger  text-bold"> {{ session('error') }}</span>
                 @endif
-                <form action="{{ route('user.login_post') }}" method="post">
+                <form action="{{ route('user.login') }}" method="post">
                     @csrf
+                    
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email">
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email') }}" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
+                        <input type="password" name="password" class="form-control" placeholder="Password" >
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -62,7 +62,7 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="icheck-primary">
-                                <input type="checkbox" id="remember">
+                                <input type="checkbox" id="remember" >
                                 <label for="remember">
                                     Remember Me
                                 </label>

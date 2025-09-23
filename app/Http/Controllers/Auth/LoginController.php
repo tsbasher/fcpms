@@ -74,7 +74,6 @@ class LoginController extends Controller
             'email' => $check['email'],
             'password' => $check['password'],
         ];
-
         if (Auth::guard('web')->attempt($data)) {
             return redirect()->route('user.home');
         } else {

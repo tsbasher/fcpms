@@ -22,9 +22,16 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
+        'contractor_id',
+        'project_id',
+        'project_code',
+        'package_id',
+        'phone',
+        'is_active',
     ];
 
     /**
@@ -48,5 +55,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function contractor(){
+        return $this->belongsTo(Contractor::class,'contractor_id','id');
+    }
+    public function project(){
+        return $this->belongsTo(Project::class,'project_id','id');
+    }
+    public function package(){
+        return $this->belongsTo(Package::class,'package_id','id');
     }
 }

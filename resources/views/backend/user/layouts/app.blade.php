@@ -49,8 +49,44 @@
 $(function () {
   bsCustomFileInput.init();
 });
-</script>
+$(document).on('select2:open', () => {
+      let searchField = document.querySelector('.select2-container--open .select2-search__field');
+      if (searchField) {
+        searchField.focus();
+      }
+    });
+    $(document).ready(function() {
+      $('input').attr('autocomplete', 'off');
+      var a = $('input[required]');
+      // debugger;
+      a.toArray().forEach(function(item) {
+        // debugger;
+        item.parentNode.childNodes.forEach(function(child) {
+          // debugger;
+          if (child.tagName === 'LABEL') {
+            child.innerHTML = child.innerHTML + ' <span class="text-danger text-bold">*</span>';
+          }
+        });
+      });
 
+
+
+
+
+      
+      var a = $('select[required]');
+      // debugger;
+      a.toArray().forEach(function(item) {
+        //  debugger;
+        item.parentNode.childNodes.forEach(function(child) {
+          // debugger;
+          if (child.tagName === 'LABEL') {
+            child.innerHTML = child.innerHTML + ' <span class="text-danger text-bold">*</span>';
+          }
+        });
+      });
+    });
+  </script>
 @yield('script')
 </body>
 </html>

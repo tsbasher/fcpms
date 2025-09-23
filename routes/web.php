@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SchemeController;
 use App\Http\Controllers\Admin\SchemeOptionController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BillController;
 use App\Http\Controllers\Common\DistrictController;
 use App\Http\Controllers\Common\RegionController;
 use App\Http\Controllers\Common\UnionController;
@@ -45,6 +46,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/boq-version-export-import/export/{version_id}', [BoqVersionExportImportController::class, 'export'])->name('admin.boq_version_export_import.export');
         Route::get('/contractors/add-package/{contractor_id}', [ContractorController::class, 'add_package'])->name('admin.contractors.add_package');
         Route::post('/contractors/add-package/{contractor_id}', [ContractorController::class, 'store_package'])->name('admin.contractors.store_package');
+
         Route::resource('regions', RegionController::class)->names('admin.regions');
         Route::resource('projects', ProjectController::class)->names('admin.projects');
         Route::resource('packages', PackageController::class)->names('admin.packages');
@@ -81,5 +83,13 @@ Route::group(['prefix' => ''], function () {
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/logout', [LoginController::class, 'user_logout'])->name('user.logout');
         Route::get('/', [UserHomeController::class, 'index'])->name('user.home');
+    Route::get('/bills/remove-scheme/{scheme_id}/{bill_id}', [BillController::class, 'removeScheme'])->name('user.bills.remove_scheme');
+    Route::get('/bills/add-scheme/{bill_id}', [BillController::class, 'addScheme'])->name('user.bills.add_scheme');
+    Route::post('/bills/add-scheme/{bill_id}', [BillController::class, 'storeScheme'])->name('user.bills.store_scheme');
+
+
+        Route::resource('bills', BillController::class)->names('user.bills');
+
+
     });
 });
