@@ -15,7 +15,9 @@
 </head>
 <body class="control-sidebar-slide-open layout-navbar-fixed layout-fixed layout-footer-fixed">
 <div class="wrapper">
-    
+    <div class="preloader flex-column justify-content-center align-items-center">
+      <img class="animation__shake" src="{{asset('backend/dist/img/short_logo.png')}}" alt="AdminLTELogo">
+    </div>
     @include("backend.user.layouts.partials._topbar")
 
     @include("backend.user.layouts.partials._sidebar")

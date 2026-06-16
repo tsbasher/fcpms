@@ -32,7 +32,7 @@ class BoqPart extends ExtendedModel
     }
     public function boq_item()
     {
-        return $this->belongsTo(BoqItem::class, 'boq_item_id', 'id');
+        return $this->hasMany(BoqItem::class, 'boq_part_id', 'id');
     }
     
 }

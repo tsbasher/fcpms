@@ -76,7 +76,7 @@
                         <select class="form-control select2" name="unit_id" id="unit_id" placeholder="Select Unit">
                             <option value="">Select Unit</option>
                             @foreach ($units as $unit)
-                                <option value="{{ $unit->id }}" @if (old('unit_id') == $unit->id) selected @endif>{{ $unit->name }}</option>
+                                <option value="{{ $unit->id }}" @if (old('unit_id') == $unit->id) selected @endif>{{ $unit->name }}({{ $unit->code }})</option>
                             @endforeach
                         </select>
                     </div>

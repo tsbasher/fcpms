@@ -35,8 +35,8 @@ F C P M S 2.0</span>
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="{{route('admin.home')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.home') active @endif">
+            <a href="{{route('user.home')}}" class="nav-link
+            @if(Route::currentRouteName() == 'user.home') active @endif">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
@@ -52,119 +52,7 @@ F C P M S 2.0</span>
               </p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="{{route('admin.regions.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.regions.index' || Route::currentRouteName() == 'admin.regions.create' || Route::currentRouteName() == 'admin.regions.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Regions
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{route('admin.packages.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.packages.index' || Route::currentRouteName() == 'admin.packages.create' || Route::currentRouteName() == 'admin.packages.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Packages
-              </p>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="{{route('admin.scheme_options.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.scheme_options.index' || Route::currentRouteName() == 'admin.scheme_options.create' || Route::currentRouteName() == 'admin.scheme_options.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Scheme Options
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{route('admin.schemes.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.schemes.index' || Route::currentRouteName() == 'admin.schemes.create' || Route::currentRouteName() == 'admin.schemes.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Schemes
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{route('admin.units.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.units.index' || Route::currentRouteName() == 'admin.units.create' || Route::currentRouteName() == 'admin.units.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Units
-              </p>
-            </a>
-          </li>
           
-          <li class="nav-item">
-            <a href="{{route('admin.boq_parts.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.boq_parts.index' || Route::currentRouteName() == 'admin.boq_parts.create' || Route::currentRouteName() == 'admin.boq_parts.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                BOQ Parts
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{route('admin.boq_items.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.boq_items.index' || Route::currentRouteName() == 'admin.boq_items.create' || Route::currentRouteName() == 'admin.boq_items.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                BOQ Items
-              </p>
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a href="{{route('admin.boq_sub_items.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.boq_sub_items.index' || Route::currentRouteName() == 'admin.boq_sub_items.create' || Route::currentRouteName() == 'admin.boq_sub_items.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                BOQ Sub Items
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{route('admin.boq_versions.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.boq_versions.index' || Route::currentRouteName() == 'admin.boq_versions.create' || Route::currentRouteName() == 'admin.boq_versions.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                BOQ Versions
-              </p>
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a href="{{route('admin.boq_version_details.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.boq_version_details.index' || Route::currentRouteName() == 'admin.boq_version_details.create' || Route::currentRouteName() == 'admin.boq_version_details.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                BOQ Versions Details
-              </p>
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a href="{{route('admin.contractors.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.contractors.index' || Route::currentRouteName() == 'admin.contractors.create' || Route::currentRouteName() == 'admin.contractors.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Contractors
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{route('admin.contractor_users.index')}}" class="nav-link
-            @if(Route::currentRouteName() == 'admin.contractor_users.index' || Route::currentRouteName() == 'admin.contractor_users.create' || Route::currentRouteName() == 'admin.contractor_users.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Contractor Users
-              </p>
-            </a>
-          </li>
 {{--           
           <li class="nav-item">
             <a href="#" class="nav-link">

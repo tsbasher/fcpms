@@ -74,6 +74,10 @@ Route::group(['prefix' => 'common'], function () {
     Route::get('/get-boq-version-by-boq-package/{package_id}', [BoqVersionController::class, 'getBoqVersionsByPackage'])->name('common.get_boq_versions_by_package');
     Route::get('/get-unit-by-boq-item/{boq_item_id}', [UnitController::class, 'getUnitByBoqItem'])->name('common.get_unit_by_boq_item');
     Route::get('/get-unit-by-boq-sub-item/{boq_sub_item_id}', [UnitController::class, 'getUnitByBoqSubItem'])->name('common.get_unit_by_boq_sub_item');
+
+    Route::get('/get-bill-boq-part-by-bill-scheme/{bill_id}/{scheme_id}', [BoqPartController::class, 'getBillBoqPartbyscheme'])->name('common.get_bill_boq_part_by_scheme');
+
+    Route::get('/get-bill-boq-items-by-bill-part/{bill_id}/{scheme_id}/{boq_part_id}', [BoqItemController::class, 'getBillBoqItemsByPart'])->name('common.get_bill_boq_items_by_part');
 });
 
 
@@ -83,13 +87,39 @@ Route::group(['prefix' => ''], function () {
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/logout', [LoginController::class, 'user_logout'])->name('user.logout');
         Route::get('/', [UserHomeController::class, 'index'])->name('user.home');
-    Route::get('/bills/remove-scheme/{scheme_id}/{bill_id}', [BillController::class, 'removeScheme'])->name('user.bills.remove_scheme');
-    Route::get('/bills/add-scheme/{bill_id}', [BillController::class, 'addScheme'])->name('user.bills.add_scheme');
-    Route::post('/bills/add-scheme/{bill_id}', [BillController::class, 'storeScheme'])->name('user.bills.store_scheme');
 
+        Route::get('/bill/details/scheme/{id}', [BillController::class, 'show_scheme'])->name('user.bills.details.scheme');
+        // Route::get('/bills/add-scheme/{bill_id}', [BillController::class, 'addScheme'])->name('user.bills.add_scheme');
+        Route::post('/bills/add-scheme/{bill_id}', [BillController::class, 'storeScheme'])->name('user.bills.store_scheme');
+        Route::get('/bills/remove-scheme/{scheme_id}/{bill_id}', [BillController::class, 'removeScheme'])->name('user.bills.remove_scheme');
+
+        Route::get('/bill/details/boq-part/{id}', [BillController::class, 'show_boq_part'])->name('user.bills.details.boq_part');
+        // Route::get('/bills/add-boq_parts/{bill_id}', [BillController::class, 'addBoqPart'])->name('user.bills.add_boq_parts');
+        Route::post('/bills/add-boq_parts/{bill_id}', [BillController::class, 'storeBoqPart'])->name('user.bills.store_boq_parts');
+        Route::get('/bills/remove-boq-part/{id}/{bill_id}', [BillController::class, 'removeBoqPart'])->name('user.bills.remove_boq_part');
+
+
+        Route::get('/bill/details/boq-item/{id}', [BillController::class, 'show_boq_item'])->name('user.bills.details.boq_item');
+        // Route::get('/bills/add-boq_items/{bill_id}', [BillController::class, 'addBoqItem'])->name('user.bills.add_boq_items');
+        Route::post('/bills/add-boq_items/{bill_id}', [BillController::class, 'storeBoqItem'])->name('user.bills.store_boq_items');
+        Route::get('/bills/remove-boq-item/{id}/{bill_id}', [BillController::class, 'removeBoqItem'])->name('user.bills.remove_boq_item');
+
+
+
+        Route::get('/bill/details/boq_subitem/{id}', [BillController::class, 'show_boq_subitem'])->name('user.bills.details.boq_subitem');
+        // Route::get('/bills/add-boq_subitems/{bill_id}', [BillController::class, 'addBoqSubItem'])->name('user.bills.add_boq_subitems');
+        Route::post('/bills/add-boq_subitems/{bill_id}', [BillController::class, 'storeBoqSubItem'])->name('user.bills.store_boq_subitems');
+        Route::get('/bills/remove-boq-subitem/{id}/{bill_id}', [BillController::class, 'removeBoqSubItem'])->name('user.bills.remove_boq_subitem');
+
+
+
+        Route::get('/bill/details/measurement/{id}', [BillController::class, 'show_measurement'])->name('user.bills.details.measurement');
+        Route::post('/bill/details/add-measurement/{bill_id}', [BillController::class, 'storeMeasurement'])->name('user.bills.store_measurement');
+        Route::get('/bill/details/remove-measurement/{id}/{bill_id}', [BillController::class, 'removeMeasurement'])->name('user.bills.remove_measurement');
+        Route::get('/bill/details/unit-wise-view/{id}', [BillController::class, 'unitWiseView'])->name('user.bills.unit_wise_view');
+
+        Route::get('bill/details/shelter-wise/{id}', [BillController::class, 'shelterWiseView'])->name('user.bills.shelter_wise_view');
 
         Route::resource('bills', BillController::class)->names('user.bills');
-
-
     });
 });

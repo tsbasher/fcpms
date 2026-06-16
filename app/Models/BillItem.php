@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
-use App\Helper\ExtendedModelUser;
+use App\Helper\ExtendedModel;
 use Illuminate\Database\Eloquent\Model;
 
-class BillPart extends ExtendedModelUser
+class BillItem extends ExtendedModel
 {
-    protected $keyType = 'string';
+    //
     public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
-        'id',
         'bill_id',
         'scheme_id',
-        'project_id',
-        'boq_part_id'
+        'boq_part_id',
+        'boq_item_id',
     ];
-
     public function bill()
     {
         return $this->belongsTo(Bill::class, 'bill_id', 'id');
@@ -28,5 +27,9 @@ class BillPart extends ExtendedModelUser
     public function scheme()
     {
         return $this->belongsTo(Scheme::class, 'scheme_id', 'id');
-    }   
+    }
+    public function boq_item()
+    {
+        return $this->belongsTo(BoqItem::class, 'boq_item_id', 'id');
+    }
 }

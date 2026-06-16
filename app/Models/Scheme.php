@@ -47,7 +47,7 @@ class Scheme extends ExtendedModel
     {
         return $this->belongsTo(Package::class, 'package_id', 'id');
     }
-    public function schemeOption()
+    public function scheme_option()
     {
         return $this->belongsTo(SchemeOption::class, 'scheme_option_id', 'id');
     }

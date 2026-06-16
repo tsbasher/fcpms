@@ -14,6 +14,8 @@ return new class extends Migration
     {
         Schema::create('bill_parts', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->uuid('project_id');
+             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->uuid('bill_id');
             $table->uuid('scheme_id');
             $table->uuid('boq_part_id');

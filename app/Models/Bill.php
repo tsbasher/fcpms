@@ -38,10 +38,27 @@ class Bill extends ExtendedModelUser
     }
     public function schemes()
     {
-        return $this->belongsToMany(Scheme::class, 'bill_schemes', 'bill_id', 'scheme_id');
+        return $this->belongsToMany(Scheme::class, 'bill_schemes', 'bill_id', 'scheme_id')->with('package','district','upazila','union');
+    }
+    
+    public function bill_scheme()
+    {
+        return $this->hasMany(BillScheme::class, 'bill_id', 'id')->with('scheme');
     }
     public function bill_parts()
     {
-        return $this->belongsToMany(BoqPart::class, 'bill_parts', 'bill_id', 'boq_part_id')->with('scheme');
+        return $this->hasMany(BillPart::class, 'bill_id', 'id')->with('scheme', 'boq_part');
+    }
+    public function bill_items()
+    {
+        return $this->hasMany(BillItem::class, 'bill_id', 'id')->with('scheme', 'boq_part','boq_item');
+    }
+    public function bill_subitems()
+    {
+        return $this->hasMany(BillSubItem::class, 'bill_id', 'id')->with('scheme', 'boq_part','boq_item','boq_subitem');
+    }
+    public function bill_details()
+    {
+        return $this->hasMany(BillDetail::class,'bill_id','id');
     }
 }

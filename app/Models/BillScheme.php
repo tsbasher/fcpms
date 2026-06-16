@@ -14,6 +14,7 @@ class BillScheme extends ExtendedModelUser
         'id',
         'bill_id',
         'scheme_id',
+        'project_id',
     ];
     public function bill()
     {
@@ -21,6 +22,6 @@ class BillScheme extends ExtendedModelUser
     }
     public function scheme()
     {
-        return $this->belongsTo(Scheme::class, 'scheme_id', 'id');
+        return $this->belongsTo(Scheme::class, 'scheme_id', 'id')->with('package','district','upazila','union');
     }
 }

@@ -12,14 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bill_schemes', function (Blueprint $table) {
+        Schema::create('bill_sub_items', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->uuid('project_id');
-             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->uuid('bill_id');
             $table->uuid('scheme_id');
-            $table->foreign('bill_id')->references('id')->on('bills')->onDelete('cascade');
+            $table->uuid('boq_part_id');
+            $table->uuid('boq_item_id');
+            $table->uuid('boq_subitem_id');
+             $table->foreign('bill_id')->references('id')->on('bills')->onDelete('cascade');
             $table->foreign('scheme_id')->references('id')->on('schemes')->onDelete('cascade');
+            $table->foreign('boq_part_id')->references('id')->on('boq_parts')->onDelete('cascade');
+            $table->foreign('boq_item_id')->references('id')->on('boq_items')->onDelete('cascade');
+            $table->foreign('boq_subitem_id')->references('id')->on('boq_sub_items')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -29,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bill_schemes');
+        Schema::dropIfExists('bill_sub_items');
     }
 };

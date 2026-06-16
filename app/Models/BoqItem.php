@@ -34,5 +34,9 @@ class BoqItem extends ExtendedModel
     {
         return $this->belongsTo(Unit::class, 'unit_id', 'id');
     }
+    public function boq_sub()
+    {
+        return $this->hasMany(BoqSubItem::class, 'boq_item_id', 'id');
+    }
 
 }

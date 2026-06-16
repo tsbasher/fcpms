@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BillPart;
 use App\Models\BoqPart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -123,5 +124,13 @@ class BoqPartController extends Controller
             $data->message = 'An error occurred while deleting BOQ Part.';
             return response()->json($data);
         }
+    }
+    public function getBillBoqPartbyscheme($bill_id, $scheme_id)
+    {
+        $boq_parts = BillPart::where('bill_id', $bill_id)
+                  ->where('scheme_id', $scheme_id)->with('boq_part')
+                  ->get();
+
+        return response()->json($boq_parts);
     }
 }

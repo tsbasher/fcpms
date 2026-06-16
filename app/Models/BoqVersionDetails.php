@@ -35,11 +35,11 @@ class BoqVersionDetails extends ExtendedModel
     }
     public function boq_item()
     {
-        return $this->belongsTo(BoqItem::class, 'boq_item_id', 'id');
+        return $this->belongsTo(BoqItem::class, 'boq_item_id', 'id')->with('unit');
     }
     public function boq_sub_item()
     {
-        return $this->belongsTo(BoqSubItem::class, 'boq_sub_item_id', 'id');
+        return $this->belongsTo(BoqSubItem::class, 'boq_sub_item_id', 'id')->with('unit');
     }
     public function scheme_option()
     {
