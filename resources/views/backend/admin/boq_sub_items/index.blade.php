@@ -131,7 +131,7 @@
             <!-- /.card-body -->
 
             <div class="card-footer clearfix" style="background: #00000000">
-                {{ $boq_sub_items->links() }}
+                {{-- {{ $boq_sub_items->appends(request()->query())->links() }} --}}
             </div>
         </div>
         <!-- /.card -->
@@ -242,7 +242,7 @@
         "lengthChange": false,
         "searching": false,
         "ordering": true,
-            "info": true,
+            "info": false,
         "autoWidth": false,
         "responsive": true,
     });

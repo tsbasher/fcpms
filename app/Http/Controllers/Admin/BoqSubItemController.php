@@ -38,10 +38,28 @@ class BoqSubItemController extends Controller
         // dd($boq_sub_items->toSql());
 
         // Get all boq sub items
-        $boq_sub_items = $boq_sub_items->paginate();
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get(); // Fetch boq parts for the filter dropdown            
+        $boq_sub_items = $boq_sub_items->get();
+        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderby('code')->get(); // Fetch boq parts for the filter dropdown            
         $boq_items = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->where('boq_part_id', $request->boq_part_id)->get(); // Fetch boq items for the filter dropdown
+		
+		$boq_items=$boq_items->sortBy(function ($item) {
+                    preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
 
+                    return [
+                        $matches[1] ?? '',
+                        (int)($matches[2] ?? 0)
+                    ];
+                });
+
+
+                $boq_sub_items=$boq_sub_items->sortBy(function ($item) {
+                    preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
+
+                    return [
+                        $matches[1] ?? '',
+                        (int)($matches[2] ?? 0)
+                    ];
+                });
         return view('backend.admin.boq_sub_items.index', compact('boq_sub_items', 'boq_parts', 'boq_items'));
     }
 

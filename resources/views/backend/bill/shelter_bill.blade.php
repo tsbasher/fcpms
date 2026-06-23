@@ -64,6 +64,8 @@
 <body>
 
     @foreach ($shelter_bill as $info)
+    {{-- @dd($info) --}}
+    @if($info->parts && count($info->parts) > 0 && $info->parts[0]->items && count($info->parts[0]->items) > 0 && $info->parts[0]->items[0]->bill_detail)
         <table class="table table-bordered table-hover" id="boq-version-table">
 
 
@@ -280,32 +282,57 @@
                             </tr>
                         @endforeach
                         <tr>
+                            @if(in_array('piece', json_decode($item->item->unit->fields)))
+                            <td colspan="3" class="no-border"></td>
+                            @else
+                            
                             <td colspan="4" class="no-border"></td>
+                            @endif
                             <td colspan="{{ count(json_decode($item->item->unit->fields))+1 }}" class="text-right text-bold">Work done Quantity</td>
                             <td class="text-right text-bold"> {{ number_format($item->measurements->sum('quantity'), 3) }}</td>
                             <td></td>
                         </tr>
                         
                         <tr>
+                            @if(in_array('piece', json_decode($item->item->unit->fields)))
+                            <td colspan="3" class="no-border"></td>
+                            @else
+                            
                             <td colspan="4" class="no-border"></td>
+                            @endif
                             <td colspan="{{ count(json_decode($item->item->unit->fields))+1 }}" class="text-right text-bold">Previous Quantity</td>
                             <td class="text-right text-bold"> {{ number_format($item->bill_detail->previous_quantity, 3) }}</td>
                             <td></td>
                         </tr>
                         <tr>
+                            @if(in_array('piece', json_decode($item->item->unit->fields)))
+                            <td colspan="3" class="no-border"></td>
+                            @else
+                            
                             <td colspan="4" class="no-border"></td>
+                            @endif
                             <td colspan="{{ count(json_decode($item->item->unit->fields))+1 }}" class="text-right text-bold">BOQ Quantity</td>
                             <td class="text-right text-bold"> {{ number_format($item->boq_version_details->quantity, 3) }}</td>
                             <td></td>
                         </tr>
                         <tr>
+                            @if(in_array('piece', json_decode($item->item->unit->fields)))
+                            <td colspan="3" class="no-border"></td>
+                            @else
+                            
                             <td colspan="4" class="no-border"></td>
+                            @endif
                             <td colspan="{{ count(json_decode($item->item->unit->fields))+1 }}" class="text-right text-bold">Held Up Quantity</td>
                             <td class="text-right text-bold"> {{ number_format($item->bill_detail->held_up_quantity, 3) }}</td>
                             <td></td>
                         </tr>
                         <tr>
+                            @if(in_array('piece', json_decode($item->item->unit->fields)))
+                            <td colspan="3" class="no-border"></td>
+                            @else
+                            
                             <td colspan="4" class="no-border"></td>
+                            @endif
                             <td colspan="{{ count(json_decode($item->item->unit->fields))+1 }}" class="text-right text-bold">This Bill Quantity</td>
                             <td class="text-right text-bold"> {{ number_format($item->bill_detail->this_bill_quantity, 3) }}</td>
                             <td></td>
@@ -317,6 +344,7 @@
         </table>
 
         <div class="page-break"></div>
+        @endif
     @endforeach
 
 

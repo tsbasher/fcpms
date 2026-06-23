@@ -32,8 +32,24 @@ class BoqItemController extends Controller
             });
         }
         // Get all boq items
-        $boq_items = $boq_items->paginate();
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get(); // Fetch boq parts for the filter dropdown
+        $boq_items = $boq_items->get();
+        $boq_items=$boq_items->sortBy(function ($item) {
+                    preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
+
+                    return [
+                        $matches[1] ?? '',
+                        (int)($matches[2] ?? 0)
+                    ];
+                });
+        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderby('code')->get(); // Fetch boq parts for the filter dropdown
+        $boq_parts=$boq_parts->sortBy(function ($item) {
+                    preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
+
+                    return [
+                        $matches[1] ?? '',
+                        (int)($matches[2] ?? 0)
+                    ];
+                });
         return view('backend.admin.boq_items.index', compact('boq_items', 'boq_parts'));
     }
 

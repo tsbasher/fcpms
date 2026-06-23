@@ -25,7 +25,7 @@ class BoqPartController extends Controller
             $boq_parts->where('name', 'ilike', "%{$search}%");
         }
         // Get all boq parts
-        $boq_parts = $boq_parts->paginate();
+        $boq_parts = $boq_parts->orderby('code')->paginate();
         return view('backend.admin.boq_parts.index', compact('boq_parts'));
     }
 
