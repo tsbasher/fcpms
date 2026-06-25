@@ -25,7 +25,7 @@ class BoqPartController extends Controller
             $boq_parts->where('name', 'ilike', "%{$search}%");
         }
         // Get all boq parts
-        $boq_parts = $boq_parts->orderby('code')->paginate();
+        $boq_parts = $boq_parts->orderby('code')->get();
         return view('backend.admin.boq_parts.index', compact('boq_parts'));
     }
 
@@ -34,7 +34,7 @@ class BoqPartController extends Controller
      */
     public function create()
     {
-        return view('backend.admin.boq_parts.create');  
+        return view('backend.admin.boq_parts.create');
     }
 
 
@@ -43,10 +43,13 @@ class BoqPartController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$request->has('is_active')) {
+        if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
         }
-        $v=Validator::make($request->all(), [
+        if (!$request->has('has_option_variation')) {
+            $request->merge(['has_option_variation' => 0]);
+        }
+        $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:boq_parts,code',
             'description' => 'nullable|string|max:1000',
@@ -54,7 +57,7 @@ class BoqPartController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $data=$request->only(['name', 'code', 'description', 'is_active']);
+        $data = $request->only(['name', 'code', 'has_option_variation', 'description', 'is_active']);
         $data['project_id'] = Auth::guard('admin')->user()->project_id; // Assuming the user is authenticated
         BoqPart::create($data);
 
@@ -74,7 +77,7 @@ class BoqPartController extends Controller
      */
     public function edit(BoqPart $boqPart)
     {
-        $boqPart= BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
+        $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
         return view('backend.admin.boq_parts.edit', compact('boqPart'));
     }
 
@@ -82,13 +85,13 @@ class BoqPartController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, BoqPart $boqPart)
-    {        
-        $boqPart= BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
+    {
+        $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
 
-        if(!$request->has('is_active')) {
+        if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
         }
-        $v=Validator::make($request->all(), [
+        $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:boq_parts,code,' . $boqPart->id,
             'description' => 'nullable|string|max:1000',
@@ -107,10 +110,10 @@ class BoqPartController extends Controller
      */
     public function destroy(BoqPart $boqPart)
     {
-        
-         try {
+
+        try {
             // Check if the project is associated with any other records
-        $boqPart= BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
+            $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
 
             $boqPart->delete();
             $data = new stdClass();
@@ -128,8 +131,8 @@ class BoqPartController extends Controller
     public function getBillBoqPartbyscheme($bill_id, $scheme_id)
     {
         $boq_parts = BillPart::where('bill_id', $bill_id)
-                  ->where('scheme_id', $scheme_id)->with('boq_part')
-                  ->get();
+            ->where('scheme_id', $scheme_id)->with('boq_part')
+            ->get();
 
         return response()->json($boq_parts);
     }

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Helper\ExtendedModel;
-use Illuminate\Database\Eloquent\Model;
 
 class BoqVersionDetails extends ExtendedModel
 {
@@ -19,6 +18,8 @@ class BoqVersionDetails extends ExtendedModel
         'boq_sub_item_id',
         'scheme_option_id',
         'unit_id',
+        'nos',
+        'total_quantity',
         'quantity',
         'rate',
         'created_by',

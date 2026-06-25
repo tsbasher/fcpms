@@ -32,24 +32,13 @@ class BoqItemController extends Controller
             });
         }
         // Get all boq items
-        $boq_items = $boq_items->get();
-        $boq_items=$boq_items->sortBy(function ($item) {
-                    preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
+        $boq_items = $boq_items
+            ->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+        regexp_replace(code, '[^0-9]', '', 'g')::int ASC")
+            ->paginate();
 
-                    return [
-                        $matches[1] ?? '',
-                        (int)($matches[2] ?? 0)
-                    ];
-                });
         $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderby('code')->get(); // Fetch boq parts for the filter dropdown
-        $boq_parts=$boq_parts->sortBy(function ($item) {
-                    preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
 
-                    return [
-                        $matches[1] ?? '',
-                        (int)($matches[2] ?? 0)
-                    ];
-                });
         return view('backend.admin.boq_items.index', compact('boq_items', 'boq_parts'));
     }
 
@@ -61,7 +50,7 @@ class BoqItemController extends Controller
         $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get(); // Assuming you have a BoqPart model to fetch parts
         $units = Unit::all(); // Fetch all units for the dropdown
         // Return the view for creating a new boq item
-        return view('backend.admin.boq_items.create', compact('boq_parts','units'));
+        return view('backend.admin.boq_items.create', compact('boq_parts', 'units'));
     }
 
     /**
@@ -108,7 +97,7 @@ class BoqItemController extends Controller
         $boq_item = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqItem->id); // Fetch the boq item by ID
         $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $units = Unit::all(); // Fetch all units for the dropdown
-        return view('backend.admin.boq_items.edit', compact('boq_item', 'boq_parts','units'));
+        return view('backend.admin.boq_items.edit', compact('boq_item', 'boq_parts', 'units'));
     }
 
     /**
@@ -174,7 +163,14 @@ class BoqItemController extends Controller
         $boq_items = BoqItem::where('boq_part_id', $boq_part_id)
             ->where('project_id', Auth::guard('admin')->user()->project_id)
             ->get();
+        $boq_items = $boq_items->sortBy(function ($item) {
+            preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);
+
+            return [
+                $matches[1] ?? '',
+                (int)($matches[2] ?? 0)
+            ];
+        })->values();;
         return response()->json($boq_items);
-    
     }
 }

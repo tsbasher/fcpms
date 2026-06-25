@@ -9,7 +9,6 @@ use App\Models\BoqSubItem;
 use App\Models\BoqVersion;
 use App\Models\BoqVersionDetails;
 use App\Models\Package;
-use App\Models\Scheme;
 use App\Models\SchemeOption;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -28,7 +27,7 @@ class BoqVersionDetailsController extends Controller
         $boq_version_details = BoqVersionDetails::where('project_id', Auth::guard('admin')->user()->project_id)
             ->with(['boq_version', 'boq_part', 'boq_item', 'boq_sub_item', 'scheme_option', 'unit', 'package']);
         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
         if ($request->has('package_id') && !empty($request->get('package_id'))) {
             $boq_version_details->where('package_id', $request->get('package_id'));
             $boq_versions = BoqVersion::where('package_id', $request->get('package_id'))
@@ -43,14 +42,16 @@ class BoqVersionDetailsController extends Controller
         if ($request->has('boq_part_id') && !empty($request->get('boq_part_id'))) {
             $boq_version_details->where('boq_part_id', $request->get('boq_part_id'));
             $boq_items = BoqItem::where('boq_part_id', $request->get('boq_part_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+                ->where('project_id', Auth::guard('admin')->user()->project_id)->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+        regexp_replace(code, '[^0-9]', '', 'g')::int ASC")->get();
         } else {
             $boq_items = [];
         }
         if ($request->has('boq_item_id') && !empty($request->get('boq_item_id'))) {
             $boq_version_details->where('boq_item_id', $request->get('boq_item_id'));
             $boq_sub_items = BoqSubItem::where('boq_item_id', $request->get('boq_item_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+                ->where('project_id', Auth::guard('admin')->user()->project_id)->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+        regexp_replace(code, '[^0-9]', '', 'g')::int ASC")->get();
         } else {
             $boq_sub_items = [];
         }
@@ -68,15 +69,15 @@ class BoqVersionDetailsController extends Controller
         $boq_version = BoqVersion::find($request->get('boq_version_id'));
         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
 
-$boq_version_detail=[];
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $boq_version_detail = [];
+        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
 
         $boq_items = [];
         $boq_sub_items = [];
         $boq_versions = [];
         $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $units = Unit::get();
-        return view('backend.admin.boq_version_details.create', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units',"boq_version_detail"));
+        return view('backend.admin.boq_version_details.create', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
     }
 
 
@@ -94,10 +95,12 @@ $boq_version_detail=[];
             'scheme_option_id' => 'required|exists:scheme_options,id',
             'unit_id' => 'required|exists:units,id',
             'quantity' => 'required|numeric|min:0',
+            'nos' => 'required|numeric|min:0',
+            'total_quantity' => 'required|numeric|min:0',
             'rate' => 'required|numeric|min:0',
         ]);
         if ($v->fails()) {
-            return response()->json(['status' => 0, 'message' => $v->errors()->first()]);
+            return redirect()->back()->withErrors($v)->withInput();
         }
 
         $exist = $this->existingBoqVersionDetails($request);
@@ -111,9 +114,10 @@ $boq_version_detail=[];
                 'scheme_option_id' => $request->get('scheme_option_id'),
                 'unit_id' => $request->get('unit_id'),
                 'quantity' => $request->get('quantity'),
+                'nos' => $request->get('nos'),
+                'total_quantity' => $request->get('total_quantity'),
                 'rate' => $request->get('rate')
             ]);
-            
         } else {
             $data = $request->only([
                 'boq_version_id',
@@ -124,16 +128,16 @@ $boq_version_detail=[];
                 'scheme_option_id',
                 'unit_id',
                 'quantity',
+                'nos',
+                'total_quantity',
                 'rate'
 
             ]);
             $data['project_id'] = Auth::guard('admin')->user()->project_id;
 
-            $details=BoqVersionDetails::create($data);
-
+            $details = BoqVersionDetails::create($data);
         }
-            return redirect()->route('admin.boq_version_details.index')->with('success', 'Boq Version Details Created Successfully.');
-        
+        return redirect()->route('admin.boq_version_details.index')->with('success', 'Boq Version Details Created Successfully.');
     }
 
     /**
@@ -160,11 +164,10 @@ $boq_version_detail=[];
         $boq_sub_items = BoqSubItem::where('boq_item_id', $boq_version_detail->boq_item_id)
             ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
-        ->where('package_id', $boq_version_detail->package_id)->get();
+            ->where('package_id', $boq_version_detail->package_id)->get();
         $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $units = Unit::get();
         return view('backend.admin.boq_version_details.edit', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
-    
     }
 
     /**
@@ -180,6 +183,8 @@ $boq_version_detail=[];
             'boq_sub_item_id' => 'nullable|exists:boq_sub_items,id',
             'scheme_option_id' => 'required|exists:scheme_options,id',
             'unit_id' => 'required|exists:units,id',
+            'nos' => 'required|numeric|min:0',
+            'total_quantity' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
             'rate' => 'required|numeric|min:0',
         ]);
@@ -189,19 +194,21 @@ $boq_version_detail=[];
         }
 
         $boq_version_detail = BoqVersionDetails::find($id);
-        
-            $data = $request->only([
-                'boq_version_id',
-                'package_id',
-                'boq_part_id',
-                'boq_item_id',
-                'boq_sub_item_id',
-                'scheme_option_id',
-                'unit_id',
-                'quantity',
-                'rate'
 
-            ]);
+        $data = $request->only([
+            'boq_version_id',
+            'package_id',
+            'boq_part_id',
+            'boq_item_id',
+            'boq_sub_item_id',
+            'scheme_option_id',
+            'unit_id',
+            'nos',
+            'total_quantity',
+            'quantity',
+            'rate'
+
+        ]);
         $boq_version_detail->update($data);
 
         return redirect()->route('admin.boq_version_details.index')->with('success', 'Boq Version Details Updated Successfully.');
@@ -212,7 +219,7 @@ $boq_version_detail=[];
      */
     public function destroy($id)
     {
-        
+
         try {
 
             $boq_version_details = BoqVersionDetails::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($id);
@@ -241,7 +248,7 @@ $boq_version_detail=[];
         if ($request->has('boq_sub_item_id') && !empty($request->get('boq_sub_item_id'))) {
             $boq_version_details->where('boq_sub_item_id', $request->get('boq_sub_item_id'));
         }
-        if($request->has('id') && !empty($request->get('id'))) {
+        if ($request->has('id') && !empty($request->get('id'))) {
             $boq_version_details->where('id', '!=', $request->get('id'));
         }
         $boq_version_details = $boq_version_details->get();
@@ -260,7 +267,7 @@ $boq_version_detail=[];
         return response()->json($data);
     }
 
-     public function copy($id)
+    public function copy($id)
     {
         $boq_version_detail = BoqVersionDetails::find($id);
         $boq_version = BoqVersion::find($boq_version_detail->boq_version_id);
@@ -273,10 +280,9 @@ $boq_version_detail=[];
         $boq_sub_items = BoqSubItem::where('boq_item_id', $boq_version_detail->boq_item_id)
             ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
-        ->where('package_id', $boq_version_detail->package_id)->get();
+            ->where('package_id', $boq_version_detail->package_id)->get();
         $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $units = Unit::get();
         return view('backend.admin.boq_version_details.copy', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
     }
-
 }

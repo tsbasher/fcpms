@@ -18,7 +18,8 @@
                 <div class="card-header">
                     <h2 class="card-title ">BOQ Parts</h2>
                     <div class="card-tools">
-                        <a href="{{ route('admin.boq_parts.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
+                        <a href="{{ route('admin.boq_parts.create') }}" class="btn btn btn-secondary"><i
+                                class="fa fa-plus"></i> Add</a>
                     </div>
                 </div>
                 <div class="card-body ">
@@ -28,11 +29,14 @@
                             <form method="get">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                        <input type="search" class="form-control" name="search_text" id="search_text"
+                                            placeholder="Type your keywords here"
+                                            value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}"
+                                            onchange="this.form.submit()">
                                         <div class="input-group-append">
-                                            <button type="submit" class="btn btn-default">
+                                            {{-- <button type="submit" class="btn btn-default">
                                                 <i class="fa fa-search"></i>
-                                            </button>
+                                            </button> --}}
                                             <a href="{{ route('admin.boq_parts.index') }}" class="btn btn-default">
                                                 <i class="fas fa-sync-alt"></i>
                                             </a>
@@ -60,6 +64,7 @@
                                     <th style="width: 10px">#</th>
                                     <th>Name</th>
                                     <th>Code</th>
+                                    <th>Option Variation</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -70,6 +75,13 @@
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $boq_part->name }}</td>
                                         <td>{{ $boq_part->code }}</td>
+                                        <td>
+                                            @if ($boq_part->has_option_variation == 1)
+                                                <span class="badge bg-success" style="font-size: 100%">Yes</span>
+                                            @else
+                                                <span class="badge bg-danger" style="font-size: 100%">No</span>
+                                            @endif
+                                        </td>
 
                                         <td>
                                             @if ($boq_part->is_active == 1)
@@ -79,8 +91,11 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ route('admin.boq_parts.edit', $boq_part->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
-                                            <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.boq_parts.destroy', $boq_part->id) }}"><i class="fas fa-trash"></i></a>
+                                            <a href="{{ route('admin.boq_parts.edit', $boq_part->id) }}"
+                                                class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            <a class="btn btn-sm btn-danger delete_record"
+                                                data-url="{{ route('admin.boq_parts.destroy', $boq_part->id) }}"><i
+                                                    class="fas fa-trash"></i></a>
 
                                         </td>
                                     </tr>
@@ -92,7 +107,7 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer clearfix" style="background: #00000000">
-                    {{ $boq_parts->links() }}
+                    {{-- {{ $boq_parts->links() }} --}}
                 </div>
             </div>
             <!-- /.card -->
@@ -108,7 +123,7 @@
     {{-- <script src="{{ asset('backend/plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+
     <!-- DataTables  & Plugins -->
     <script src="{{ asset('backend/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -193,7 +208,7 @@
             });
         });
 
-        
+
 
         $('#boq-part-table').DataTable({
             "paging": false,

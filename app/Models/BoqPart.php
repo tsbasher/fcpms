@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Helper\ExtendedModel;
-use Illuminate\Database\Eloquent\Model;
 
 class BoqPart extends ExtendedModel
 {
@@ -12,6 +11,7 @@ class BoqPart extends ExtendedModel
     protected $fillable = [
         'boq_part_id',
         'boq_item_id',
+        'has_option_variation',
         'name',
         'code',
         'description',
@@ -34,5 +34,4 @@ class BoqPart extends ExtendedModel
     {
         return $this->hasMany(BoqItem::class, 'boq_part_id', 'id');
     }
-    
 }
