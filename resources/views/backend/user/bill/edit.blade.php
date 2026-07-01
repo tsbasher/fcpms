@@ -48,7 +48,7 @@
                                 <select class="form-control select2" required name="boq_version_id" id="boq_version_id" placeholder="Enter BOQ Version">
                                     <option value="">Select BOQ Version</option>
                                     @foreach ($boq_versions as $version)
-                                    <option value="{{ $version->id }}" @if (old('boq_version_id', $bill->boq_version_id) == $version->id) selected @endif>{{ $version->name }}</option>
+                                    <option value="{{ $version->id }}" @if (old('boq_version_id', $bill->boq_version_id) == $version->id) selected @endif>{{ $version->name }} ({{ date('d F, Y', strtotime($version->version_date)) }})</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -70,16 +70,38 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="bill_date">Bill Date</label>
-                        <input type="text" required class="form-control datepicker" name="bill_date" id="bill_date" placeholder="Enter Bill Date" value="{{ old('bill_date', $bill->bill_date) }}">
-                    </div>
+                    
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="bill_date">Bill Date</label>
+                                    <input type="text" required class="form-control datepicker" name="bill_date"
+                                        id="bill_date" placeholder="Enter Bill Date" value="{{ old('bill_date', $bill->bill_date) }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="measurement_from_date">Measurement From Date</label>
+                                    <input type="text" class="form-control datepicker" name="measurement_from_date"
+                                        id="measurement_from_date" placeholder="Enter Measurement From Date"
+                                        value="{{ old('measurement_from_date', $bill->measurement_from_date) }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="measurement_to_date">Measurement To Date</label>
+                                    <input type="text" class="form-control datepicker" name="measurement_to_date"
+                                        id="measurement_to_date" placeholder="Enter Measurement To Date"
+                                        value="{{ old('measurement_to_date', $bill->measurement_to_date) }}">
+                                </div>
+                            </div>
+                        </div>
                     <div class="form-group">
                         <label for="schemes">Schemes</label>
                         <select class="form-control select2" multiple name="schemes[]" id="schemes" placeholder="Select Schemes">
                             <option value="">Select Schemes</option>
                             @foreach ($schemes as $scheme)
-                            <option value="{{ $scheme->id }}" @if (old('schemes', $bill->schemes->pluck('id')->toArray()) && in_array($scheme->id, old('schemes', $bill->schemes->pluck('id')->toArray()))) selected @endif>{{ $scheme->name }}</option>
+                            <option value="{{ $scheme->id }}" @if (old('schemes', $bill->schemes->pluck('id')->toArray()) && in_array($scheme->id, old('schemes', $bill->schemes->pluck('id')->toArray()))) selected @endif>{{ $scheme->code }} - {{ $scheme->name }}</option>
                             @endforeach
                         </select>
                     </div>

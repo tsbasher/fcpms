@@ -68,6 +68,8 @@ class BillController extends Controller
             'reference_code' => 'nullable|string|max:255',
             'name' => 'required|string|max:255',
             'remarks' => 'nullable|string',
+            'measurement_from_date' => 'nullable|date',
+            'measurement_to_date' => 'nullable|date',
             'boq_version_id' => 'required|exists:boq_versions,id',
             'schemes' => 'required|array',
             'schemes.*' => 'exists:schemes,id',
@@ -82,6 +84,8 @@ class BillController extends Controller
             $bill->bill_date = $request->bill_date;
             $bill->reference_code = $request->reference_code;
             $bill->name = $request->name;
+            $bill->measurement_from_date = $request->measurement_from_date;
+            $bill->measurement_to_date = $request->measurement_to_date;
             $bill->remarks = $request->remarks;
             $bill->boq_version_id = $request->boq_version_id;
             $bill->contractor_id = Auth::guard('web')->user()->contractor_id;
@@ -178,6 +182,8 @@ class BillController extends Controller
             'name' => 'required|string|max:255',
             'remarks' => 'nullable|string',
             'boq_version_id' => 'required|exists:boq_versions,id',
+            'measurement_from_date' => 'nullable|date',
+            'measurement_to_date' => 'nullable|date',
             'schemes' => 'required|array',
             'schemes.*' => 'exists:schemes,id',
         ]);
@@ -188,6 +194,8 @@ class BillController extends Controller
             $bill->bill_no = $request->bill_no;
             $bill->bill_date = $request->bill_date;
             $bill->reference_code = $request->reference_code;
+            $bill->measurement_from_date = $request->measurement_from_date;
+            $bill->measurement_to_date = $request->measurement_to_date;
             $bill->name = $request->name;
             $bill->remarks = $request->remarks;
             $bill->boq_version_id = $request->boq_version_id;
@@ -277,7 +285,7 @@ class BillController extends Controller
     public function show_boq_part($id, Request $request)
     {
         $bill = Bill::with('schemes'); //->findOrFail($id);
-        if ($request->has('schemes') && isset($request->schemes))
+        if ($request->has('schemes') && isset($request->schemes) && $request->schemes != "All")
             $bill->with('bill_parts', function ($q) use ($request) {
                 $q->where('scheme_id', $request->schemes);
             });
@@ -300,7 +308,7 @@ class BillController extends Controller
     public function storeBoqPart(Request $request, $bill_id)
     {
         $v = Validator($request->all(), [
-            'schemes' => 'required|exists:schemes,id',
+            'schemes' => 'required',
             'boq_parts' => 'required|array',
             'boq_parts.*' => 'exists:boq_parts,id',
         ]);
@@ -308,20 +316,29 @@ class BillController extends Controller
             return redirect()->back()->withErrors($v)->withInput();
         }
         $bill = Bill::findOrFail($bill_id);
-        DB::transaction(function () use ($request, $bill) {
+        if( $request->schemes == "All"){
+            $schemes = Scheme::where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)->pluck('id')->toArray();
+        }
+        else
+            $schemes = $request->schemes;
+        DB::transaction(function () use ($request, $bill,$schemes) {
             // Add new bill parts
-            BillPart::where('bill_id', $bill->id)->where('scheme_id', $request->schemes)->delete();
+            foreach ($schemes as $scheme_id) {
+                BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->delete();
+            
             $bill_parts = [];
             foreach ($request->boq_parts as $boq_part_id) {
 
                 $bill_parts = [
                     'bill_id' => $bill->id,
-                    'scheme_id' => $request->schemes,
+                    'scheme_id' => $scheme_id,
                     'project_id' => Auth::guard('web')->user()->project_id,
                     'boq_part_id' => $boq_part_id,
                 ];
                 // dd($bill_parts);
                 BillPart::create($bill_parts);
+            }
             }
         });
         // dd($request);

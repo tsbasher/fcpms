@@ -144,7 +144,7 @@
                             <td colspan="4">Name of Shelter:{{ $info->scheme->name }}</td>
                             <td colspan="3" class="text-center">Shelter ID: {{ $info->scheme->code }}</td>
                             <td colspan="2" class="text-center">{{ $info->scheme->scheme_option->name }}</td>
-                            <td colspan="4" class="text-center">Measurement Date: {{ date('Y-m-d') }}</td>
+                            <td colspan="4" class="text-center">Measurement Date: @if($this_bill->measurement_from_date && $this_bill->measurement_to_date){{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}@endif</td>
                         </tr>
 
                         <tr>
@@ -478,7 +478,7 @@
                             <td colspan="3">Name of Shelter:{{ $info->scheme->name }}</td>
                             <td colspan="2" class="text-center">Shelter ID: {{ $info->scheme->code }}</td>
                             <td colspan="2" class="text-center">{{ $info->scheme->scheme_option->name }}</td>
-                            <td colspan="4" class="text-center">Measurement Date: {{ date('Y-m-d') }}</td>
+                            <td colspan="4" class="text-center">Measurement Date: @if($this_bill->measurement_from_date && $this_bill->measurement_to_date){{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}@endif</td>
                         </tr>
 
                         @foreach ($info->parts as $part)

@@ -17,6 +17,8 @@ class Bill extends ExtendedModelUser
         'bill_no',
         'bill_date',
         'reference_code',
+        'measurement_from_date',
+        'measurement_to_date',
         'name',
         'status',
         'remarks',

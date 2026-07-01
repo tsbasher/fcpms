@@ -55,21 +55,21 @@
 
                         <hr>
                         <!--
-                                      <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
+                                          <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
 
-                                      <p class="text-muted">
-                                        <span class="tag tag-danger">UI Design</span>
-                                        <span class="tag tag-success">Coding</span>
-                                        <span class="tag tag-info">Javascript</span>
-                                        <span class="tag tag-warning">PHP</span>
-                                        <span class="tag tag-primary">Node.js</span>
-                                      </p>
+                                          <p class="text-muted">
+                                            <span class="tag tag-danger">UI Design</span>
+                                            <span class="tag tag-success">Coding</span>
+                                            <span class="tag tag-info">Javascript</span>
+                                            <span class="tag tag-warning">PHP</span>
+                                            <span class="tag tag-primary">Node.js</span>
+                                          </p>
 
-                                      <hr>
+                                          <hr>
 
-                                      <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
+                                          <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
 
-                                      <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p> -->
+                                          <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p> -->
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -80,12 +80,18 @@
                 <div class="card">
                     <div class="card-header p-2">
                         <ul class="nav nav-pills">
-                            <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.scheme', [$bill->id]) }}" data-toggle="tab">Scheme</a></li>
-                            <li class="nav-item"><a class="nav-link active click_tab" href="{{ route('user.bills.details.boq_part', [$bill->id]) }}" data-toggle="tab">BOQ Parts</a></li>
+                            <li class="nav-item"><a class="nav-link  click_tab"
+                                    href="{{ route('user.bills.details.scheme', [$bill->id]) }}"
+                                    data-toggle="tab">Scheme</a></li>
+                            <li class="nav-item"><a class="nav-link active click_tab"
+                                    href="{{ route('user.bills.details.boq_part', [$bill->id]) }}" data-toggle="tab">BOQ
+                                    Parts</a></li>
                             {{-- <li class="nav-item"><a class="nav-link click_tab" href="{{ route('user.bills.details.boq_item', [$bill->id]) }}" data-toggle="tab">BOQ Items</a></li>
                             <li class="nav-item"><a class="nav-link click_tab" href="{{ route('user.bills.details.boq_subitem', [$bill->id]) }}" data-toggle="tab">BOQ Sub
                                     Items</a></li> --}}
-                            <li class="nav-item"><a class="nav-link click_tab" href="{{ route('user.bills.details.measurement', [$bill->id]) }}" data-toggle="tab">Measurements</a>
+                            <li class="nav-item"><a class="nav-link click_tab"
+                                    href="{{ route('user.bills.details.measurement', [$bill->id]) }}"
+                                    data-toggle="tab">Measurements</a>
                             </li>
                         </ul>
                     </div><!-- /.card-header -->
@@ -115,26 +121,37 @@
                                     </div>
                                 </div>
                                 <div class="mb-2">
-                                    <form role="form" method="POST" action="{{ route('user.bills.store_boq_parts', $bill->id) }}" enctype="multipart/form-data">
+                                    <form role="form" method="POST"
+                                        action="{{ route('user.bills.store_boq_parts', $bill->id) }}"
+                                        enctype="multipart/form-data">
                                         @csrf
                                         <div class="card-body">
 
                                             <div class="form-group">
                                                 <label for="schemes">Scheme</label>
-                                                <select class="form-control select2" name="schemes" id="schemes" placeholder="Select Schemes" required>
+                                                <select class="form-control select2" name="schemes" id="schemes"
+                                                    placeholder="Select Schemes" required>
                                                     <option value="">Select Schemes</option>
+                                                    <option value="All" @if (Request::get('schemes') == "All") selected @endif>All Schemes</option>
                                                     @foreach ($schemes as $scheme)
-                                                        <option value="{{ $scheme->id }}" @if (Request::get('schemes') == $scheme->id) selected @endif>{{ $scheme->name }}</option>
+                                                        <option value="{{ $scheme->id }}"
+                                                            @if (Request::get('schemes') == $scheme->id) selected @endif>
+                                                            {{ $scheme->code }} - {{ $scheme->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="boq_part_id">BOQ Part</label>
-                                                <select class="form-control" multiple="multiple" name="boq_parts[]" id="boq_parts" placeholder="Select BOQ Parts" required>
-                                                   
+                                                <select class="form-control" multiple="multiple" name="boq_parts[]"
+                                                    id="boq_parts" placeholder="Select BOQ Parts" required>
+
                                                     @foreach ($boq_parts as $boq_part)
-                                                        <option value="{{ $boq_part->id }}" @if (Request::has('schemes') && Request::get('schemes')!=null && in_array($boq_part->id, $bill->bill_parts->pluck('boq_part_id')->toarray())) selected @endif>{{ $boq_part->code }} - {{ $boq_part->name }}</option>
+                                                        <option value="{{ $boq_part->id }}"
+                                                            @if (Request::has('schemes') &&
+                                                                    Request::get('schemes') != null &&
+                                                                    in_array($boq_part->id, $bill->bill_parts->pluck('boq_part_id')->toarray())) selected @endif>
+                                                            {{ $boq_part->code }} - {{ $boq_part->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -146,7 +163,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                
+
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-hover table-head-fixed" id="boq_part-table">
                                         <thead>
@@ -161,18 +178,19 @@
                                             @foreach ($bill->bill_parts as $part)
                                                 <tr>
                                                     <td>{{ $loop->index + 1 }}</td>
-                                                    <td>{{ $part->scheme->name ?? 'N/A' }}</td>
+                                                    <td>{{ $part->scheme->code ?? 'N/A' }} - {{ $part->scheme->name ?? 'N/A' }}</td>
                                                     <td>{{ $part->boq_part->code ?? 'N/A' }} -
                                                         {{ $part->boq_part->name ?? '' }}</td>
                                                     <td>
-                                                        <a class="btn btn-sm btn-danger remove" data-url="{{ route('user.bills.remove_boq_part', ['id' => $part->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                        <a class="btn btn-sm btn-danger remove"
+                                                            data-url="{{ route('user.bills.remove_boq_part', ['id' => $part->id, 'bill_id' => $bill->id]) }}">X</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
- 
+
 
                             </div>
 
@@ -236,11 +254,11 @@
     <script src="{{ asset('backend/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}"></script>
 
     <script type="text/javascript">
-    $(document).ready(function() {
+        $(document).ready(function() {
 
             var dual = $('select[name="boq_parts[]"]').bootstrapDualListbox({
-                 nonSelectedListLabel: 'Non-selected',
-                 selectedListLabel: 'Selected',
+                nonSelectedListLabel: 'Non-selected',
+                selectedListLabel: 'Selected',
                 // preserveSelectionOnMove: 'moved',
                 moveOnSelect: false,
             });

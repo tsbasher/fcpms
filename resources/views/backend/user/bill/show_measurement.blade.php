@@ -192,7 +192,7 @@
                                                 <select class="form-control select2" name="schemes" id="schemes" placeholder="Select Schemes" required>
                                                     <option value="">Select Schemes</option>
                                                     @foreach ($schemes as $scheme)
-                                                        <option value="{{ $scheme->id }}" @if (Request::get('schemes') == $scheme->id) selected @endif>{{ $scheme->name }}</option>
+                                                        <option value="{{ $scheme->id }}" @if (Request::get('schemes') == $scheme->id) selected @endif>{{$scheme->code}} - {{$scheme->name}}</option>
                                                     @endforeach
                                                 </select>
                                             </div></div>
@@ -285,7 +285,7 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="7" class="text-right">Total</td>
-                                                <td>{{ $measurements->sum('quantity') }}
+                                                <td colspan="2">{{ $measurements->sum('quantity') }}
                                             </tr>
                                         </tfoot>
                                     </table>

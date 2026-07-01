@@ -8,7 +8,7 @@
             <select class="form-control select2" name="schemes" id="schemes" placeholder="Select Schemes" required>
                             <option value="">Select Schemes</option>
                             @foreach ($schemes as $scheme)
-                            <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                            <option value="{{ $scheme->id }}">{{ $scheme->code }} - {{ $scheme->name }}</option>
                             @endforeach
                         </select>
         </div>
