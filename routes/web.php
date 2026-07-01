@@ -46,6 +46,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/boq-version-export-import/export/{version_id}', [BoqVersionExportImportController::class, 'export'])->name('admin.boq_version_export_import.export');
         Route::get('/contractors/add-package/{contractor_id}', [ContractorController::class, 'add_package'])->name('admin.contractors.add_package');
         Route::post('/contractors/add-package/{contractor_id}', [ContractorController::class, 'store_package'])->name('admin.contractors.store_package');
+        Route::get('/boq-versions/export', [BoqVersionController::class, 'export'])->name('admin.boq_versions.export');
+        Route::get('/boq-versions/export-data', [BoqVersionController::class, 'export_data'])->name('admin.boq_versions.export_data');
+
 
         Route::resource('regions', RegionController::class)->names('admin.regions');
         Route::resource('projects', ProjectController::class)->names('admin.projects');

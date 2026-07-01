@@ -18,7 +18,8 @@
             <div class="card-header">
                 <h2 class="card-title ">BOQ Versions</h2>
                 <div class="card-tools">
-                    <a href="{{ route('admin.boq_versions.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
+                    <a href="{{ route('admin.boq_versions.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>                    
+                    {{-- <a href="{{ route('admin.boq_versions.export') }}" class="btn btn btn-success"><i class="fa fa-file-export"></i> Export</a> --}}
                 </div>
             </div>
             <div class="card-body ">
@@ -99,7 +100,7 @@
                                 <td>
                                     <a href="{{ route('admin.boq_versions.edit', $boq_version->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
                                     <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.boq_versions.destroy', $boq_version->id) }}"><i class="fas fa-trash"></i></a>
-
+                                    <a class="btn btn-sm btn-info" target="_blank" href="{{ route('admin.boq_versions.export_data', ['package_id' =>$boq_version->package_id, 'boq_version_id' => $boq_version->id]) }}"><i class="fas fa-download"></i></a>
                                 </td>
                             </tr>
                             @endforeach

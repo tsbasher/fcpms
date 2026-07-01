@@ -7,7 +7,6 @@
 @endsection
 
 @section('content')
-
     <section class="content">
         <div class="row">
             <!-- general form elements -->
@@ -32,6 +31,19 @@
                                     </ul>
                                 </div>
                             @endif
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                @if ($message = Session::get('error'))
+                                    <div class="alert alert-danger alert-dismissible">{{ $message }}</div>
+                                @endif
+                                @if ($message = Session::get('success'))
+                                    <div class="alert alert-success alert-dismissible">{{ $message }}</div>
+                                @endif
+
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-4">
@@ -212,6 +224,15 @@
         let get_boq_versions_by_package_url = "{{ route('common.get_boq_versions_by_package', '*') }}";
         let get_unit_by_boq_item_url = "{{ route('common.get_unit_by_boq_item', '*') }}";
         let get_unit_by_boq_sub_item_url = "{{ route('common.get_unit_by_boq_sub_item', '*') }}";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const url = new URL(window.location);
+
+            if (url.searchParams.has('stored')) {
+                url.searchParams.delete('stored');
+                window.history.replaceState({}, '', url);
+            }
+        });
         $(document).ready(function() {
             // debugger;
             $('#description').summernote();

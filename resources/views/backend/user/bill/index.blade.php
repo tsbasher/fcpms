@@ -18,7 +18,7 @@
             <div class="card-header">
                 <h2 class="card-title ">Bill</h2>
                 <div class="card-tools">
-                    <a href="{{ route('user.bills.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
+                    <a href="{{ route('user.bills.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
                 </div>
             </div>
             <div class="card-body ">
@@ -80,7 +80,7 @@
                                     <a href="{{ route('user.bills.edit', $bill->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
                                     <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('user.bills.destroy', $bill->id) }}"><i class="fas fa-trash"></i></a>
                                     <a href="{{ route('user.bills.show', $bill->id) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
-                                    <a href="{{ route('user.bills.shelter_wise_view', $bill->id) }}" class="btn btn-sm btn-success"><i class="fa fa-file-invoice"></i></a>
+                                    <a href="{{ route('user.bills.shelter_wise_view', $bill->id) }}" class="btn btn-sm btn-success" target="_blank"><i class="fa fa-file-invoice"></i></a>
 
                                 </td>
                             </tr>

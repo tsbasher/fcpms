@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helper\InWordConvertion;
 use App\Http\Controllers\Controller;
 use App\Models\BoqItem;
 use App\Models\BoqPart;
@@ -14,6 +15,7 @@ use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 
@@ -24,8 +26,25 @@ class BoqVersionDetailsController extends Controller
      */
     public function index(Request $request)
     {
+        // dd(InWordConvertion::convert(123434334)); // Example usage
         $boq_version_details = BoqVersionDetails::where('project_id', Auth::guard('admin')->user()->project_id)
-            ->with(['boq_version', 'boq_part', 'boq_item', 'boq_sub_item', 'scheme_option', 'unit', 'package']);
+            ->with([
+                'boq_version',
+                'boq_part' => function ($query) {
+                    $query->orderBy('code');
+                },
+                'boq_item' => function ($query) {
+                    $query->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+        regexp_replace(code, '[^0-9]', '', 'g')::int ASC");
+                },
+                'boq_sub_item' => function ($query) {
+                    $query->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+        regexp_replace(code, '[^0-9]', '', 'g')::int ASC");
+                },
+                'scheme_option',
+                'unit',
+                'package'
+            ]);
         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
         $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
         if ($request->has('package_id') && !empty($request->get('package_id'))) {
@@ -68,6 +87,7 @@ class BoqVersionDetailsController extends Controller
     {
         $boq_version = BoqVersion::find($request->get('boq_version_id'));
         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
 
         $boq_version_detail = [];
         $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
@@ -75,8 +95,27 @@ class BoqVersionDetailsController extends Controller
         $boq_items = [];
         $boq_sub_items = [];
         $boq_versions = [];
-        $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $units = Unit::get();
+
+        if ($request->stored) {
+            // dd("Hello");
+            $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
+
+            $boq_items = BoqItem::where('boq_part_id', $request->get('boq_part_id'))
+                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+            $boq_sub_items = BoqSubItem::where('boq_item_id', $request->get('boq_item_id'))
+                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+            $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+                ->where('package_id', $request->get('package_id'))->get();
+            $units = Unit::get();
+            Session::flash('_old_input', $request->all());
+            Session::flash('success', 'Boq Version Details Created Successfully.');
+            //         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+            // $boq_version = BoqVersion::find($request->get('boq_version_id'));
+            // $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        }
+
+
         return view('backend.admin.boq_version_details.create', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
     }
 
@@ -86,6 +125,8 @@ class BoqVersionDetailsController extends Controller
      */
     public function store(Request $request)
     {
+
+
         $v = Validator::make($request->all(), [
             'boq_version_id' => 'required|exists:boq_versions,id',
             'package_id' => 'required|exists:packages,id',
@@ -115,7 +156,7 @@ class BoqVersionDetailsController extends Controller
                 'unit_id' => $request->get('unit_id'),
                 'quantity' => $request->get('quantity'),
                 'nos' => $request->get('nos'),
-                'total_quantity' => $request->get('total_quantity'),
+                'total_quantity' => round($request->get('total_quantity'), 3),
                 'rate' => $request->get('rate')
             ]);
         } else {
@@ -131,13 +172,21 @@ class BoqVersionDetailsController extends Controller
                 'nos',
                 'total_quantity',
                 'rate'
-
             ]);
             $data['project_id'] = Auth::guard('admin')->user()->project_id;
-
+            $data['total_quantity'] = round($data['total_quantity'], 3);
             $details = BoqVersionDetails::create($data);
         }
-        return redirect()->route('admin.boq_version_details.index')->with('success', 'Boq Version Details Created Successfully.');
+
+
+        $data = $request->only(['boq_version_id', 'package_id', 'boq_part_id', 'boq_item_id', 'boq_sub_item_id', 'scheme_option_id', 'unit_id', 'unit_name']);
+        $data['stored'] = true;
+
+        return redirect()->route('admin.boq_version_details.create', $data)->with('success', 'Boq Version Details Created Successfully.');
+
+        // view('backend.admin.boq_version_details.create', compact('boq_parts', 'boq_items', 'boq_sub_items', 'boq_versions', 'units', 'packages', 'boq_version', 'scheme_options'));//->with('success', 'Boq Version Details Created Successfully.');
+        // $this->create($request)->with('success', 'Boq Version Details Created Successfully.')->with(compact('boq_parts', 'boq_items', 'boq_sub_items', 'boq_versions', 'units', 'req')); 
+        // redirect()->withInput($request->all())->with('success', 'Boq Version Details Created Successfully.');
     }
 
     /**
@@ -209,6 +258,7 @@ class BoqVersionDetailsController extends Controller
             'rate'
 
         ]);
+        $data['total_quantity'] = round($data['total_quantity'], 3);
         $boq_version_detail->update($data);
 
         return redirect()->route('admin.boq_version_details.index')->with('success', 'Boq Version Details Updated Successfully.');
@@ -285,4 +335,6 @@ class BoqVersionDetailsController extends Controller
         $units = Unit::get();
         return view('backend.admin.boq_version_details.copy', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
     }
+
+
 }

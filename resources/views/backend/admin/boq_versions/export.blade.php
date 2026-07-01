@@ -1,11 +1,9 @@
 @extends('backend.admin.layouts.app')
-@section('title', 'Units')
+@section('title', 'BOQ Version Export')
 @section('style')
 
-    <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/select2/css/select2.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 @endsection
 
 @section('content')
@@ -16,86 +14,62 @@
             <!-- general form elements -->
             <div class="card card-body bg-gray-light">
                 <div class="card-header">
-                    <h2 class="card-title ">Units</h2>
+                    <h2 class="card-title ">BOQ Version Export</h2>
                     <div class="card-tools">
-                        <a href="{{ route('admin.units.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+
                     </div>
                 </div>
-                <div class="card-body ">
+                <form method="get" action="{{ route('admin.boq_versions.export_data') }}" target="_blank"
+                    enctype="multipart/form-data">
+                    <div class="card-body ">
 
-                    <div class="row">
-                        <div class="col-md-8 offset-md-2">
-                            <form method="get">
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <input type="search" class="form-control form-control-lg" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="btn btn-lg btn-default">
-                                                <i class="fa fa-search"></i>
-                                            </button>
-                                            <a href="{{ route('admin.units.index') }}" class="btn btn-lg btn-default">
-                                                <i class="fas fa-sync-alt"></i>
-                                            </a>
-                                        </div>
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <div class="form-group row">
+                                    <label for="package_id" class="col-sm-2 col-form-label">Package</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select2" id="package_id" placeholder="Package"
+                                            name="package_id" >
+                                            <option value="">Select Package</option>
+                                            @foreach ($packages as $package)
+                                                <option value="{{ $package->id }}"
+                                                    @if (Request::get('package_id') == $package->id) selected @endif>
+                                                    {{ $package->code }}.{{ $package->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
+
+                            <div class="col-md-6 ">
+                                <div class="form-group row">
+                                    <label for="boq_version_id" class="col-sm-2 col-form-label">BOQ Version</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select2" id="boq_version_id" placeholder="BOQ Version"
+                                            name="boq_version_id">
+                                            <option value="">Select BOQ Version</option>
+                                            @foreach ($boq_versions as $version)
+                                                <option value="{{ $version->id }}"
+                                                    @if (Request::get('boq_version_id') == $version->id) selected @endif>
+                                                    {{ $version->name }}({{ $version->version_date }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            @if ($message = Session::get('error'))
-                                <div class="alert alert-danger alert-dismissible">{{ $message }}</div>
-                            @endif
-                            @if ($message = Session::get('success'))
-                                <div class="alert alert-success alert-dismissible">{{ $message }}</div>
-                            @endif
+                    <!-- /.card-body -->
 
-                        </div>
+                    <div class="card-footer clearfix" style="background: #00000000">
+                        <button type="submit" class="btn btn-primary">Export</button>
+
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-head-fixed" id="unit-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 10px">#</th>
-                                    <th>Name</th>
-                                    <th>Code</th>
-                                    <th>Fields</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($units as $unit)
-                                    <tr>
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $unit->name }}</td>
-                                        <td>{{ $unit->code }}</td>
-                                        <td>{{ $unit->fields }}</td>
+                </form>
 
-                                        <td>
-                                            @if ($unit->is_active == 1)
-                                                <span class="badge bg-success" style="font-size: 100%">Yes</span>
-                                            @else
-                                                <span class="badge bg-danger" style="font-size: 100%">No</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('admin.units.edit', $unit->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
-                                            <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.units.destroy', $unit->id) }}"><i class="fas fa-trash"></i></a>
-
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- /.card-body -->
-
-                <div class="card-footer clearfix" style="background: #00000000">
-                    {{ $units->links() }}
-                </div>
             </div>
             <!-- /.card -->
         </div>
@@ -107,9 +81,10 @@
 @section('script')
     <script src="{{ asset('backend/plugins/summernote/summernote-bs4.min.js') }}"></script>
 
+    {{-- <script src="{{ asset('backend/plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+
     <!-- DataTables  & Plugins -->
     <script src="{{ asset('backend/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -117,15 +92,19 @@
     <script src="{{ asset('backend/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('backend/plugins/jszip/jszip.min.js') }}"></script>
+    {{-- <script src="{{ asset('backend/plugins/jszip/jszip.min.js') }}"></script> --}}
     <script src="{{ asset('backend/plugins/pdfmake/pdfmake.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/pdfmake/vfs_fonts.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/select2/js/select2.full.js') }}"></script>
 
     <script type="text/javascript">
-        $(document).ready(function(){
+        {{-- let get_boq_item_by_boq_part_url="{{route('common.get_boq_items_by_part','*')}}";
+    let get_boq_sub_item_by_boq_item_url="{{route('common.get_boq_sub_items_by_boq_item','*')}}";--}}
+    let get_boq_versions_by_package_url = "{{ route('common.get_boq_versions_by_package', '*') }}"; 
+        $(".select2").select2();
         $(".delete_record").click(function() {
             var url = $(this).data('url');
 
@@ -195,9 +174,9 @@
             });
         });
 
-        
 
-        $('#unit-table').DataTable({
+
+        $('#boq-sub-item-table').DataTable({
             "paging": false,
             "lengthChange": false,
             "searching": false,
@@ -206,6 +185,8 @@
             "autoWidth": false,
             "responsive": true,
         });
-        });
     </script>
+<script src="{{asset('backend/dist/js/fcpms/boq_version.js')}}"></script>
+    {{-- <script src="{{asset('backend/dist/js/fcpms/boq_sub_item.js')}}"></script>
+<script src="{{asset('backend/dist/js/fcpms/boq_item.js')}}"></script> --}}
 @endsection

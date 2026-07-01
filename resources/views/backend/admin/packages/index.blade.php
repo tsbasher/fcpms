@@ -19,7 +19,7 @@
             <div class="card-header">
                 <h2 class="card-title ">Packages</h2>
                 <div class="card-tools">
-                    <a href="{{ route('admin.packages.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
+                    <a href="{{ route('admin.packages.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
                 </div>
             </div>
             <div class="card-body ">

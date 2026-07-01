@@ -18,7 +18,7 @@
                 <div class="card-header">
                     <h2 class="card-title ">Scheme Options</h2>
                     <div class="card-tools">
-                        <a href="{{ route('admin.scheme_options.create') }}" class="btn btn btn-secondary"><i class="fa fa-plus"></i> Add</a>
+                        <a href="{{ route('admin.scheme_options.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
                     </div>
                 </div>
                 <div class="card-body ">

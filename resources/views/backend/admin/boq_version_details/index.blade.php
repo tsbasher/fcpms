@@ -20,7 +20,7 @@
                 <div class="card-header">
                     <h2 class="card-title ">BOQ Version Details</h2>
                     <div class="card-tools">
-                        <a href="{{ route('admin.boq_version_details.create') }}" class="btn btn btn-secondary"><i
+                        <a href="{{ route('admin.boq_version_details.create') }}" class="btn btn btn-success"><i
                                 class="fa fa-plus"></i> Add</a>
                     </div>
                 </div>
@@ -174,12 +174,12 @@
                                         <td>{{ $boq_version_detail->boq_part ? $boq_version_detail->boq_part->code . '.' . $boq_version_detail->boq_part->name : '' }}</td>
                                         <td>{{ $boq_version_detail->boq_item ? $boq_version_detail->boq_item->code . '.' . $boq_version_detail->boq_item->name : '' }}</td>
                                         <td>{{ $boq_version_detail->boq_sub_item ? $boq_version_detail->boq_sub_item->code . '.' . $boq_version_detail->boq_sub_item->name : '' }}</td>
-                                        <td><span class="badge badge-info" style="font-size: 100%">{{ $boq_version_detail->scheme_option ? $boq_version_detail->scheme_option->name : '' }}</span></td>
-                                        <td>{{ $boq_version_detail->nos }}</td>
-                                        <td>{{ $boq_version_detail->quantity }}</td>
-                                        <td>{{ $boq_version_detail->total_quantity }}</td>
-                                        <td>{{ $boq_version_detail->rate }}</td>
-                                        <td>{{ $boq_version_detail->total_quantity * $boq_version_detail->rate }}</td>
+                                        <td class="text-center"><span class="badge badge-info" style="font-size: 100%">{{ $boq_version_detail->scheme_option ? $boq_version_detail->scheme_option->name : '' }}</span></td>
+                                        <td class="text-right">{{ number_format($boq_version_detail->nos, 2) }}</td>
+                                        <td class="text-right">{{ number_format($boq_version_detail->quantity, 3) }}</td>
+                                        <td class="text-right">{{ number_format($boq_version_detail->total_quantity, 3) }}</td>
+                                        <td class="text-right">{{ number_format($boq_version_detail->rate, 2) }}</td>
+                                        <td class="text-right">{{ number_format($boq_version_detail->total_quantity * $boq_version_detail->rate, 2) }}</td>
                                         <td>
                                             <a href="{{ route('admin.boq_version_details.edit', $boq_version_detail->id) }}"
                                                 class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>

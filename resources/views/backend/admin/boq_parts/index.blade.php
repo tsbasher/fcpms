@@ -18,7 +18,7 @@
                 <div class="card-header">
                     <h2 class="card-title ">BOQ Parts</h2>
                     <div class="card-tools">
-                        <a href="{{ route('admin.boq_parts.create') }}" class="btn btn btn-secondary"><i
+                        <a href="{{ route('admin.boq_parts.create') }}" class="btn btn btn-success"><i
                                 class="fa fa-plus"></i> Add</a>
                     </div>
                 </div>

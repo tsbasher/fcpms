@@ -552,7 +552,7 @@ class BillController extends Controller
         $bill_parts->where('scheme_id', $request->schemes);
         // }
 
-        $bill_parts = $bill_parts->groupby('boq_part_id')->select('boq_part_id')->get();
+        $bill_parts = $bill_parts->join('boq_parts', 'bill_parts.boq_part_id', '=', 'boq_parts.id')->groupby('boq_part_id','boq_parts.code')->select('boq_part_id')->orderby('boq_parts.code')->get();
 
         $boq_version_details_item = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
             ->where('project_id', Auth::guard('web')->user()->project_id)
@@ -561,7 +561,8 @@ class BillController extends Controller
             ->distinct('boq_item_id')
             ->get()->pluck('boq_item_id')->toArray();
 
-        $boq_items = BoqItem::wherein('id', $boq_version_details_item)->get();
+        $boq_items = BoqItem::wherein('id', $boq_version_details_item)->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
+        COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")->get();
 
         $boq_version_details_subitem = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
             ->where('project_id', Auth::guard('web')->user()->project_id)
@@ -570,7 +571,8 @@ class BillController extends Controller
             ->where('boq_item_id', $request->boq_item_id)
             ->distinct('boq_sub_item_id')
             ->get()->pluck('boq_sub_item_id')->toArray();
-        $boq_subitems = BoqSubItem::wherein('id', $boq_version_details_subitem)->get();
+        $boq_subitems = BoqSubItem::wherein('id', $boq_version_details_subitem)->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
+        COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")->get();
         $measurement_view = '';
         if ($request->has('boq_item_id') && isset($request->boq_item_id)) {
             $item = BoqItem::find($request->boq_item_id);
@@ -783,7 +785,7 @@ class BillController extends Controller
             $bill_details->quantity = $bill_details->measurements->sum('quantity');
             $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
             if ($bill_details->boq_quantity < $bill_details->measurements->sum('quantity')) {
-                $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity')-$bill_details->boq_quantity;
+                $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity') - $bill_details->boq_quantity;
                 $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
             } else
                 $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
@@ -862,11 +864,12 @@ class BillController extends Controller
         }
     }
 
-    public function shelterWiseView($id)
+    public function shelterWiseView2($id)
     {
 
+
         $bill = Bill::with('schemes')->findOrFail($id);
-        $last_bill = Bill::where('id', '!=', $bill->id)->where('project_id', $bill->project_id)->orderBy('id', 'desc')->first();
+        $last_bill = Bill::where('id', '!=', $bill->id)->where('created_at', '<', $bill->created_at)->where('project_id', $bill->project_id)->orderBy('id', 'desc')->first();
         $project = Project::findOrFail($bill->project_id);
         // dd($bill);
         $schemes = $bill->schemes->pluck('id')->toArray();
@@ -879,7 +882,14 @@ class BillController extends Controller
             $info->scheme = $shelter;
             $info->parts = [];
 
-            $bill_parts = BillPart::where('project_id', $bill->project_id)->where('scheme_id', $scheme_id)->distinct('boq_part_id')->get()->pluck('boq_part_id')->toArray();
+            $bill_parts = BillPart::join('boq_parts', 'bill_parts.boq_part_id', '=', 'boq_parts.id')
+                ->where('bill_parts.project_id', $bill->project_id)
+                ->where('bill_parts.scheme_id', $scheme_id)
+                ->select('bill_parts.boq_part_id')
+                ->groupBy('bill_parts.boq_part_id', 'boq_parts.code')
+                ->orderBy('boq_parts.code')
+                ->pluck('bill_parts.boq_part_id')
+                ->toArray();
             foreach ($bill_parts as $part_id) {
                 $part = BoqPart::where('id', $part_id)->first();
                 $part_data = new stdClass();
@@ -887,9 +897,9 @@ class BillController extends Controller
                 $part_data->items = [];
 
                 $items = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
-                    ->where('boq_part_id', $part_id)->with('boq_item')
+                    ->where('boq_part_id', $part_id)->with('boq_item')->distinct('boq_item_id')
                     ->get();
-
+                // dd($items);
                 $items = $items->sortBy(function ($item) {
                     preg_match('/([A-Za-z]+)(\d+)/', $item->boq_item->code, $matches);
 
@@ -904,26 +914,86 @@ class BillController extends Controller
 
                     $item_info->item = $item->boq_item;
                     if (!$item->boq_item->has_sub_items) {
-                        $bill_detail = BillDetail::where('bill_id', $bill->id)//->with('measurements')
+                        $bill_detail = BillDetail::where('bill_id', $bill->id) //->with('measurements')
                             ->where('scheme_id', $scheme_id)
                             ->where('boq_part_id', $part_id)
                             ->where('boq_item_id', $item->boq_item_id)
                             ->first();
-                        
+
                         $item_info->bill_detail = $bill_detail;
-                        $boq=BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
+                        $boq = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
                             ->where('scheme_option_id', $shelter->scheme_option_id)
                             ->where('boq_part_id', $part_id)
                             ->where('boq_item_id', $item->boq_item_id)
                             ->first();
-             
-                        $item_info->boq_version_details=$boq;
-                        $item_info->measurements=Measurement::where('bill_id', $bill->id)
+
+                        $item_info->boq_version_details = $boq;
+                        $item_info->measurements = Measurement::where('bill_id', $bill->id)
                             ->where('scheme_id', $scheme_id)
                             ->where('boq_part_id', $part_id)
                             ->where('boq_item_id', $item->boq_item_id)
                             ->get();
-                        
+                    } else {
+                        $item_info->sub_items = [];
+                        $sub_item_list = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
+                            ->where('boq_part_id', $part_id)
+                            ->where('boq_item_id', $item->boq_item_id)
+                            ->distinct('boq_sub_item_id')
+                            ->get()->pluck('boq_sub_item_id')->toArray();
+                        $boq_sub_items = BoqSubItem::whereIn('id', $sub_item_list)->with('unit')
+                            ->orderByRaw("
+        regexp_replace(code, '[0-9]+', '', 'g') ASC,
+        COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")
+                            ->get();
+                        foreach ($boq_sub_items as $sub_item) {
+                            $sub_item_info = new stdClass();
+                            $sub_item_info->sub_item = $sub_item;
+
+                            $boq = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
+                                ->where('scheme_option_id', $shelter->scheme_option_id)
+                                ->where('boq_part_id', $part_id)
+                                ->where('boq_item_id', $item->boq_item_id)
+                                ->where('boq_sub_item_id', $sub_item->id)
+                                ->first();
+                            $sub_item_info->boq_version_details = $boq;
+
+                            $bill_detail = BillDetail::where('bill_id', $bill->id)
+                                ->where('scheme_id', $scheme_id)
+                                ->where('boq_part_id', $part_id)
+                                ->where('boq_item_id', $item->boq_item_id)
+                                ->where('boq_subitem_id', $sub_item->id)
+                                ->first();
+                            if ($bill_detail) {
+                                $sub_item_info->bill_detail = $bill_detail;
+                                $sub_item_info->measurements = Measurement::where('bill_id', $bill->id)
+                                    ->where('scheme_id', $scheme_id)
+                                    ->where('boq_part_id', $part_id)
+                                    ->where('boq_item_id', $item->boq_item_id)
+                                    ->where('boq_subitem_id', $sub_item->id)
+                                    ->get();
+                            } else {
+                                $bill_detail = BillDetail::where('scheme_id', $scheme_id)
+                                    ->where('boq_part_id', $part_id)
+                                    ->where('boq_item_id', $item->boq_item_id)
+                                    ->where('boq_subitem_id', $sub_item->id)
+                                    ->orderby('created_at', 'desc')
+                                    ->first();
+                                // if(!$bill_detail)
+                                //     dd($sub_item_info);
+                                // dd($bill_detail);
+                                if ($bill_detail)
+                                    $sub_item_info->measurements = Measurement::where('bill_detail_id', $bill_detail->id)
+                                        ->get();
+                                else
+                                    $sub_item_info->measurements = [];
+                                // $sub_item_info->bill_detail = null;
+                            }
+                            // if($part->code=="E")
+                            //     dd($bill_detail);
+                            $sub_item_info->bill_detail = $bill_detail;
+
+                            array_push($item_info->sub_items, $sub_item_info);
+                        }
                     }
                     array_push($part_data->items, $item_info);
                 }
@@ -933,7 +1003,174 @@ class BillController extends Controller
         }
         // dd($bill,$last_bill);
         // dd($shelter_bill);
+        // dd($shelter_bill);
         return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'bill', 'last_bill'));
         return response()->json($shelter_bill);
+    }
+
+    public function shelterWiseView($id)
+    {
+
+    // return view('backend.bill.test');
+        $this_bill = Bill::with('schemes')->findOrFail($id);
+        $previous_bill_ids = Bill::where('id', '!=', $this_bill->id)
+            ->where('created_at', '<', $this_bill->created_at)
+            ->where('project_id', $this_bill->project_id)
+            ->wherehas('boq_version', function ($query) {
+                $query->where('project_id', Auth::guard('web')->user()->project_id)
+                    ->where('package_id', Auth::guard('web')->user()->package_id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()->pluck('id')->toArray();
+
+        // dd($this_bill, $previous_bill_ids);
+
+        $boq_version = BoqVersion::findOrFail($this_bill->boq_version_id);
+
+
+        $scheme_ids = BillScheme::where(function ($query) use ($this_bill, $previous_bill_ids) {
+            $query->where('bill_id', $this_bill->id)
+                ->orwhereIn('bill_id', $previous_bill_ids);
+        })->get()->pluck('scheme_id')->toArray();
+        $schemes = Scheme::whereIn('id', $scheme_ids)->orderBy('code')->with('package', 'district', 'upazila', 'union', 'scheme_option')->get();
+
+        $shelter_bill = [];
+        $next_bill = Bill::where('serial', '>', $this_bill->serial)
+            ->where('project_id', $this_bill->project_id)
+            ->wherehas('boq_version', function ($query) {
+                $query->where('project_id', Auth::guard('web')->user()->project_id)
+                    ->where('package_id', Auth::guard('web')->user()->package_id);
+            })
+            ->orderBy('serial', 'asc')
+            ->first();
+        // dd($next_bill);
+        foreach ($schemes as $scheme) {
+            $info = new stdClass();
+            $info->scheme = $scheme;
+            $info->parts = [];
+            $bill_part_ids = BillPart::where('project_id', Auth::guard('web')->user()->project_id)->where('scheme_id', $scheme->id);
+            if ($next_bill)
+                $bill_part_ids = $bill_part_ids->whereHas('bill', function ($query) use ($next_bill) {
+                    $query->where('serial', '<', $next_bill->serial);
+                });
+            $bill_part_ids = $bill_part_ids->distinct('boq_part_id')->get()->pluck('boq_part_id')->toArray();
+            $parts = BoqPart::whereIn('id', $bill_part_ids)->orderby('code')->get();
+            // dd($parts);
+            foreach ($parts as $part) {
+                $part_data = new stdClass();
+                $part_data->part = $part;
+                $part_data->items = [];
+
+                $item_ids = BoqVersionDetails::where('boq_version_id', $boq_version->id)
+                    ->where('boq_part_id', $part->id)
+                    ->distinct('boq_item_id')
+                    ->get()->pluck('boq_item_id')->toArray();
+                // $items = BoqItem::whereIn('id', $item_ids)->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
+                $items = BoqItem::whereIn('id', $item_ids)->with('unit')->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
+        COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")->get();
+
+
+                foreach ($items as $item) {
+                    $item_info = new stdClass();
+
+                    $item_info->item = $item;
+
+                    if ($item->has_sub_items) {
+                        $item_info->sub_items = [];
+                        $sub_item_ids = BoqVersionDetails::where('boq_version_id', $boq_version->id)
+                            ->where('boq_part_id', $part->id)
+                            ->where('boq_item_id', $item->id)
+                            ->distinct('boq_sub_item_id')
+                            ->get()->pluck('boq_sub_item_id')->toArray();
+                        // dd($sub_item_ids);
+                        $sub_items = BoqSubItem::whereIn('id', $sub_item_ids)->with('unit')->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC, COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")->get();
+                        // dd($sub_items);
+                        foreach ($sub_items as $sub_item) {
+                            $sub_item_info = new stdClass();
+                            $sub_item_info->sub_item = $sub_item;
+
+                            $this_bill_detail = BillDetail::where('bill_id', $this_bill->id)
+                                ->where('scheme_id', $scheme->id)
+                                ->where('boq_part_id', $part->id)
+                                ->where('boq_item_id', $item->id)
+                                ->where('boq_subitem_id', $sub_item->id)
+                                ->with('measurements')
+                                ->first();
+                            $sub_item_info->this_bill_detail = $this_bill_detail;
+
+                            if (!$this_bill_detail) {
+                                $sub_item_info->this_bill_detail = null;
+                                $old_bill_details = BillDetail::whereIn('bill_id', $previous_bill_ids)
+                                    ->where('scheme_id', $scheme->id)
+                                    ->where('boq_part_id', $part->id)
+                                    ->where('boq_item_id', $item->id)
+                                    ->where('boq_subitem_id', $sub_item->id)
+                                    ->orderby('created_at', 'desc')
+                                    ->with('measurements')
+                                    ->first();
+                                $sub_item_info->old_bill_detail = $old_bill_details;
+                            } else {
+                                $sub_item_info->old_bill_detail = null;
+                            }
+
+                            $boq_details = BoqVersionDetails::where('boq_version_id', $boq_version->id)
+                                ->where('boq_part_id', $part->id)
+                                ->where('boq_item_id', $item->id)
+                                ->where('boq_sub_item_id', $sub_item->id);
+                            if ($part->has_option_variation)
+                                $boq_details->where('scheme_option_id', $scheme->scheme_option_id);
+                            $boq_details = $boq_details->first();
+
+                            $sub_item_info->boq_version_details = $boq_details;
+
+                            // dd($sub_item_info);
+
+                            array_push($item_info->sub_items, $sub_item_info);
+                        }
+                        array_push($part_data->items, $item_info);
+                    } else {
+                        $this_bill_detail = BillDetail::where('bill_id', $this_bill->id)
+                            ->where('scheme_id', $scheme->id)
+                            ->where('boq_part_id', $part->id)
+                            ->where('boq_item_id', $item->id)
+                            ->with('measurements')
+                            ->first();
+                        $item_info->this_bill_detail = $this_bill_detail;
+
+                        if (!$this_bill_detail) {
+                            $item_info->this_bill_detail = null;
+                            $old_bill_details = BillDetail::whereIn('bill_id', $previous_bill_ids)
+                                ->where('scheme_id', $scheme->id)
+                                ->where('boq_part_id', $part->id)
+                                ->where('boq_item_id', $item->id)
+                                ->orderby('created_at', 'desc')
+                                ->with('measurements')
+                                ->first();
+                            $item_info->old_bill_detail = $old_bill_details;
+                        } else {
+                            $item_info->old_bill_detail = null;
+                        }
+
+                        $boq_details = BoqVersionDetails::where('boq_version_id', $boq_version->id)
+                            ->where('boq_part_id', $part->id)
+                            ->where('boq_item_id', $item->id);
+                        if ($part->has_option_variation)
+                            $boq_details->where('scheme_option_id', $scheme->scheme_option_id);
+                        $boq_details = $boq_details->first();
+
+                        $item_info->boq_version_details = $boq_details;
+
+
+                        array_push($part_data->items, $item_info);
+                    }
+                }
+                array_push($info->parts, $part_data);
+            }
+            array_push($shelter_bill, $info);
+        }
+        // return response()->json($shelter_bill);
+        $last_bill = Bill::where('id', '!=', $this_bill->id)->where('created_at', '<', $this_bill->created_at)->where('project_id', $this_bill->project_id)->orderBy('id', 'desc')->first();
+        $project = Project::findOrFail($this_bill->project_id);
+        return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill'));
     }
 }

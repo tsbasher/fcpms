@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BoqItem;
+use App\Models\BoqPart;
+use App\Models\BoqSubItem;
 use App\Models\BoqVersion;
 use App\Models\BoqVersionDetails;
 use App\Models\Package;
+use App\Models\SchemeOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -176,5 +180,80 @@ class BoqVersionController extends Controller
             return response()->json($boqVersions);
         }
         return response()->json([]);
+    }
+
+    public function export(Request $request)
+    {
+        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $boq_versions = [];
+        return view('backend.admin.boq_versions.export', compact('packages', 'boq_versions'));
+    }
+    
+    public function export_data(Request $request)
+    {
+        $v = Validator::make($request->all(), [
+            'package_id' => 'required|exists:packages,id',
+            'boq_version_id' => 'required|exists:boq_versions,id',
+        ]);
+        if ($v->fails()) {
+            return redirect()->back()->withErrors($v)->withInput();
+        }
+
+
+        $boq_version = BoqVersion::find($request->get('boq_version_id'));
+        $part_list = BoqVersionDetails::where('boq_version_id', $request->get('boq_version_id'))
+            ->where('package_id', $request->get('package_id'))
+            ->distinct('boq_part_id')
+            ->get()->pluck('boq_part_id')->toArray();
+        $boq_parts = BoqPart::whereIn('id', $part_list)->orderby('code')->get();
+        $package = Package::find($request->get('package_id'));
+        $details = [];
+        // dd($boq_parts);
+        foreach ($boq_parts as $boq_part) {
+            $part_data = new stdClass();
+            $part_data->boq_part = $boq_part;
+            $part_data->items = [];
+            $item_list = BoqVersionDetails::where('boq_version_id', $request->get('boq_version_id'))
+                ->where('package_id', $request->get('package_id'))
+                ->where('boq_part_id', $boq_part->id)
+                ->distinct('boq_item_id')
+                ->get()->pluck('boq_item_id')->toArray();
+            $boq_items = BoqItem::whereIn('id', $item_list)->orderByRaw("
+                            regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+                            COALESCE(NULLIF(regexp_replace(boq_items.code, '[^0-9]', '', 'g'), ''), '0')::int ASC")->get();
+
+            foreach ($boq_items as $boq_item) {
+                $item_data = new stdClass();
+                $item_data->boq_item = $boq_item;
+                if ($boq_item->has_sub_items) {
+
+                    $sub_item_list = BoqVersionDetails::where('boq_version_id', $request->get('boq_version_id'))
+                        ->where('package_id', $request->get('package_id'))
+                        ->where('boq_part_id', $boq_part->id)
+                        ->where('boq_item_id', $boq_item->id)
+                        ->distinct('boq_sub_item_id')
+                        ->get()->pluck('boq_sub_item_id')->toArray();
+                    $boq_sub_items = BoqSubItem::whereIn('id', $sub_item_list)->with('unit')
+                        ->orderByRaw("
+        regexp_replace(code, '[0-9]+', '', 'g') ASC,
+        COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")
+                        ->get();
+                    $item_data->boq_sub_items = $boq_sub_items;
+                }
+                array_push($part_data->items, $item_data);
+            }
+
+
+
+            // $part_data->boq_version_details = $data;
+            array_push($details, $part_data);
+        }
+
+        $boq_version_details = BoqVersionDetails::where('boq_version_id', $request->get('boq_version_id'))
+            ->where('package_id', $request->get('package_id'))->get();
+        $options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        // dd($details);
+        $project = Auth::guard('admin')->user()->project;
+        return view('backend.admin.boq_versions.export_data', compact('boq_version', 'boq_version_details', 'details', 'package', 'options', 'project'));
     }
 }
