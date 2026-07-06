@@ -26,7 +26,6 @@
 
                 <form method="get">
                     <div class="row">
-                        
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="division_id">Division</label>
@@ -124,7 +123,7 @@
                                     <th>District</th>
                                     <th>Upazila</th>
                                     <th>Union</th>
-                                    <th>Status</th>
+                                    <th>Option</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -139,11 +138,8 @@
                                     <td>{{ $scheme->upazila->name ?? 'N/A' }}</td>
                                     <td>{{ $scheme->union->name ?? 'N/A' }}</td>
                                     <td>
-                                        @if ($scheme->is_active == 1)
-                                        <span class="badge bg-success" style="font-size: 100%">Yes</span>
-                                        @else
-                                        <span class="badge bg-danger" style="font-size: 100%">No</span>
-                                        @endif
+                                        <span class="badge bg-success" style="font-size: 100%">{{$scheme->scheme_option->name}}</span>
+                                        
                                     </td>
                                     <td>
                                         <a href="{{ route('admin.schemes.edit', $scheme->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>

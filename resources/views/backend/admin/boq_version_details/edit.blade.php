@@ -239,7 +239,7 @@ $('#rate').on('input', function() {
 
                 if (field_nos) {
                     total_quantity = field_nos * quantity;
-                    $('#total_quantity').val(total_quantity);
+                    $('#total_quantity').val(total_quantity.toFixed(4));
                 } else if (field_total_quantity && quantity) {
                     nos = field_total_quantity / quantity;
                     $('#nos').val(nos);
@@ -255,7 +255,7 @@ $('#rate').on('input', function() {
                 let rate = parseFloat($('#rate').val()) || 0;
                 let total_quantity = nos * quantity;
                 let total_amount = total_quantity * rate;
-                $('#total_amount').val(total_amount);
+                $('#total_amount').val(total_amount.toFixed(2));
             }
             
             $('#btn_submit').on('click', function(e) {

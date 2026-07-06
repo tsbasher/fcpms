@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('bill_date')->nullable();
             $table->string('reference_code')->nullable();
             $table->string('name');
-            $table->string('status')->default('Pending');
+            $table->string('status')->default('Draft');
             $table->text('remarks')->nullable();
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();

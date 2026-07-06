@@ -303,7 +303,6 @@
                                     $d = $boq_version_details
                                         ->where('boq_part_id', $part->boq_part->id)
                                         ->where('boq_item_id', $item->boq_item->id)
-                                        ->where('boq_sub_item_id', $sub_item->boq_sub_item->id)
                                         ->first();
                                 @endphp
                                 @if ($d)
@@ -314,7 +313,7 @@
                                         <td class="text-center">{{ $item->boq_item->code }}</td>
                                         <td>{{ $item->boq_item->specification_no }}</td>
                                         <td>{{ $item->boq_item->name }} <br> {!! $item->boq_item->description !!}</td>
-                                        <td class="text-center">{{ $d ? $d->nos : 0 }}</td>
+                                        <td class="text-center">{{ $d ? round($d->nos,2) : 0 }}</td>
                                         <td class="text-center">{{ $d ? $d->quantity : 0 }}</td>
                                         <td class="text-center">{{ $d ? $d->total_quantity : 0 }}</td>
                                         <td class="text-center">{{ $item->boq_item->unit->code }}</td>

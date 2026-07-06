@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('boq_version_details', function (Blueprint $table) {
             //
             $table->double('nos')->default(0);
-            $table->double("total_quantity")->default(0);
+            $table->double("total_quantity",12,4)->default(0);
         });
     }
 

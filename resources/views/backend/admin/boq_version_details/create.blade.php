@@ -271,7 +271,7 @@
                 let rate = parseFloat($('#rate').val()) || 0;
                 let total_quantity = nos * quantity;
                 let total_amount = total_quantity * rate;
-                $('#total_amount').val(total_amount);
+                $('#total_amount').val(total_amount.toFixed(2));
             }
 
             $('#btn_submit').on('click', function(e) {

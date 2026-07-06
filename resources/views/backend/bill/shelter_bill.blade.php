@@ -114,7 +114,7 @@
 
     @foreach ($shelter_bill as $info)
         {{-- @dd($info) --}}
-        @if ($info->parts && count($info->parts) > 0 && $info->parts[0]->items)
+        @if ($info->has_bill_details)
             <div class="page landscape-page">
                 <table class="table table-bordered table-hover" id="boq-version-table">
 

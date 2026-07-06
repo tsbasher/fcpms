@@ -36,104 +36,110 @@
                 </div>
                 <!-- /.card -->
 
-                @if($boq_version_item)
-                <div class="card card-info">
-                    <!-- /.card-header -->
-                    <div class="card-header p-2">
-                        Total Bill
+                @if ($boq_version_item)
+                    <div class="card card-info">
+                        <!-- /.card-header -->
+                        <div class="card-header p-2">
+                            Total Bill
+                        </div>
+                        <div class="card-body">
+                            <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
+
+                            <span class="text-muted float-right">
+                                @if ($this_bill_details)
+                                    {{ $this_bill_details->quantity }}
+                                    ({{ number_format($boq_version_item->quantity, 3) }})
+                                    {{ $boq_version_item->unit->code }}
+                                @endif
+                            </span>
+
+                            <hr>
+
+                            <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
+
+                            <span class="text-muted float-right">
+                                {{ number_format($boq_version_item->rate, 2) }}
+                            </span>
+
+                            <hr>
+                            {{-- <i class="fas fa-dollar-sign"></i> --}}
+                            <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
+
+                            <span class="text-muted float-right">
+                                {{ number_format($boq_version_item->quantity * $boq_version_item->rate, 2) }}
+                            </span>
+                        </div>
+                        <!-- /.card-body -->
                     </div>
-                    <div class="card-body">
-                        <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
-
-                        <span class="text-muted float-right">
-                            @if($this_bill_details){{ $this_bill_details->quantity}} ({{ number_format($boq_version_item->quantity, 3) }}) {{ $boq_version_item->unit->code }}@endif
-                        </span>
-
-                        <hr>
-
-                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
-
-                        <span class="text-muted float-right">
-                            {{ number_format($boq_version_item->rate, 2) }}
-                        </span>
-
-<hr>
-                        {{-- <i class="fas fa-dollar-sign"></i> --}}
-                        <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
-
-                        <span class="text-muted float-right">
-                            {{ number_format($boq_version_item->quantity * $boq_version_item->rate, 2) }}
-                        </span>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
                 @endif
 
-                @if($old_bill_details && count($old_bill_details))
-                <div class="card card-warning">
-                    <!-- /.card-header -->
-                    <div class="card-header p-2">
-                        Previous Bill Details
+                @if ($old_bill_details && count($old_bill_details))
+                    <div class="card card-warning">
+                        <!-- /.card-header -->
+                        <div class="card-header p-2">
+                            Previous Bill Details
+                        </div>
+                        <div class="card-body">
+                            <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
+
+                            <span class="text-muted float-right">
+                                {{ number_format($old_bill_details->sum('this_bill_quantity'), 3) }}
+                                {{ $boq_version_item->unit->code }}
+                            </span>
+
+                            <hr>
+
+                            <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
+
+                            <span class="text-muted float-right">
+                                {{ number_format($boq_version_item->rate, 2) }}
+                            </span>
+                            <hr>
+                            {{-- <i class="fas fa-dollar-sign"></i> --}}
+                            <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
+
+                            <span class="text-muted float-right">
+                                {{ number_format($old_bill_details->sum('amount'), 2) }}
+                            </span>
+
+                        </div>
+                        <!-- /.card-body -->
                     </div>
-                    <div class="card-body">
-                        <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
-
-                        <span class="text-muted float-right">
-                            {{ number_format($old_bill_details->sum('this_bill_quantity'), 3) }} {{ $boq_version_item->unit->code }}
-                        </span>
-
-                        <hr>
-
-                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
-
-                        <span class="text-muted float-right">
-                            {{ number_format($boq_version_item->rate, 2) }}
-                        </span>
-<hr>
-                        {{-- <i class="fas fa-dollar-sign"></i> --}}
-                        <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
-
-                        <span class="text-muted float-right">
-                            {{ number_format($old_bill_details->sum('amount'), 2) }}
-                        </span>
-
-                    </div>
-                    <!-- /.card-body -->
-                </div>
                 @endif
 
-                
-                @if($this_bill_details )
-                <div class="card card-success">
-                    <!-- /.card-header -->
-                    <div class="card-header p-2">
-                        This Bill Details
+
+                @if ($this_bill_details)
+                    <div class="card card-success">
+                        <!-- /.card-header -->
+                        <div class="card-header p-2">
+                            This Bill Details
+                        </div>
+                        <div class="card-body">
+                            <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
+
+                            <span class="text-muted float-right">
+                                {{ $this_bill_details->quantity > 0 ? number_format($this_bill_details->quantity - $old_bill_details->sum('this_bill_quantity'), 3) : 0 }}
+                                {{ $boq_version_item->unit->code }}
+                            </span>
+
+                            <hr>
+
+                            <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
+
+                            <span class="text-muted float-right">
+                                {{ number_format($boq_version_item->rate, 2) }}
+                            </span>
+
+                            <hr>
+                            <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
+
+                            <span class="text-muted float-right">
+                                {{ $this_bill_details->quantity > 0 ? number_format(($this_bill_details->quantity - $old_bill_details->sum('this_bill_quantity')) * $boq_version_item->rate, 2) : 0 }}
+                            </span>
+
+                        </div>
+                        <!-- /.card-body -->
                     </div>
-                    <div class="card-body">
-                        <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
-
-                        <span class="text-muted float-right">
-                            {{ $this_bill_details->quantity>0?number_format($this_bill_details->quantity - $old_bill_details->sum('this_bill_quantity'), 3):0 }} {{ $boq_version_item->unit->code }}
-                        </span>
-
-                        <hr>
-
-                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
-
-                        <span class="text-muted float-right">
-                            {{ number_format($boq_version_item->rate, 2) }}
-                        </span>
-
-                        <hr>
-                        <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
-
-                        <span class="text-muted float-right">
-                            {{ $this_bill_details->quantity>0?number_format(($this_bill_details->quantity - $old_bill_details->sum('this_bill_quantity')) * $boq_version_item->rate, 2):0 }}
-                        </span>
-
-                    </div>
-                    <!-- /.card-body -->
-                </div>
                 @endif
             </div>
             <!-- /.col -->
@@ -141,11 +147,17 @@
                 <div class="card">
                     <div class="card-header p-2">
                         <ul class="nav nav-pills">
-                            <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.scheme', [$bill->id]) }}" data-toggle="tab">Scheme</a></li>
-                            <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.boq_part', [$bill->id]) }}" data-toggle="tab">BOQ Parts</a></li>
+                            <li class="nav-item"><a class="nav-link  click_tab"
+                                    href="{{ route('user.bills.details.scheme', [$bill->id]) }}"
+                                    data-toggle="tab">Scheme</a></li>
+                            <li class="nav-item"><a class="nav-link  click_tab"
+                                    href="{{ route('user.bills.details.boq_part', [$bill->id]) }}" data-toggle="tab">BOQ
+                                    Parts</a></li>
                             {{-- <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.boq_item', [$bill->id]) }}" data-toggle="tab">BOQ Items</a></li>
                             <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.boq_subitem', [$bill->id]) }}" data-toggle="tab">BOQ Sub Items</a></li> --}}
-                            <li class="nav-item"><a class="nav-link active click_tab" href="{{ route('user.bills.details.measurement', [$bill->id]) }}" data-toggle="tab">Measurements</a>
+                            <li class="nav-item"><a class="nav-link active click_tab"
+                                    href="{{ route('user.bills.details.measurement', [$bill->id]) }}"
+                                    data-toggle="tab">Measurements</a>
                             </li>
                         </ul>
                     </div><!-- /.card-header -->
@@ -181,55 +193,79 @@
 
                                 </div>
                                 <div class="mb-2">
-                                    <form role="form" method="POST" action="{{ route('user.bills.store_measurement', $bill->id) }}" enctype="multipart/form-data">
+                                    <form role="form" method="POST"
+                                        action="{{ route('user.bills.store_measurement', $bill->id) }}"
+                                        enctype="multipart/form-data">
                                         @csrf
                                         <div class="card-body">
 
                                             <div class="row">
                                                 <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="schemes">Scheme</label>
-                                                <select class="form-control select2" name="schemes" id="schemes" placeholder="Select Schemes" required>
-                                                    <option value="">Select Schemes</option>
-                                                    @foreach ($schemes as $scheme)
-                                                        <option value="{{ $scheme->id }}" @if (Request::get('schemes') == $scheme->id) selected @endif>{{$scheme->code}} - {{$scheme->name}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div></div>
+                                                    <div class="form-group">
+                                                        <label for="schemes">Scheme</label>
+                                                        <select class="form-control select2" name="schemes" id="schemes"
+                                                            placeholder="Select Schemes" required>
+                                                            <option value="">Select Schemes</option>
+                                                            @foreach ($schemes as $scheme)
+                                                                <option value="{{ $scheme->id }}"
+                                                                    @if (Request::get('schemes') == $scheme->id) selected @endif>
+                                                                    {{ $scheme->code }} - {{ $scheme->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="boq_part_id">BOQ Part</label>
-                                                <select class="form-control select2" name="boq_part_id" id="boq_part_id" placeholder="Select BOQ Parts" required>
-                                                    <option value="">Select BOQ Parts</option>
-                                                    @foreach ($bill_parts as $bill_part)
-                                                        <option value="{{ $bill_part->boq_part->id }}" @if (Request::get('boq_part_id') == $bill_part->boq_part->id) selected @endif>{{ $bill_part->boq_part->code }} - {{ $bill_part->boq_part->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div></div>
+                                                    <div class="form-group">
+                                                        <label for="boq_part_id">BOQ Part</label>
+                                                        <select class="form-control select2" name="boq_part_id"
+                                                            id="boq_part_id" placeholder="Select BOQ Parts" required>
+                                                            <option value="">Select BOQ Parts</option>
+                                                            @foreach ($bill_parts as $bill_part)
+                                                                <option value="{{ $bill_part->boq_part->id }}"
+                                                                    @if (Request::get('boq_part_id') == $bill_part->boq_part->id) selected @endif>
+                                                                    {{ $bill_part->boq_part->code }} -
+                                                                    {{ $bill_part->boq_part->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            
+
                                             <div class="row">
                                                 <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="boq_item_id">BOQ Item</label>
-                                                <select class="form-control select2" name="boq_item_id" id="boq_item_id" placeholder="Select BOQ Items" required>
-                                                    <option value="">Select BOQ Items</option>
-                                                    @foreach ($boq_items as $bill_item)
-                                                        <option value="{{ $bill_item->id }}" data-unit="{{ $bill_item->unit_id }}" data-hassub="{{ $bill_item->has_sub_items }}" @if (Request::get('boq_item_id') == $bill_item->id) selected @endif>{{ $bill_item->code }} - {{ $bill_item->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div></div>
+                                                    <div class="form-group">
+                                                        <label for="boq_item_id">BOQ Item</label>
+                                                        <select class="form-control select2" name="boq_item_id"
+                                                            id="boq_item_id" placeholder="Select BOQ Items" required>
+                                                            <option value="">Select BOQ Items</option>
+                                                            @foreach ($boq_items as $bill_item)
+                                                                <option value="{{ $bill_item->id }}"
+                                                                    data-unit="{{ $bill_item->unit_id }}"
+                                                                    data-hassub="{{ $bill_item->has_sub_items }}"
+                                                                    @if (Request::get('boq_item_id') == $bill_item->id) selected @endif>
+                                                                    {{ $bill_item->code }} - {{ $bill_item->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="boq_subitem_id">BOQ Subitem</label>
-                                                <select class="form-control select2" name="boq_subitem_id" id="boq_subitem_id" placeholder="Select BOQ Subitems">
-                                                    <option value="">Select BOQ Subitems</option>
-                                                    @foreach ($boq_subitems as $boq_subitem)
-                                                        <option value="{{ $boq_subitem->id }}" data-unit="{{ $boq_subitem->unit_id }}" @if (Request::get('boq_subitem_id') == $boq_subitem->id) selected @endif>{{ $boq_subitem->code }} - {{ $boq_subitem->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div></div>
+                                                    <div class="form-group">
+                                                        <label for="boq_subitem_id">BOQ Subitem</label>
+                                                        <select class="form-control select2" name="boq_subitem_id"
+                                                            id="boq_subitem_id" placeholder="Select BOQ Subitems">
+                                                            <option value="">Select BOQ Subitems</option>
+                                                            @foreach ($boq_subitems as $boq_subitem)
+                                                                <option value="{{ $boq_subitem->id }}"
+                                                                    data-unit="{{ $boq_subitem->unit_id }}"
+                                                                    @if (Request::get('boq_subitem_id') == $boq_subitem->id) selected @endif>
+                                                                    {{ $boq_subitem->code }} - {{ $boq_subitem->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
 
 
@@ -246,7 +282,8 @@
                                             <!-- /.card-body -->
 
                                             <div class="card-footer">
-                                                <button type="submit" id="add-measurement" class="btn btn-primary">Add Measurement</button>
+                                                <button type="submit" id="add-measurement" class="btn btn-primary">Add
+                                                    Measurement</button>
                                             </div>
                                     </form>
                                 </div>
@@ -277,7 +314,8 @@
                                                     <td>{{ $item->weight ?? '-' }} </td>
                                                     <td> {{ $item->quantity ?? '' }}</td>
                                                     <td>
-                                                        <a class="btn btn-sm btn-danger remove" data-url="{{ route('user.bills.remove_measurement', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                        <a class="btn btn-sm btn-danger remove"
+                                                            data-url="{{ route('user.bills.remove_measurement', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -479,7 +517,7 @@
                             } else {
 
                                 Swal.fire({
-                                   
+
                                     title: 'ERROR',
                                     text: data.message,
                                     icon: 'error'
@@ -490,7 +528,7 @@
 
                             debugger;
                             Swal.fire({
-                               
+
                                 title: 'ERROR',
                                 text: 'Something Went Wrong',
                                 icon: 'error'

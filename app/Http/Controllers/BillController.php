@@ -316,29 +316,28 @@ class BillController extends Controller
             return redirect()->back()->withErrors($v)->withInput();
         }
         $bill = Bill::findOrFail($bill_id);
-        if( $request->schemes == "All"){
+        if ($request->schemes == "All") {
             $schemes = Scheme::where('project_id', Auth::guard('web')->user()->project_id)
-            ->where('package_id', Auth::guard('web')->user()->package_id)->pluck('id')->toArray();
-        }
-        else
+                ->where('package_id', Auth::guard('web')->user()->package_id)->pluck('id')->toArray();
+        } else
             $schemes = $request->schemes;
-        DB::transaction(function () use ($request, $bill,$schemes) {
+        DB::transaction(function () use ($request, $bill, $schemes) {
             // Add new bill parts
             foreach ($schemes as $scheme_id) {
                 BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->delete();
-            
-            $bill_parts = [];
-            foreach ($request->boq_parts as $boq_part_id) {
 
-                $bill_parts = [
-                    'bill_id' => $bill->id,
-                    'scheme_id' => $scheme_id,
-                    'project_id' => Auth::guard('web')->user()->project_id,
-                    'boq_part_id' => $boq_part_id,
-                ];
-                // dd($bill_parts);
-                BillPart::create($bill_parts);
-            }
+                $bill_parts = [];
+                foreach ($request->boq_parts as $boq_part_id) {
+
+                    $bill_parts = [
+                        'bill_id' => $bill->id,
+                        'scheme_id' => $scheme_id,
+                        'project_id' => Auth::guard('web')->user()->project_id,
+                        'boq_part_id' => $boq_part_id,
+                    ];
+                    // dd($bill_parts);
+                    BillPart::create($bill_parts);
+                }
             }
         });
         // dd($request);
@@ -569,7 +568,7 @@ class BillController extends Controller
         $bill_parts->where('scheme_id', $request->schemes);
         // }
 
-        $bill_parts = $bill_parts->join('boq_parts', 'bill_parts.boq_part_id', '=', 'boq_parts.id')->groupby('boq_part_id','boq_parts.code')->select('boq_part_id')->orderby('boq_parts.code')->get();
+        $bill_parts = $bill_parts->join('boq_parts', 'bill_parts.boq_part_id', '=', 'boq_parts.id')->groupby('boq_part_id', 'boq_parts.code')->select('boq_part_id')->orderby('boq_parts.code')->get();
 
         $boq_version_details_item = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
             ->where('project_id', Auth::guard('web')->user()->project_id)
@@ -1028,7 +1027,7 @@ class BillController extends Controller
     public function shelterWiseView($id)
     {
 
-    // return view('backend.bill.test');
+        // return view('backend.bill.test');
         $this_bill = Bill::with('schemes')->findOrFail($id);
         $previous_bill_ids = Bill::where('id', '!=', $this_bill->id)
             ->where('created_at', '<', $this_bill->created_at)
@@ -1064,6 +1063,7 @@ class BillController extends Controller
         foreach ($schemes as $scheme) {
             $info = new stdClass();
             $info->scheme = $scheme;
+            $info->has_bill_details = false;
             $info->parts = [];
             $bill_part_ids = BillPart::where('project_id', Auth::guard('web')->user()->project_id)->where('scheme_id', $scheme->id);
             if ($next_bill)
@@ -1126,7 +1126,11 @@ class BillController extends Controller
                                     ->with('measurements')
                                     ->first();
                                 $sub_item_info->old_bill_detail = $old_bill_details;
+                                if ($old_bill_details)
+                                    $info->has_bill_details = true;
                             } else {
+
+                                $info->has_bill_details = true;
                                 $sub_item_info->old_bill_detail = null;
                             }
 
