@@ -138,7 +138,7 @@
                                     <td>{{ $scheme->upazila->name ?? 'N/A' }}</td>
                                     <td>{{ $scheme->union->name ?? 'N/A' }}</td>
                                     <td>
-                                        <span class="badge bg-success" style="font-size: 100%">{{$scheme->scheme_option->name}}</span>
+                                        <span class="badge bg-success" style="font-size: 100%">{{$scheme->scheme_option?$scheme->scheme_option->name:'N/A'}}</span>
                                         
                                     </td>
                                     <td>

@@ -309,34 +309,35 @@ class BillController extends Controller
     {
         $v = Validator($request->all(), [
             'schemes' => 'required',
-            'boq_parts' => 'required|array',
-            'boq_parts.*' => 'exists:boq_parts,id',
+            // 'boq_parts' => 'array',
+            // 'boq_parts.*' => 'exists:boq_parts,id',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
         $bill = Bill::findOrFail($bill_id);
         if ($request->schemes == "All") {
-            $schemes = Scheme::where('project_id', Auth::guard('web')->user()->project_id)
-                ->where('package_id', Auth::guard('web')->user()->package_id)->pluck('id')->toArray();
+            $schemes = BillScheme::where('project_id', Auth::guard('web')->user()->project_id)
+                // ->where('package_id', Auth::guard('web')->user()->package_id)
+                ->where('bill_id', $bill->id)->get()->pluck('scheme_id')->toArray();
         } else
-            $schemes = $request->schemes;
+            $schemes = array($request->schemes);
+        //dd($schemes);
         DB::transaction(function () use ($request, $bill, $schemes) {
             // Add new bill parts
             foreach ($schemes as $scheme_id) {
                 BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->delete();
 
-                $bill_parts = [];
-                foreach ($request->boq_parts as $boq_part_id) {
-
-                    $bill_parts = [
-                        'bill_id' => $bill->id,
-                        'scheme_id' => $scheme_id,
-                        'project_id' => Auth::guard('web')->user()->project_id,
-                        'boq_part_id' => $boq_part_id,
-                    ];
-                    // dd($bill_parts);
-                    BillPart::create($bill_parts);
+                if($request->has('boq_parts') && is_array($request->boq_parts) && count($request->boq_parts)>0) {
+                    foreach ($request->boq_parts as $boq_part_id) {
+                        $bill_parts = [
+                            'bill_id' => $bill->id,
+                            'scheme_id' => $scheme_id,
+                            'project_id' => Auth::guard('web')->user()->project_id,
+                            'boq_part_id' => $boq_part_id,
+                        ];
+						BillPart::create($bill_parts);
+                    }
                 }
             }
         });
@@ -729,6 +730,7 @@ class BillController extends Controller
                 if ($request->has('boq_subitem_id') && isset($request->boq_subitem_id)) {
                     $boq_version_details->where('boq_sub_item_id', $request->boq_subitem_id);
                 }
+                
                 $boq_version_details = $boq_version_details->first();
 
                 $bill_details = BillDetail::create([
@@ -1036,7 +1038,7 @@ class BillController extends Controller
                 $query->where('project_id', Auth::guard('web')->user()->project_id)
                     ->where('package_id', Auth::guard('web')->user()->package_id);
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('serial', 'desc')
             ->get()->pluck('id')->toArray();
 
         // dd($this_bill, $previous_bill_ids);

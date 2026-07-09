@@ -60,7 +60,7 @@
                                         @foreach ($boq_versions as $version)
                                             <option value="{{ $version->id }}"
                                                 @if (old('boq_version_id', $boq_version_detail->boq_version_id) == $version->id) selected @endif>
-                                                {{ $version->code }}.{{ $version->name }}</option>
+                                                {{ $version->name }} - {{ date('Y-m-d', strtotime($version->version_date)) }}</option>
                                         @endforeach
                                     </select>
                                 </div>

@@ -199,7 +199,7 @@
                                         <td></td>
                                         <td class="text-bold text-right">Total =</td>
                                         <td></td>
-                                        <td class="text-center">{{ round($option_total_quantity, 3) }}</td>
+                                        <td class="text-center">{{ number_format($option_total_quantity, 3) }}</td>
                                         <td class="text-center">{{ $sub_item->unit->code }}</td>
                                         <td class="text-right">{{ number_format($rate, 2) }}</td>
                                         <td class="text-center">{{ \App\Helper\InWordConvertion::convert($rate) }}</td>
@@ -291,7 +291,7 @@
                                     <td></td>
                                     <td class="text-bold text-right">Total =</td>
                                     <td></td>
-                                    <td class="text-center">{{ round($option_total_quantity, 3) }}</td>
+                                    <td class="text-center">{{ number_format($option_total_quantity, 3) }}</td>
                                     <td class="text-center">{{ $item->boq_item->unit->code }}</td>
                                     <td class="text-right">{{ number_format($rate, 2) }}</td>
                                     <td class="text-center">{{ \App\Helper\InWordConvertion::convert($rate) }}</td>
@@ -313,7 +313,7 @@
                                         <td class="text-center">{{ $item->boq_item->code }}</td>
                                         <td>{{ $item->boq_item->specification_no }}</td>
                                         <td>{{ $item->boq_item->name }} <br> {!! $item->boq_item->description !!}</td>
-                                        <td class="text-center">{{ $d ? round($d->nos,2) : 0 }}</td>
+                                        <td class="text-center">{{ $d ? number_format($d->nos,2) : 0 }}</td>
                                         <td class="text-center">{{ $d ? $d->quantity : 0 }}</td>
                                         <td class="text-center">{{ $d ? $d->total_quantity : 0 }}</td>
                                         <td class="text-center">{{ $item->boq_item->unit->code }}</td>

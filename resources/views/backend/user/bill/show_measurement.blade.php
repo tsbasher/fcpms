@@ -123,6 +123,28 @@
                             </span>
 
                             <hr>
+                            <strong><i class="fas fa-book mr-1"></i> Held up Quantity</strong>
+
+                            <span class="text-muted float-right">
+                                {{ $this_bill_details->held_up_quantity > 0 ? number_format($this_bill_details->held_up_quantity, 3) : 0 }}
+                                {{ $boq_version_item->unit->code }}
+                            </span>
+
+                            <hr>
+
+                            <strong><i class="fas fa-book mr-1"></i> This Bill Quantity</strong>
+
+                            <span class="text-muted float-right">
+                                {{ $this_bill_details->this_bill_quantity > 0 ? number_format($this_bill_details->this_bill_quantity, 3) : 0 }}
+                                {{ $boq_version_item->unit->code }}
+                            </span>
+
+                            <hr>
+
+
+
+
+
 
                             <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
 
@@ -134,7 +156,7 @@
                             <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->quantity > 0 ? number_format(($this_bill_details->quantity - $old_bill_details->sum('this_bill_quantity')) * $boq_version_item->rate, 2) : 0 }}
+                                {{ $this_bill_details->this_bill_quantity > 0 ? number_format(($this_bill_details->this_bill_quantity) * $boq_version_item->rate, 2) : 0 }}
                             </span>
 
                         </div>

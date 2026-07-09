@@ -144,7 +144,7 @@
                                             <div class="form-group">
                                                 <label for="boq_part_id">BOQ Part</label>
                                                 <select class="form-control" multiple="multiple" name="boq_parts[]"
-                                                    id="boq_parts" placeholder="Select BOQ Parts" required>
+                                                    id="boq_parts" placeholder="Select BOQ Parts">
 
                                                     @foreach ($boq_parts as $boq_part)
                                                         <option value="{{ $boq_part->id }}"

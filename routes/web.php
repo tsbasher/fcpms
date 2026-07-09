@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminBillController;
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\BoqPartController;
 use App\Http\Controllers\Admin\BoqItemController;
@@ -48,6 +49,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/contractors/add-package/{contractor_id}', [ContractorController::class, 'store_package'])->name('admin.contractors.store_package');
         Route::get('/boq-versions/export', [BoqVersionController::class, 'export'])->name('admin.boq_versions.export');
         Route::get('/boq-versions/export-data', [BoqVersionController::class, 'export_data'])->name('admin.boq_versions.export_data');
+        Route::get('/bills-by-package/{package_id}', [AdminBillController::class, 'getBillsByPackage'])->name('admin.bills.get_bills_by_package');
+                Route::get('bill/details/shelter-wise-details', [AdminBillController::class, 'bill_show'])->name('admin.bills.shelter_wise_view');
 
 
         Route::resource('regions', RegionController::class)->names('admin.regions');
@@ -63,6 +66,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('boq-version-details', BoqVersionDetailsController::class)->names('admin.boq_version_details');
         Route::resource('contractors', ContractorController::class)->names('admin.contractors');
         Route::resource('contractor-users', ContractorUserController::class)->names('admin.contractor_users');
+        Route::resource('bills', AdminBillController::class)->names('admin.bills');
     });
 });
 

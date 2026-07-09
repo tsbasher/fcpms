@@ -1,0 +1,25 @@
+$(document).ready(function() {
+    $('#package_id').change(function() {
+        var districtId = $(this).data('district_id');
+        debugger;
+        url= upazila_url.replace('*', districtId);
+        if (districtId) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(data) {
+                    debugger;
+                    $('#upazila_id').empty();
+                    $('#upazila_id').append('<option value="">Select Upazila</option>');
+                    $.each(data, function(key, value) {
+                        $('#upazila_id').append(`<option value="${value.id}">${value.name}</option>`);
+                    });
+                }
+            });
+        } else {
+            $('#upazila_id').empty();
+            $('#upazila_id').append('<option value="">Select Upazila</option>');
+        }
+        $('#upazila_id').select2();
+    });
+});

@@ -23,7 +23,9 @@ class SchemeController extends Controller
      */
     public function index(Request $request)
     {
-        $schemes = Scheme::permitted();
+        $schemes = Scheme::with('division', 'district', 'upazila', 'union', 'package','scheme_option')
+        ->orderby('code')
+        ->permitted();
         if ($request->has('search_text') && !empty($request->search_text)) {
 
             // Get schemes based on search criteria

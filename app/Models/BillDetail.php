@@ -24,6 +24,7 @@ class BillDetail extends ExtendedModelUser
         'boq_quantity',
         'held_up_quantity',
         'this_bill_quantity',
+        'this_bill_amount',
         'rate',
         'amount'
 
