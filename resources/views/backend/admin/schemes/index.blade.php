@@ -29,7 +29,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="division_id">Division</label>
-                                <select class="form-control select2" name="division_id" id="division_id">
+                                <select class="form-control select2" name="division_id" id="division_id" onchange="this.form.submit()">
                                     <option value="">Select Division</option>
                                     @foreach ($divisions as $division)
                                     <option value="{{ $division->id }}" {{ Request::get('division_id') == $division->id ? 'selected' : '' }}>{{ $division->name }}</option>
@@ -40,7 +40,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="district_id">District</label>
-                                <select class="form-control select2" name="district_id" id="district_id">
+                                <select class="form-control select2" name="district_id" id="district_id" onchange="this.form.submit()">
                                     <option value="">Select District</option>
                                     @foreach ($districts as $district)
                                     <option value="{{ $district->id }}" {{ Request::get('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
@@ -51,7 +51,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="upazila_id">Upazila</label>
-                                <select class="form-control select2" name="upazila_id" id="upazila_id">
+                                <select class="form-control select2" name="upazila_id" id="upazila_id" onchange="this.form.submit()">
                                     <option value="">Select Upazila</option>
                                     @foreach ($upazilas as $upazila)
                                     <option value="{{ $upazila->id }}" {{ Request::get('upazila_id') == $upazila->id ? 'selected' : '' }}>{{ $upazila->name }}</option>
@@ -62,7 +62,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="union_id">Union</label>
-                                <select class="form-control select2" name="union_id" id="union_id">
+                                <select class="form-control select2" name="union_id" id="union_id" onchange="this.form.submit()">
                                     <option value="">Select Union</option>
                                     @foreach ($unions as $union)
                                     <option value="{{ $union->id }}" {{ Request::get('union_id') == $union->id ? 'selected' : '' }}>{{ $union->name }}</option>
@@ -74,7 +74,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="package_id">Package</label>
-                                <select class="form-control select2" name="package_id" id="package_id">
+                                <select class="form-control select2" name="package_id" id="package_id" onchange="this.form.submit()">
                                     <option value="">Select Package</option>
                                     @foreach ($packages as $package)
                                     <option value="{{ $package->id }}" {{ Request::get('package_id') == $package->id ? 'selected' : '' }}>{{ $package->name }}</option>
@@ -87,11 +87,9 @@
                         <div class="col-md-8 offset-md-2">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control form-control-lg" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                    <input type="search" class="form-control form-control-lg" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}" onchange="this.form.submit()">
                                     <div class="input-group-append">
-                                        <button type="submit" class="btn btn-lg btn-default">
-                                            <i class="fa fa-search"></i>
-                                        </button>
+                                        
                                         <a href="{{ route('admin.schemes.index') }}" class="btn btn-lg btn-default">
                                             <i class="fas fa-sync-alt"></i>
                                         </a>
@@ -155,7 +153,7 @@
             <!-- /.card-body -->
 
             <div class="card-footer clearfix" style="background: #00000000">
-                {{ $schemes->links() }}
+                {{ $schemes->appends(request()->query())->links() }}
             </div>
         </div>
         <!-- /.card -->
@@ -189,9 +187,9 @@
 
 <script type="text/javascript">
     
-        let district_url = "{{ route('common.get_districts_by_division','*') }}";
-        let upazila_url = "{{ route('common.get_upazilas_by_district','*') }}";
-        let union_url = "{{ route('common.get_unions_by_upazila','*') }}";
+        // let district_url = "{{ route('common.get_districts_by_division','*') }}";
+        // let upazila_url = "{{ route('common.get_upazilas_by_district','*') }}";
+        // let union_url = "{{ route('common.get_unions_by_upazila','*') }}";
 
     $(document).ready(function() {
         $('.select2').select2();
@@ -277,7 +275,7 @@
 </script>
 
 
-<script src="{{asset('backend/dist/js/fcpms/district.js')}}"></script>
+{{-- <script src="{{asset('backend/dist/js/fcpms/district.js')}}"></script>
 <script src="{{asset('backend/dist/js/fcpms/upazila.js')}}"></script>
-<script src="{{asset('backend/dist/js/fcpms/union.js')}}"></script>
+<script src="{{asset('backend/dist/js/fcpms/union.js')}}"></script> --}}
 @endsection

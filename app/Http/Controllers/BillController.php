@@ -1199,7 +1199,7 @@ class BillController extends Controller
 
     public function report(Request $request)
     {
-        
+
         $package = Package::find(Auth::guard('web')->user()->package_id);
         if ($package)
             $upazilas = Upazila::where('district_id', $package->district_id)->get();
@@ -1240,13 +1240,18 @@ class BillController extends Controller
                 $query->where('bill_id', $this_bill->id)
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
-
-            return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids,$request->report_type);
+        } else {
+            $scheme_ids = BillScheme::where(function ($query) use ($this_bill, $previous_bill_ids) {
+                $query->where('bill_id', $this_bill->id)
+                    ->orwhereIn('bill_id', $previous_bill_ids);
+            })->get()->pluck('scheme_id')->toArray();
         }
+
+        return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids, $request->report_type);
+
 
 
 
         // return view('backend.admin.bill.shelter_wise_details', compact('bill', 'scheme_ids', 'project_id', 'package_id'));
     }
-    
 }

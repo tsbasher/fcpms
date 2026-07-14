@@ -256,6 +256,11 @@ class BillGenerator
         $project = Project::findOrFail($this_bill->project_id);
         $package = Package::findOrFail($this_bill->boq_version->package_id);
         $upazila = Upazila::findOrFail($schemes->first()->upazila_id);
-        return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill', 'package', 'summary_bill', 'upazila', 'contractor'));
+        if ($report_type == "PKG_SUM") {
+            return view('backend.bill.summary_bill', compact('project', 'this_bill', 'last_bill', 'package', 'summary_bill', 'upazila', 'contractor'));
+        } else {
+            return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill', 'package', 'summary_bill', 'upazila', 'contractor'));
+        }
+        // return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill', 'package', 'summary_bill', 'upazila', 'contractor'));
     }
 }
