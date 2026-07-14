@@ -165,6 +165,16 @@ F C P M S 2.0</span>
               </p>
             </a>
           </li>
+          
+          <li class="nav-item">
+            <a href="{{route('admin.bills.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.bills.index' || Route::currentRouteName() == 'admin.bills.create' || Route::currentRouteName() == 'admin.bills.edit') active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Bill
+              </p>
+            </a>
+          </li>
 {{--           
           <li class="nav-item">
             <a href="#" class="nav-link">

@@ -25,6 +25,7 @@ class Scheme extends ExtendedModel
         'union_id',
         'village_name',
         'external_code',
+        'pile_type',
         'latitude',
         'longitude',
         'scheme_option_id',

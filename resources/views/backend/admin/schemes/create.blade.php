@@ -35,19 +35,30 @@
                         @endif
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
 
                             <div class="form-group">
                                 <label for="name">Scheme Name</label>
                                 <input type="text" required class="form-control" name="name" id="name" placeholder="Enter Scheme Name" value="{{ old('name') }}">
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="code">Scheme Code</label>
                                 <input type="text" required class="form-control" name="code" id="code" placeholder="Enter Scheme Code" value="{{ old('code') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="pile_type">Pile Type</label>
+                                <select name="pile_type" id="pile_type" class="form-control select2" required>
+                                    <option value="NA" @if(old('pile_type')=='NA') selected @endif>Not Applicable</option>
+                                    <option value="PC" @if(old('pile_type')=='PC') selected @endif>Pre-Cast</option>
+                                    <option value="CIS" @if(old('pile_type')=='CIS') selected @endif>Cust-in-Situ</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-4">

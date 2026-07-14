@@ -30,9 +30,10 @@
         .no-border-summary {
             border: none !important;
             font-size: 30px !important;
-            padding-top:40px !important;
+            padding-top: 40px !important;
             font-weight: normal !important;
         }
+
         th {
             font-weight: bold !important;
         }
@@ -67,9 +68,9 @@
             }
         } */
 
-p{
-    margin: 0px !important;
-}
+        p {
+            margin: 0px !important;
+        }
 
         /* Base print setups */
         @media print {
@@ -127,82 +128,83 @@ p{
     <div class="page portrait-page">
         <table class="table table-bordered table-hover" id="boq-version-table">
             <tbody>
-                
+
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr class="">
-                    <td class="text-center no-border-summary" >Local Government Engineering
+                    <td class="text-center no-border-summary">Local Government Engineering
                         Department (LGED)
                     </td>
                 </tr>
-                
+
                 <tr class="text-bold">
-                    <td  class="text-center no-border-summary" >
+                    <td class="text-center no-border-summary">
                         {{ $project->name }}({{ $project->short_name }})</td>
                 </tr>
                 <tr class="">
-                    <td class="text-center no-border-summary" >
+                    <td class="text-center no-border-summary">
                         Package: {{ $package->name }} {{ $package->code }}</br>
                         {{ $this_bill->name }}
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr class="text-bold">
                     <td class="text-center no-border-summary" style="font-size: 80px !important;">
-                        {{strtoupper($upazila->name)}}
+                        {{ strtoupper($upazila->name) }}
                     </td>
                 </tr>
                 <tr class="">
-                    <td class="text-center no-border-summary" style="padding-top:0px" >
+                    <td class="text-center no-border-summary" style="padding-top:0px">
                         Detailed Measurement
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr>
-                    
-                    <td class="text-center no-border-summary">Measurement Date:<span style="font-weight: bold"> @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
-                            {{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to
-                            {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}
-                        @endif
+
+                    <td class="text-center no-border-summary">Measurement Date:<span style="font-weight: bold">
+                            @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
+                                {{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to
+                                {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}
+                            @endif
                         </span>
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-bold no-border-summary" >
+                    <td class="text-bold no-border-summary">
                         &nbsp;
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-center no-border-summary" >
+                    <td class="text-center no-border-summary">
                         SUBMITTED BY:</br>
                         {{ $contractor->company_name }}</br>
-                        <span style="font-size: 20px !important;">{!!$contractor->company_address!!}</span>
+                        <span style="font-size: 20px !important;">{!! $contractor->company_address !!}</span>
                     </td>
                 </tr>
             </tbody>
@@ -234,7 +236,7 @@ p{
                     <td colspan="{{ $colspan }}" class="text-center no-border">{{ $this_bill->name }}</td>
                 </tr>
                 <tr class="text-bold">
-                    <td colspan="9">
+                    <td colspan="7">
                         @if (Request::get('report_type') == 'UPZ_DTL')
                             Upazila: {{ $upazila->name }}
                         @elseif(Request::get('report_type') == 'PKG_SUM')
@@ -458,7 +460,7 @@ p{
         </table>
     </div>
     @foreach ($shelter_bill as $info)
-        {{-- @dd($info) --}}
+        {{-- @dd($shelter_bill) --}}
         @if ($info->has_bill_details)
             <div class="page landscape-page">
                 <table class="table table-bordered table-hover" id="boq-version-table">
@@ -489,7 +491,7 @@ p{
                         </tr>
                         <tr class="text-bold">
                             <td colspan="2">Name of Shelter:{{ $info->scheme->name }}</td>
-                            <td colspan="3">Upazila: {{ $info->scheme->upazila->name }}</td>
+                            <td colspan="2">Upazila: {{ $info->scheme->upazila->name }}</td>
                             <td colspan="2" class="text-center">Shelter ID: {{ $info->scheme->code }}</td>
                             <td colspan="2" class="text-center">{{ $info->scheme->scheme_option->name }}</td>
                             <td colspan="4" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
@@ -551,71 +553,55 @@ p{
                                 $previous_bill_total = 0;
 
                             @endphp
+                            {{-- @dd($part->items[0]) --}}
                             @foreach ($part->items as $item)
-                                @if (!$item->item->has_sub_items)
-                                    @if ($item->boq_version_details)
-                                        @php
-                                            $boq_total += $item->boq_version_details
-                                                ? $item->boq_version_details->quantity *
-                                                    $item->boq_version_details->rate
-                                                : 0;
 
-                                            $total += $item->this_bill_detail
-                                                ? $item->this_bill_detail->amount
-                                                : ($item->old_bill_detail
-                                                    ? $item->old_bill_detail->amount
-                                                    : 0);
+                                @if ($item->item->pile_type == 'NA' || $info->scheme->pile_type == $item->item->pile_type)
+                                    @if (!$item->item->has_sub_items)
+                                        @if ($item->boq_version_details)
+                                            @php
+                                                $boq_total += $item->boq_version_details
+                                                    ? $item->boq_version_details->quantity *
+                                                        $item->boq_version_details->rate
+                                                    : 0;
 
-                                            $this_bill_total += $item->this_bill_detail
-                                                ? $item->this_bill_detail->this_bill_amount
-                                                : 0;
-                                            $previous_bill_total += $item->this_bill_detail
-                                                ? $item->this_bill_detail->previous_quantity *
-                                                    $item->this_bill_detail->rate
-                                                : ($item->old_bill_detail
-                                                    ? ($item->old_bill_detail->quantity -
-                                                            $item->old_bill_detail->held_up_quantity) *
-                                                        $item->old_bill_detail->rate
-                                                    : 0);
-                                        @endphp
-                                        <tr>
-                                            <td class="text-center">{{ $item->item->code }}</td>
-                                            <td>{{ $item->item->name }}</td>
-                                            <td class="text-center">
-                                                {{ $item->item->unit ? $item->item->unit->code : '' }}
-                                            </td>
-                                            <td class="text-right">
-                                                {{ $item->boq_version_details ? number_format($item->boq_version_details->quantity, 3) : '' }}
-                                            </td>
-                                            <td class="text-right">
-                                                {{ $item->boq_version_details ? number_format($item->boq_version_details->rate, 2) : '' }}
-                                            </td>
-                                            <td class="text-right">
-                                                {{ $item->boq_version_details ? number_format($item->boq_version_details->quantity * $item->boq_version_details->rate, 2) : '' }}
-                                            </td>
+                                                $total += $item->this_bill_detail
+                                                    ? $item->this_bill_detail->amount
+                                                    : ($item->old_bill_detail
+                                                        ? $item->old_bill_detail->amount
+                                                        : 0);
 
-                                            <td class="text-right">
-                                                @if ($item->this_bill_detail)
-                                                    {{ $item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity > 0 ? number_format($item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity, 3) : '-' }}
-                                                @elseif($item->old_bill_detail)
-                                                    {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
-                                                @else
-                                                    {{ '-' }}
-                                                @endif
-                                            </td>
-                                            <td class="text-right">
-                                                @if ($item->this_bill_detail)
-                                                    {{ number_format($item->this_bill_detail->amount, 2) }}
-                                                @elseif($item->old_bill_detail)
-                                                    {{ number_format($item->old_bill_detail->amount, 2) }}
-                                                @else
-                                                    {{ '-' }}
-                                                @endif
-                                            </td>
-                                            @if ($last_bill)
+                                                $this_bill_total += $item->this_bill_detail
+                                                    ? $item->this_bill_detail->this_bill_amount
+                                                    : 0;
+                                                $previous_bill_total += $item->this_bill_detail
+                                                    ? $item->this_bill_detail->previous_quantity *
+                                                        $item->this_bill_detail->rate
+                                                    : ($item->old_bill_detail
+                                                        ? ($item->old_bill_detail->quantity -
+                                                                $item->old_bill_detail->held_up_quantity) *
+                                                            $item->old_bill_detail->rate
+                                                        : 0);
+                                            @endphp
+                                            <tr>
+                                                <td class="text-center">{{ $item->item->code }}</td>
+                                                <td>{{ $item->item->name }}</td>
+                                                <td class="text-center">
+                                                    {{ $item->item->unit ? $item->item->unit->code : '' }}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{ $item->boq_version_details ? number_format($item->boq_version_details->quantity, 3) : '' }}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{ $item->boq_version_details ? number_format($item->boq_version_details->rate, 2) : '' }}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{ $item->boq_version_details ? number_format($item->boq_version_details->quantity * $item->boq_version_details->rate, 2) : '' }}
+                                                </td>
+
                                                 <td class="text-right">
                                                     @if ($item->this_bill_detail)
-                                                        {{ $item->this_bill_detail->previous_quantity > 0 ? number_format($item->this_bill_detail->previous_quantity, 3) : '-' }}
+                                                        {{ $item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity > 0 ? number_format($item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity, 3) : '-' }}
                                                     @elseif($item->old_bill_detail)
                                                         {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
                                                     @else
@@ -624,93 +610,93 @@ p{
                                                 </td>
                                                 <td class="text-right">
                                                     @if ($item->this_bill_detail)
-                                                        {{ $item->this_bill_detail->previous_quantity > 0 ? number_format($item->this_bill_detail->previous_quantity * $item->this_bill_detail->rate, 2) : '-' }}
+                                                        {{ number_format($item->this_bill_detail->amount, 2) }}
                                                     @elseif($item->old_bill_detail)
-                                                        {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format(($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity) * $item->old_bill_detail->rate, 2) : '-' }}
-                                                    @else
-                                                        {{ '-' }}
-                                                    @endif
-                                                </td>
-                                            @endif
-                                            <td class="text-right">
-                                                {{ $item->this_bill_detail ? number_format($item->this_bill_detail->this_bill_quantity, 3) : '-' }}
-                                            </td>
-                                            <td class="text-right">
-                                                {{ $item->this_bill_detail ? number_format($item->this_bill_detail->this_bill_amount, 2) : '-' }}
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                    @endif
-                                @else
-                                    <tr>
-                                        <td colspan="{{ $colspan }}" class="text-bold">
-                                            ({{ $item->item->code }})
-                                            {{ $item->item->name }}</td>
-                                    </tr>
-                                    @foreach ($item->sub_items as $sub_item)
-                                        @if ($sub_item->boq_version_details)
-                                            @php
-                                                $boq_total += $sub_item->boq_version_details
-                                                    ? $sub_item->boq_version_details->quantity *
-                                                        $sub_item->boq_version_details->rate
-                                                    : 0;
-
-                                                $total += $sub_item->this_bill_detail
-                                                    ? $sub_item->this_bill_detail->amount
-                                                    : ($sub_item->old_bill_detail
-                                                        ? $sub_item->old_bill_detail->amount
-                                                        : 0);
-
-                                                $this_bill_total += $sub_item->this_bill_detail
-                                                    ? $sub_item->this_bill_detail->this_bill_amount
-                                                    : 0;
-                                                $previous_bill_total += $sub_item->this_bill_detail
-                                                    ? $sub_item->this_bill_detail->previous_quantity *
-                                                        $sub_item->this_bill_detail->rate
-                                                    : ($sub_item->old_bill_detail
-                                                        ? ($sub_item->old_bill_detail->quantity -
-                                                                $sub_item->old_bill_detail->held_up_quantity) *
-                                                            $sub_item->old_bill_detail->rate
-                                                        : 0);
-                                            @endphp
-                                            <tr>
-                                                <td class="text-center">{{ $sub_item->sub_item->code }}</td>
-                                                <td>{{ $sub_item->sub_item->name }}</td>
-                                                <td class="text-center">
-                                                    {{ $sub_item->sub_item->unit ? $sub_item->sub_item->unit->code : '' }}
-                                                </td>
-                                                <td class="text-right">
-                                                    {{ $sub_item->boq_version_details ? number_format($sub_item->boq_version_details->quantity, 3) : '' }}
-                                                </td>
-                                                <td class="text-right">
-                                                    {{ $sub_item->boq_version_details ? number_format($sub_item->boq_version_details->rate, 2) : '' }}
-                                                </td>
-                                                <td class="text-right">
-                                                    {{ $sub_item->boq_version_details ? number_format($sub_item->boq_version_details->quantity * $sub_item->boq_version_details->rate, 2) : '' }}
-                                                </td>
-
-                                                <td class="text-right">
-                                                    @if ($sub_item->this_bill_detail)
-                                                        {{ $sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity > 0 ? number_format($sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity, 3) : '-' }}
-                                                    @elseif($sub_item->old_bill_detail)
-                                                        {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
-                                                    @else
-                                                        {{ '-' }}
-                                                    @endif
-                                                </td>
-                                                <td class="text-right">
-                                                    @if ($sub_item->this_bill_detail)
-                                                        {{ number_format($sub_item->this_bill_detail->amount, 2) }}
-                                                    @elseif($sub_item->old_bill_detail)
-                                                        {{ number_format($sub_item->old_bill_detail->amount, 2) }}
+                                                        {{ number_format($item->old_bill_detail->amount, 2) }}
                                                     @else
                                                         {{ '-' }}
                                                     @endif
                                                 </td>
                                                 @if ($last_bill)
                                                     <td class="text-right">
+                                                        @if ($item->this_bill_detail)
+                                                            {{ $item->this_bill_detail->previous_quantity > 0 ? number_format($item->this_bill_detail->previous_quantity, 3) : '-' }}
+                                                        @elseif($item->old_bill_detail)
+                                                            {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
+                                                        @else
+                                                            {{ '-' }}
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-right">
+                                                        @if ($item->this_bill_detail)
+                                                            {{ $item->this_bill_detail->previous_quantity > 0 ? number_format($item->this_bill_detail->previous_quantity * $item->this_bill_detail->rate, 2) : '-' }}
+                                                        @elseif($item->old_bill_detail)
+                                                            {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format(($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity) * $item->old_bill_detail->rate, 2) : '-' }}
+                                                        @else
+                                                            {{ '-' }}
+                                                        @endif
+                                                    </td>
+                                                @endif
+                                                <td class="text-right">
+                                                    {{ $item->this_bill_detail ? number_format($item->this_bill_detail->this_bill_quantity, 3) : '-' }}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{ $item->this_bill_detail ? number_format($item->this_bill_detail->this_bill_amount, 2) : '-' }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        @endif
+                                    @else
+                                        <tr>
+                                            <td colspan="{{ $colspan }}" class="text-bold">
+                                                ({{ $item->item->code }})
+                                                {{ $item->item->name }}</td>
+                                        </tr>
+                                        @foreach ($item->sub_items as $sub_item)
+                                            @if ($sub_item->boq_version_details)
+                                                @php
+                                                    $boq_total += $sub_item->boq_version_details
+                                                        ? $sub_item->boq_version_details->quantity *
+                                                            $sub_item->boq_version_details->rate
+                                                        : 0;
+
+                                                    $total += $sub_item->this_bill_detail
+                                                        ? $sub_item->this_bill_detail->amount
+                                                        : ($sub_item->old_bill_detail
+                                                            ? $sub_item->old_bill_detail->amount
+                                                            : 0);
+
+                                                    $this_bill_total += $sub_item->this_bill_detail
+                                                        ? $sub_item->this_bill_detail->this_bill_amount
+                                                        : 0;
+                                                    $previous_bill_total += $sub_item->this_bill_detail
+                                                        ? $sub_item->this_bill_detail->previous_quantity *
+                                                            $sub_item->this_bill_detail->rate
+                                                        : ($sub_item->old_bill_detail
+                                                            ? ($sub_item->old_bill_detail->quantity -
+                                                                    $sub_item->old_bill_detail->held_up_quantity) *
+                                                                $sub_item->old_bill_detail->rate
+                                                            : 0);
+                                                @endphp
+                                                <tr>
+                                                    <td class="text-center">{{ $sub_item->sub_item->code }}</td>
+                                                    <td>{{ $sub_item->sub_item->name }}</td>
+                                                    <td class="text-center">
+                                                        {{ $sub_item->sub_item->unit ? $sub_item->sub_item->unit->code : '' }}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ $sub_item->boq_version_details ? number_format($sub_item->boq_version_details->quantity, 3) : '' }}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ $sub_item->boq_version_details ? number_format($sub_item->boq_version_details->rate, 2) : '' }}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ $sub_item->boq_version_details ? number_format($sub_item->boq_version_details->quantity * $sub_item->boq_version_details->rate, 2) : '' }}
+                                                    </td>
+
+                                                    <td class="text-right">
                                                         @if ($sub_item->this_bill_detail)
-                                                            {{ $sub_item->this_bill_detail->previous_quantity > 0 ? number_format($sub_item->this_bill_detail->previous_quantity, 3) : '-' }}
+                                                            {{ $sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity > 0 ? number_format($sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity, 3) : '-' }}
                                                         @elseif($sub_item->old_bill_detail)
                                                             {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
                                                         @else
@@ -719,24 +705,44 @@ p{
                                                     </td>
                                                     <td class="text-right">
                                                         @if ($sub_item->this_bill_detail)
-                                                            {{ $sub_item->this_bill_detail->previous_quantity > 0 ? number_format($sub_item->this_bill_detail->previous_quantity * $sub_item->this_bill_detail->rate, 2) : '-' }}
+                                                            {{ number_format($sub_item->this_bill_detail->amount, 2) }}
                                                         @elseif($sub_item->old_bill_detail)
-                                                            {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format(($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity) * $sub_item->old_bill_detail->rate, 2) : '-' }}
+                                                            {{ number_format($sub_item->old_bill_detail->amount, 2) }}
                                                         @else
                                                             {{ '-' }}
                                                         @endif
                                                     </td>
-                                                @endif
-                                                <td class="text-right">
-                                                    {{ $sub_item->this_bill_detail ? number_format($sub_item->this_bill_detail->this_bill_quantity, 3) : '-' }}
-                                                </td>
-                                                <td class="text-right">
-                                                    {{ $sub_item->this_bill_detail ? number_format($sub_item->this_bill_detail->this_bill_amount, 2) : '-' }}
-                                                </td>
-                                                <td></td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
+                                                    @if ($last_bill)
+                                                        <td class="text-right">
+                                                            @if ($sub_item->this_bill_detail)
+                                                                {{ $sub_item->this_bill_detail->previous_quantity > 0 ? number_format($sub_item->this_bill_detail->previous_quantity, 3) : '-' }}
+                                                            @elseif($sub_item->old_bill_detail)
+                                                                {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
+                                                            @else
+                                                                {{ '-' }}
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-right">
+                                                            @if ($sub_item->this_bill_detail)
+                                                                {{ $sub_item->this_bill_detail->previous_quantity > 0 ? number_format($sub_item->this_bill_detail->previous_quantity * $sub_item->this_bill_detail->rate, 2) : '-' }}
+                                                            @elseif($sub_item->old_bill_detail)
+                                                                {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format(($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity) * $sub_item->old_bill_detail->rate, 2) : '-' }}
+                                                            @else
+                                                                {{ '-' }}
+                                                            @endif
+                                                        </td>
+                                                    @endif
+                                                    <td class="text-right">
+                                                        {{ $sub_item->this_bill_detail ? number_format($sub_item->this_bill_detail->this_bill_quantity, 3) : '-' }}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ $sub_item->this_bill_detail ? number_format($sub_item->this_bill_detail->this_bill_amount, 2) : '-' }}
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 @endif
                             @endforeach
                             @php
@@ -831,7 +837,7 @@ p{
                         </tr>
                         <tr class="text-bold">
                             <td colspan="3">Name of Shelter:{{ $info->scheme->name }}</td>
-                            <td colspan="2" >Upazila: {{ $info->scheme->upazila->name }}</td>
+                            <td colspan="2">Upazila: {{ $info->scheme->upazila->name }}</td>
                             <td colspan="1" class="text-center">Shelter ID: {{ $info->scheme->code }}</td>
                             <td colspan="2" class="text-center">{{ $info->scheme->scheme_option->name }}</td>
                             <td colspan="2" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)

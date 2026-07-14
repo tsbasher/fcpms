@@ -102,6 +102,7 @@ class SchemeController extends Controller
             'union_id' => 'nullable|exists:unions,id',
             'village_name' => 'nullable|string|max:100',
             'external_code' => 'nullable|string|max:50',
+            'pile_type' => 'required|string|in:NA,PC,CIS',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'scheme_option_id' => 'nullable|exists:scheme_options,id',
@@ -138,6 +139,7 @@ class SchemeController extends Controller
             'actual_end_date' => $request->actual_end_date,
             'planned_budget' => $request->planned_budget,
             'actual_budget' => $request->actual_budget,
+            'pile_type' => $request->pile_type,
             'is_active' => $request->is_active,
         ]);
         return redirect()->route('admin.schemes.index')->with('success', 'Scheme created successfully.');
@@ -184,6 +186,7 @@ class SchemeController extends Controller
             'union_id' => 'nullable|exists:unions,id',
             'village_name' => 'nullable|string|max:100',
             'external_code' => 'nullable|string|max:50',
+            'pile_type' => 'required|string|in:NA,PC,CIS',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'scheme_option_id' => 'nullable|exists:scheme_options,id',
@@ -220,6 +223,7 @@ class SchemeController extends Controller
             'planned_budget' => $request->planned_budget,
             'actual_budget' => $request->actual_budget,
             'is_active' => $request->is_active,
+            'pile_type' => $request->pile_type,
         ];
         $scheme->update($data);
         return redirect()->route('admin.schemes.index')->with('success', 'Scheme created successfully.');

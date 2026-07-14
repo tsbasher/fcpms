@@ -68,6 +68,7 @@ class BoqItemController extends Controller
             'boq_part_id' => 'required|exists:boq_parts,id',
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50',
+            'pile_type' => 'required|string|in:NA,PC,CIS',
             'description' => 'nullable|string|max:1000',
             'specification_no' => 'nullable|string|max:100',
             'unit_id' => 'nullable|uuid|exists:units,id', // Assuming you have a Unit model for units
@@ -75,7 +76,7 @@ class BoqItemController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $data = $request->only(['boq_part_id', 'name', 'code', 'description', 'is_active', 'specification_no', 'has_sub_items', 'unit_id']);
+        $data = $request->only(['boq_part_id', 'name', 'code', 'pile_type', 'description', 'is_active', 'specification_no', 'has_sub_items', 'unit_id']);
         $data['project_id'] = Auth::guard('admin')->user()->project_id; // Assuming the user is authenticated
         BoqItem::create($data);
         return redirect()->route('admin.boq_items.index')->with('success', 'BOQ Item created successfully.');
@@ -117,6 +118,7 @@ class BoqItemController extends Controller
             'boq_part_id' => 'required|exists:boq_parts,id',
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50',
+            'pile_type' => 'required|string|in:NA,PC,CIS',
             'description' => 'nullable|string|max:1000',
             'specification_no' => 'nullable|string|max:100',
             'unit_id' => 'nullable|uuid|exists:units,id', // Assuming you have a Unit model for units
@@ -125,7 +127,7 @@ class BoqItemController extends Controller
             return redirect()->back()->withErrors($v)->withInput();
         }
 
-        $data = $request->only(['boq_part_id', 'name', 'code', 'description', 'is_active', 'specification_no', 'has_sub_items', 'unit_id']);
+        $data = $request->only(['boq_part_id', 'name', 'code', 'pile_type', 'description', 'is_active', 'specification_no', 'has_sub_items', 'unit_id']);
         $boq_item->update($data);
         return redirect()->route('admin.boq_items.index')->with('success', 'BOQ Item updated successfully.');
     }

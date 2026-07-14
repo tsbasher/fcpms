@@ -40,17 +40,32 @@
                     <div class="card card-info">
                         <!-- /.card-header -->
                         <div class="card-header p-2">
-                            Total Bill
+                            Total Bill Details
                         </div>
                         <div class="card-body">
-                            <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
+                            <strong><i class="fas fa-book mr-1"></i>Total Quantity</strong>
 
                             <span class="text-muted float-right">
-                                @if ($this_bill_details)
-                                    {{ $this_bill_details->quantity }}
-                                    ({{ number_format($boq_version_item->quantity, 3) }})
-                                    {{ $boq_version_item->unit->code }}
-                                @endif
+                                {{ $this_bill_details->quantity > 0 ? number_format($this_bill_details->quantity, 3) : 0 }}
+                                {{ $boq_version_item->unit->code }}
+                            </span>
+
+                            <hr>
+
+                            <strong><i class="fas fa-book mr-1"></i>BOQ Quantity</strong>
+
+                            <span class="text-muted float-right">
+                               {{ number_format($boq_version_item->quantity, 3) }}
+                                {{ $boq_version_item->unit->code }}
+                            </span>
+
+                            <hr>
+                            
+                            <strong><i class="fas fa-book mr-1"></i> Held up Quantity</strong>
+
+                            <span class="text-muted float-right">
+                                {{ $this_bill_details->held_up_quantity > 0 ? number_format($this_bill_details->held_up_quantity, 3) : 0 }}
+                                {{ $boq_version_item->unit->code }}
                             </span>
 
                             <hr>
@@ -58,22 +73,32 @@
                             <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
 
                             <span class="text-muted float-right">
-                                {{ number_format($boq_version_item->rate, 2) }}
+                                {{ number_format($boq_version_item->rate, 2) }} Tk.
                             </span>
 
                             <hr>
+
                             {{-- <i class="fas fa-dollar-sign"></i> --}}
-                            <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
+                            <strong><i class="fas fa-dollar-sign mr-1"></i>BOQ Amount</strong>
 
                             <span class="text-muted float-right">
-                                {{ number_format($boq_version_item->quantity * $boq_version_item->rate, 2) }}
+                                {{ number_format($boq_version_item->quantity * $boq_version_item->rate, 2) }} Tk.
                             </span>
+
+                            
+                            <hr>
+                            <strong><i class="fas fa-map-marker-alt mr-1"></i> Bill Amount</strong>
+
+                            <span class="text-muted float-right">
+                                {{ $this_bill_details->quantity > 0 ? number_format(($this_bill_details->quantity-$this_bill_details->held_up_quantity)*$boq_version_item->rate, 2) : 0 }} Tk.
+                            </span>
+
                         </div>
                         <!-- /.card-body -->
                     </div>
                 @endif
 
-                @if ($old_bill_details && count($old_bill_details))
+                @if ($old_bill_details)
                     <div class="card card-warning">
                         <!-- /.card-header -->
                         <div class="card-header p-2">
@@ -84,22 +109,22 @@
 
                             <span class="text-muted float-right">
                                 {{ number_format($old_bill_details->sum('this_bill_quantity'), 3) }}
-                                {{ $boq_version_item->unit->code }}
+                                {{ $boq_version_item?$boq_version_item->unit->code:'' }}
                             </span>
 
                             <hr>
-
+{{-- 
                             <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
 
                             <span class="text-muted float-right">
                                 {{ number_format($boq_version_item->rate, 2) }}
                             </span>
-                            <hr>
+                            <hr> --}}
                             {{-- <i class="fas fa-dollar-sign"></i> --}}
                             <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
 
                             <span class="text-muted float-right">
-                                {{ number_format($old_bill_details->sum('amount'), 2) }}
+                                {{ number_format($old_bill_details->sum('this_bill_amount'), 2) }} Tk.
                             </span>
 
                         </div>
@@ -115,48 +140,20 @@
                             This Bill Details
                         </div>
                         <div class="card-body">
-                            <strong><i class="fas fa-book mr-1"></i> Quantity</strong>
-
-                            <span class="text-muted float-right">
-                                {{ $this_bill_details->quantity > 0 ? number_format($this_bill_details->quantity - $old_bill_details->sum('this_bill_quantity'), 3) : 0 }}
-                                {{ $boq_version_item->unit->code }}
-                            </span>
-
-                            <hr>
-                            <strong><i class="fas fa-book mr-1"></i> Held up Quantity</strong>
-
-                            <span class="text-muted float-right">
-                                {{ $this_bill_details->held_up_quantity > 0 ? number_format($this_bill_details->held_up_quantity, 3) : 0 }}
-                                {{ $boq_version_item->unit->code }}
-                            </span>
-
-                            <hr>
+                            
 
                             <strong><i class="fas fa-book mr-1"></i> This Bill Quantity</strong>
 
                             <span class="text-muted float-right">
                                 {{ $this_bill_details->this_bill_quantity > 0 ? number_format($this_bill_details->this_bill_quantity, 3) : 0 }}
-                                {{ $boq_version_item->unit->code }}
-                            </span>
-
-                            <hr>
-
-
-
-
-
-
-                            <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
-
-                            <span class="text-muted float-right">
-                                {{ number_format($boq_version_item->rate, 2) }}
+                                {{ $boq_version_item?$boq_version_item->unit->code:'' }}
                             </span>
 
                             <hr>
                             <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->this_bill_quantity > 0 ? number_format(($this_bill_details->this_bill_quantity) * $boq_version_item->rate, 2) : 0 }}
+                                {{ $this_bill_details->this_bill_quantity > 0 ? number_format(($this_bill_details->this_bill_quantity) * $boq_version_item->rate, 2) : 0 }} Tk.
                             </span>
 
                         </div>

@@ -20,7 +20,7 @@ class BillGenerator
 {
 
 
-    public static function shelterWiseView(Bill $this_bill, array $previous_bill_ids, string $project_id, string $package_id, array $scheme_ids)
+    public static function shelterWiseView(Bill $this_bill, array $previous_bill_ids, string $project_id, string $package_id, array $scheme_ids, string $report_type)
     {
         $summary_bill = [];
         // return view('backend.bill.test');

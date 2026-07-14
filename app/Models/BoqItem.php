@@ -17,6 +17,7 @@ class BoqItem extends ExtendedModel
         'specification_no',
         'name',
         'code',
+        'pile_type',
         'description',
         'is_active',
         'has_sub_items',

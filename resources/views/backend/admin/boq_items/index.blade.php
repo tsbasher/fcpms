@@ -88,7 +88,7 @@
                                     <th>Unit</th>
                                     <th>Spec. No</th>
                                     <th>Has Sub Items</th>
-                                    <th>Status</th>
+                                    <th>Pile Type</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -110,10 +110,12 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($item->is_active == 1)
-                                                <span class="badge bg-success" style="font-size: 100%">Yes</span>
+                                            @if ($item->pile_type == 'PC')
+                                                <span class="badge bg-info" style="font-size: 100%">PC</span>
+                                            @elseif ($item->pile_type == 'CIS')
+                                                <span class="badge bg-success" style="font-size: 100%">CIS</span>
                                             @else
-                                                <span class="badge bg-danger" style="font-size: 100%">No</span>
+                                                <span class="badge bg-primary" style="font-size: 100%">NA</span>
                                             @endif
                                         </td>
                                         <td>

@@ -61,7 +61,7 @@ class AdminBillController extends Controller
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
 
-            return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids);
+            return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids,$request->report_type);
         }
 
 

@@ -52,6 +52,15 @@ F C P M S 2.0</span>
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{route('user.bills.report')}}" class="nav-link
+            @if(Route::currentRouteName() == 'user.bills.report' ) active @endif">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Bill Report
+              </p>
+            </a>
+          </li>
           
 {{--           
           <li class="nav-item">

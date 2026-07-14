@@ -126,6 +126,10 @@ Route::group(['prefix' => ''], function () {
         Route::get('/bill/details/unit-wise-view/{id}', [BillController::class, 'unitWiseView'])->name('user.bills.unit_wise_view');
 
         Route::get('bill/details/shelter-wise/{id}', [BillController::class, 'shelterWiseView'])->name('user.bills.shelter_wise_view');
+                Route::get('bill/details', [BillController::class, 'report'])->name('user.bills.report');
+
+                Route::get('bill/details/shelter-wise-details', [BillController::class, 'report_show'])->name('user.bills.shelter_wise_view');
+    
 
         Route::resource('bills', BillController::class)->names('user.bills');
     });

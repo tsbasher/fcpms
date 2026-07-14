@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\BillGenerator;
 use App\Models\Bill;
 use App\Models\BillDetail;
 use App\Models\BillItem;
@@ -14,9 +15,11 @@ use App\Models\BoqSubItem;
 use App\Models\BoqVersion;
 use App\Models\BoqVersionDetails;
 use App\Models\Measurement;
+use App\Models\Package;
 use App\Models\Project;
 use App\Models\Scheme;
 use App\Models\Unit;
+use App\Models\Upazila;
 use Dotenv\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -328,7 +331,7 @@ class BillController extends Controller
             foreach ($schemes as $scheme_id) {
                 BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->delete();
 
-                if($request->has('boq_parts') && is_array($request->boq_parts) && count($request->boq_parts)>0) {
+                if ($request->has('boq_parts') && is_array($request->boq_parts) && count($request->boq_parts) > 0) {
                     foreach ($request->boq_parts as $boq_part_id) {
                         $bill_parts = [
                             'bill_id' => $bill->id,
@@ -336,7 +339,7 @@ class BillController extends Controller
                             'project_id' => Auth::guard('web')->user()->project_id,
                             'boq_part_id' => $boq_part_id,
                         ];
-						BillPart::create($bill_parts);
+                        BillPart::create($bill_parts);
                     }
                 }
             }
@@ -730,7 +733,7 @@ class BillController extends Controller
                 if ($request->has('boq_subitem_id') && isset($request->boq_subitem_id)) {
                     $boq_version_details->where('boq_sub_item_id', $request->boq_subitem_id);
                 }
-                
+
                 $boq_version_details = $boq_version_details->first();
 
                 $bill_details = BillDetail::create([
@@ -776,7 +779,7 @@ class BillController extends Controller
                 ->where('project_id', Auth::guard('web')->user()->project_id)
                 ->where('package_id', Auth::guard('web')->user()->package_id)
                 ->where('id', '!=', $id)
-                ->where('created_at', '<', $bill->created_at)
+
                 ->get()->pluck('id')->toArray();
 
             $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
@@ -807,7 +810,7 @@ class BillController extends Controller
                 $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
             } else
                 $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
-            $bill_details->amount = $bill_details->quantity * $bill_details->rate;
+            $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
             $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
             $bill_details->save();
         });
@@ -822,6 +825,7 @@ class BillController extends Controller
                 $measurement = Measurement::findOrFail($id);
                 $bill_detail_id = $measurement->bill_detail_id;
                 $measurement->delete();
+                $bill = Bill::findOrFail($bill_id);
 
                 $bill_details = BillDetail::with('measurements')->find($bill_detail_id);
 
@@ -831,6 +835,7 @@ class BillController extends Controller
                     ->where('project_id', Auth::guard('web')->user()->project_id)
                     ->where('package_id', Auth::guard('web')->user()->package_id)
                     ->where('id', '!=', $bill_id)
+                    ->where('serial', '<', $bill->serial)
                     ->get()->pluck('id')->toArray();
 
                 $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
@@ -852,21 +857,16 @@ class BillController extends Controller
 
 
 
-                // $bill_details = BillDetail::with('measurements')->find($bill_detail_id);
                 $bill_details->quantity = $bill_details->measurements->sum('quantity');
                 $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
                 if ($bill_details->boq_quantity < $bill_details->measurements->sum('quantity')) {
                     $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity') - $bill_details->boq_quantity;
-                } else {
-                    $bill_details->held_up_quantity = 0;
-                }
-
-                $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
-                if ($bill_details->this_bill_quantity < 0) {
-                    $bill_details->this_bill_quantity = 0;
-                }
-                $bill_details->amount = $bill_details->this_bill_quantity * $bill_details->rate;
-                // dd($bill_details);
+                    $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
+                } else
+                    $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
+                $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
+                $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
+                $bill_details->save(); // dd($bill_details);
                 $bill_details->save();
             });
             $data = new stdClass();
@@ -1196,4 +1196,57 @@ class BillController extends Controller
         $project = Project::findOrFail($this_bill->project_id);
         return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill'));
     }
+
+    public function report(Request $request)
+    {
+        
+        $package = Package::find(Auth::guard('web')->user()->package_id);
+        if ($package)
+            $upazilas = Upazila::where('district_id', $package->district_id)->get();
+        else
+            $upazilas = [];
+
+        $bills = Bill::where('package_id', $package->id)
+            ->get();
+
+        // dd($bills);
+        return view('backend.user.bill.report.index', compact('bills', 'upazilas'));
+    }
+    public function report_show(Request $request)
+    {
+        // $bill = Bill::with('schemes')->findOrFail($request->bill_id);
+
+        $this_bill = Bill::findOrFail($request->bill_id);
+        $project_id = $this_bill->project_id;
+        $package_id = $this_bill->boq_version->package_id;
+
+        $previous_bill_ids = Bill::where('id', '!=', $this_bill->id)
+            ->where('serial', '<', $this_bill->serial)
+            ->where('project_id', $this_bill->project_id)
+            ->wherehas('boq_version', function ($query) use ($project_id, $package_id) {
+                $query->where('project_id', $project_id)
+                    ->where('package_id', $package_id);
+            })
+            ->orderBy('serial', 'desc')
+            ->get()->pluck('id')->toArray();
+
+        $upazila_scheme_ids = [];
+        if ($request->report_type == "UPZ_DTL") {
+            $upazila_scheme_ids = Scheme::where('upazila_id', $request->upazila_id)
+                ->get()
+                ->pluck('id')
+                ->toArray();
+            $scheme_ids = BillScheme::wherein('scheme_id', $upazila_scheme_ids)->where(function ($query) use ($this_bill, $previous_bill_ids) {
+                $query->where('bill_id', $this_bill->id)
+                    ->orwhereIn('bill_id', $previous_bill_ids);
+            })->get()->pluck('scheme_id')->toArray();
+
+            return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids,$request->report_type);
+        }
+
+
+
+        // return view('backend.admin.bill.shelter_wise_details', compact('bill', 'scheme_ids', 'project_id', 'package_id'));
+    }
+    
 }
