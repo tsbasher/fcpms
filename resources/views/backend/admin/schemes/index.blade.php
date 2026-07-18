@@ -120,7 +120,7 @@
                                     <th>Package</th>
                                     <th>District</th>
                                     <th>Upazila</th>
-                                    <th>Union</th>
+                                    <th>Pile Type</th>
                                     <th>Option</th>
                                     <th>Action</th>
                                 </tr>
@@ -134,7 +134,15 @@
                                     <td>{{ $scheme->package->name ?? 'N/A' }}</td>
                                     <td>{{ $scheme->district->name ?? 'N/A' }}</td>
                                     <td>{{ $scheme->upazila->name ?? 'N/A' }}</td>
-                                    <td>{{ $scheme->union->name ?? 'N/A' }}</td>
+                                    <td>
+                                        @if($scheme->pile_type == 'PC')
+                                            <span class="badge bg-success" style="font-size: 100%">PC</span>
+                                        @elseif($scheme->pile_type == 'CIS')
+                                            <span class="badge bg-info" style="font-size: 100%">CIS</span>
+                                        @else
+                                            <span class="badge bg-primary" style="font-size: 100%">N/A</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <span class="badge bg-success" style="font-size: 100%">{{$scheme->scheme_option?$scheme->scheme_option->name:'N/A'}}</span>
                                         
@@ -197,7 +205,7 @@
     $(".delete_record").click(function() {
         var url = $(this).data('url');
 
-        debugger;
+        
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -218,7 +226,7 @@
                         "_token": token,
                     },
                     success: function(data) {
-                        debugger;
+                        
                         // var data = JSON.parse(response);
                         if (data.status == 1) {
                             Swal.fire({
@@ -242,7 +250,7 @@
                     },
                     error: function(ex) {
 
-                        debugger;
+                        
                         Swal.fire({
                             timer: 1500,
                             title: 'ERROR',

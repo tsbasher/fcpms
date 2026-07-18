@@ -2,7 +2,9 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="measurement_item">Measurement description</label>
-            <input class="form-control" name="measurement_item" id="measurement_item" value="{{ old('measurement_item') }}" placeholder="Enter Measurement description" required>
+            <input class="form-control" name="measurement_item" id="measurement_item" autocomplete="off" value="{{ old('measurement_item') }}" placeholder="Enter Measurement description" required>
+            {{-- <datalist id="suggestions"></datalist> --}}
+            <div id="suggestions_dropdown" class="custom-dropdown-menu"></div>
         </div>
     </div>
 

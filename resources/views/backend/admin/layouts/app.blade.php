@@ -64,11 +64,11 @@
     $(document).ready(function() {
       $('input').attr('autocomplete', 'off');
       var a = $('input[required]');
-      // debugger;
+      // 
       a.toArray().forEach(function(item) {
-        // debugger;
+        // 
         item.parentNode.childNodes.forEach(function(child) {
-          // debugger;
+          // 
           if (child.tagName === 'LABEL') {
             child.innerHTML = child.innerHTML + ' <span class="text-danger text-bold">*</span>';
           }
@@ -81,11 +81,11 @@
 
       
       var a = $('select[required]');
-      // debugger;
+      // 
       a.toArray().forEach(function(item) {
-        //  debugger;
+        //  
         item.parentNode.childNodes.forEach(function(child) {
-          // debugger;
+          // 
           if (child.tagName === 'LABEL') {
             child.innerHTML = child.innerHTML + ' <span class="text-danger text-bold">*</span>';
           }

@@ -93,7 +93,7 @@
 <script src="{{asset('backend/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
         $('.select2').select2();
         $('.datepicker').datepicker({

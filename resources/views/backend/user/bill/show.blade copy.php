@@ -423,7 +423,7 @@
         $(".remove").click(function() {
             var url = $(this).data('url');
 
-            debugger;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -444,7 +444,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            debugger;
+                            
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -468,7 +468,7 @@
                         },
                         error: function(ex) {
 
-                            debugger;
+                            
                             Swal.fire({
                                 timer: 1500,
                                 title: 'ERROR',
@@ -493,7 +493,7 @@
         $("#add_scheme").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href");
-            debugger;
+            
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -512,12 +512,12 @@
         $("#add_boq_part").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href");
-            debugger;
+            
             $.ajax({
                 url: url,
                 type: 'GET',
                 success: function(data) {
-                    debugger;
+                    
                     $("#add-body").html(data);
                     $('.select2').select2();
                 }
@@ -547,12 +547,12 @@
         });
 
         $(".click_tab").click(function() {
-            debugger;
+            
             var url = $(this).attr("href");
             history.pushState(null, null, url);
         });
         function part_scheme_change() {
-            debugger;
+            
             var part_scheme_id = $('#part_scheme').val();
             var url=''
                 param={
@@ -565,7 +565,7 @@
         }
 
         function item_scheme_change() {
-            debugger;
+            
             var item_scheme_id = $('#item_scheme').val();
             var url=''
                 param={
@@ -577,7 +577,7 @@
             window.location.href = url;
         }
         function item_part_change() {
-            debugger;
+            
             var item_part_id = $('#item_part').val();
             var item_scheme_id = $('#item_scheme').val();
             var url=''

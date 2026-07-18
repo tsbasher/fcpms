@@ -196,7 +196,7 @@
 <script type="text/javascript">
     let district_url = "{{ route('common.get_districts_by_division','*') }}";
     $(document).ready(function() {
-        debugger;
+        
         $(".select2").select2();
         $('#description').summernote();
         $('.datepicker').datepicker({

@@ -176,7 +176,7 @@
         $(".delete_record").click(function() {
             var url = $(this).data('url');
 
-            debugger;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -197,7 +197,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            debugger;
+                            
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -221,7 +221,7 @@
                         },
                         error: function(ex) {
 
-                            debugger;
+                            
                             Swal.fire({
                                 timer: 1500,
                                 title: 'ERROR',

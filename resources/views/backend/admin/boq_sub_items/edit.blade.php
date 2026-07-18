@@ -130,7 +130,7 @@
 <script type="text/javascript">
     let get_boq_item_by_boq_part_url = "{{route('common.get_boq_items_by_part','*')}}";
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
         $('.select2').select2();
     });

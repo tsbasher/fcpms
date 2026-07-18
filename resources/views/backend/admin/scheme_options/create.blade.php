@@ -76,7 +76,7 @@
     <script src="{{asset('backend/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            debugger;
+            
             $('#description').summernote();
             $('.datepicker').datepicker({
                 dateFormat: 'yy-mm-dd',

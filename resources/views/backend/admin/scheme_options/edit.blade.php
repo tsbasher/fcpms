@@ -91,7 +91,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
         $('.datepicker').datepicker({
             dateFormat: 'yy-mm-dd',
@@ -102,7 +102,7 @@
             e.preventDefault();
 
 
-            debugger;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You Want to delete this image!",

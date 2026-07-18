@@ -91,7 +91,7 @@
 <script src="{{ asset('backend/plugins/select2/js/select2.full.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
         $('.select2').select2();
     });

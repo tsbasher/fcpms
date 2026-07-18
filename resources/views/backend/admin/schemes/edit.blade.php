@@ -260,7 +260,7 @@
         let union_url = "{{ route('common.get_unions_by_upazila','*') }}";
 
     $(document).ready(function() {
-        debugger;
+        
         $(".select2").select2();
         $('#description').summernote();
         $('.datepicker').datepicker({

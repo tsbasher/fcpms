@@ -769,7 +769,7 @@
                                 @endif
                                 <td></td>
                                 <td class="text-right text-bold">
-                                    {{ $this_bill_total > 0 ? number_format($this_bill_total, 2) : '' }}</td>
+                                    {{  number_format($this_bill_total, 2)}}</td>
                                 <td></td>
                             </tr>
                         @endforeach
@@ -789,7 +789,7 @@
                             @endif
                             <td></td>
                             <td class="text-right text-bold">
-                                {{ $part_this_bill_total > 0 ? number_format($part_this_bill_total, 2) : '' }}</td>
+                                {{ number_format($part_this_bill_total, 2) }}</td>
                             <td></td>
                         </tr>
 

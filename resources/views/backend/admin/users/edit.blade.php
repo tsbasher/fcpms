@@ -110,7 +110,7 @@
 <script src="{{ asset('backend/plugins/summernote/summernote-bs4.min.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
     });
 </script>

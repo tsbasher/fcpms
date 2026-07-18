@@ -55,21 +55,21 @@
 
                         <hr>
                         <!--
-                                          <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
+                                              <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
 
-                                          <p class="text-muted">
-                                            <span class="tag tag-danger">UI Design</span>
-                                            <span class="tag tag-success">Coding</span>
-                                            <span class="tag tag-info">Javascript</span>
-                                            <span class="tag tag-warning">PHP</span>
-                                            <span class="tag tag-primary">Node.js</span>
-                                          </p>
+                                              <p class="text-muted">
+                                                <span class="tag tag-danger">UI Design</span>
+                                                <span class="tag tag-success">Coding</span>
+                                                <span class="tag tag-info">Javascript</span>
+                                                <span class="tag tag-warning">PHP</span>
+                                                <span class="tag tag-primary">Node.js</span>
+                                              </p>
 
-                                          <hr>
+                                              <hr>
 
-                                          <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
+                                              <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
 
-                                          <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p> -->
+                                              <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p> -->
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -132,7 +132,9 @@
                                                 <select class="form-control select2" name="schemes" id="schemes"
                                                     placeholder="Select Schemes" required>
                                                     <option value="">Select Schemes</option>
-                                                    <option value="All" @if (Request::get('schemes') == "All") selected @endif>All Schemes</option>
+                                                    <option value="All"
+                                                        @if (Request::get('schemes') == 'All') selected @endif>All Schemes
+                                                    </option>
                                                     @foreach ($schemes as $scheme)
                                                         <option value="{{ $scheme->id }}"
                                                             @if (Request::get('schemes') == $scheme->id) selected @endif>
@@ -178,7 +180,8 @@
                                             @foreach ($bill->bill_parts as $part)
                                                 <tr>
                                                     <td>{{ $loop->index + 1 }}</td>
-                                                    <td>{{ $part->scheme->code ?? 'N/A' }} - {{ $part->scheme->name ?? 'N/A' }}</td>
+                                                    <td>{{ $part->scheme->code ?? 'N/A' }} -
+                                                        {{ $part->scheme->name ?? 'N/A' }}</td>
                                                     <td>{{ $part->boq_part->code ?? 'N/A' }} -
                                                         {{ $part->boq_part->name ?? '' }}</td>
                                                     <td>
@@ -255,7 +258,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-
+            $(".select2").select2();
             var dual = $('select[name="boq_parts[]"]').bootstrapDualListbox({
                 nonSelectedListLabel: 'Non-selected',
                 selectedListLabel: 'Selected',
@@ -271,7 +274,7 @@
         $(".rrrrrremove").click(function() {
             var url = $(this).data('url');
 
-            debugger;
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -292,7 +295,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            debugger;
+
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -316,7 +319,7 @@
                         },
                         error: function(ex) {
 
-                            debugger;
+
                             Swal.fire({
                                 timer: 1500,
                                 title: 'ERROR',
@@ -338,7 +341,7 @@
         });
 
         $('#schemes').change(function(e) {
-            debugger;
+
             var scheme = $(this).val();
             var url = window.location.href
             var param = {
@@ -365,7 +368,7 @@
         $(".click_tab").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href")
-            debugger;
+
             window.location = url;
         });
         $('#boq-version-table').DataTable({

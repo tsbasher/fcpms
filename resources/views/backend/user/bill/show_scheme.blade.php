@@ -249,7 +249,7 @@ $(document).ready(function() {
         $(".rrrrremove").click(function() {
             var url = $(this).data('url');
 
-            debugger;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -270,7 +270,7 @@ $(document).ready(function() {
                             "_token": token,
                         },
                         success: function(data) {
-                            debugger;
+                            
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -294,7 +294,7 @@ $(document).ready(function() {
                         },
                         error: function(ex) {
 
-                            debugger;
+                            
                             Swal.fire({
                                 timer: 1500,
                                 title: 'ERROR',
@@ -319,7 +319,7 @@ $(document).ready(function() {
         $("#add_scheme").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href");
-            debugger;
+            
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -338,7 +338,7 @@ $(".click_tab").click(function(e)
 {
     e.preventDefault();
     var url=$(this).attr("href")
-    debugger;
+    
     window.location=url;
 }
 );

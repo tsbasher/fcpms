@@ -8,6 +8,40 @@
     <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/plugins/select2/css/select2.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <style>
+        .custom-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            /* Hidden by default, controlled via jQuery */
+            z-index: 9999;
+        }
+
+        .custom-dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333333;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -46,7 +80,7 @@
                             <strong><i class="fas fa-book mr-1"></i>Total Quantity</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->quantity > 0 ? number_format($this_bill_details->quantity, 3) : 0 }}
+                                {{ $this_bill_details ? ($this_bill_details->quantity > 0 ? number_format($this_bill_details->quantity, 3) : 0) : ($old_bill_details ? number_format($old_bill_details->sum('this_bill_quantity'), 3) : 0) }}
                                 {{ $boq_version_item->unit->code }}
                             </span>
 
@@ -55,16 +89,16 @@
                             <strong><i class="fas fa-book mr-1"></i>BOQ Quantity</strong>
 
                             <span class="text-muted float-right">
-                               {{ number_format($boq_version_item->quantity, 3) }}
+                                {{ number_format($boq_version_item->quantity, 3) }}
                                 {{ $boq_version_item->unit->code }}
                             </span>
 
                             <hr>
-                            
+
                             <strong><i class="fas fa-book mr-1"></i> Held up Quantity</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->held_up_quantity > 0 ? number_format($this_bill_details->held_up_quantity, 3) : 0 }}
+                                {{ $this_bill_details ? ($this_bill_details->held_up_quantity > 0 ? number_format($this_bill_details->held_up_quantity, 3) : 0) : ($old_bill_details && $old_bill_details->sum('this_bill_quantity') > $boq_version_item->quantity ? number_format($old_bill_details->sum('this_bill_quantity') - $boq_version_item->quantity, 3) : 0) }}
                                 {{ $boq_version_item->unit->code }}
                             </span>
 
@@ -85,12 +119,13 @@
                                 {{ number_format($boq_version_item->quantity * $boq_version_item->rate, 2) }} Tk.
                             </span>
 
-                            
+
                             <hr>
                             <strong><i class="fas fa-map-marker-alt mr-1"></i> Bill Amount</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->quantity > 0 ? number_format(($this_bill_details->quantity-$this_bill_details->held_up_quantity)*$boq_version_item->rate, 2) : 0 }} Tk.
+                                {{ $this_bill_details && $this_bill_details->quantity > 0 ? number_format(($this_bill_details->quantity - $this_bill_details->held_up_quantity) * $boq_version_item->rate, 2) : 0 }}
+                                Tk.
                             </span>
 
                         </div>
@@ -109,11 +144,11 @@
 
                             <span class="text-muted float-right">
                                 {{ number_format($old_bill_details->sum('this_bill_quantity'), 3) }}
-                                {{ $boq_version_item?$boq_version_item->unit->code:'' }}
+                                {{ $boq_version_item ? $boq_version_item->unit->code : '' }}
                             </span>
 
                             <hr>
-{{-- 
+                            {{-- 
                             <strong><i class="fas fa-map-marker-alt mr-1"></i> Rate</strong>
 
                             <span class="text-muted float-right">
@@ -140,20 +175,21 @@
                             This Bill Details
                         </div>
                         <div class="card-body">
-                            
+
 
                             <strong><i class="fas fa-book mr-1"></i> This Bill Quantity</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->this_bill_quantity > 0 ? number_format($this_bill_details->this_bill_quantity, 3) : 0 }}
-                                {{ $boq_version_item?$boq_version_item->unit->code:'' }}
+                                {{ $this_bill_details ? number_format($this_bill_details->this_bill_quantity, 3) : 0 }}
+                                {{ $boq_version_item ? $boq_version_item->unit->code : '' }}
                             </span>
 
                             <hr>
                             <strong><i class="fas fa-dollar-sign mr-1"></i> Amount</strong>
 
                             <span class="text-muted float-right">
-                                {{ $this_bill_details->this_bill_quantity > 0 ? number_format(($this_bill_details->this_bill_quantity) * $boq_version_item->rate, 2) : 0 }} Tk.
+                                {{ $this_bill_details ? number_format($this_bill_details->this_bill_quantity * $boq_version_item->rate, 2) : 0 }}
+                                Tk.
                             </span>
 
                         </div>
@@ -411,9 +447,94 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+
+            $('#measurement_item').on('input', function() {
+                let query = $(this).val().trim();
+                let $dropdown = $('#suggestions_dropdown');
+                let part_id = $('#boq_part_id').val();
+                let item_id = $('#boq_item_id').val();
+                let subitem_id = $('#boq_subitem_id').val();
+                
+                // Hide and empty dropdown if search query is too short
+                if (query.length < 2) {
+                    $dropdown.hide().empty();
+                    return;
+                }
+
+                let params = {
+                    'query': query,
+                    'part_id': part_id,
+                    'item_id': item_id,
+                    'subitem_id': subitem_id
+                };
+
+                // Fetch filtered data from database backend
+                $.getJSON("{{ route('user.bills.get_measurement_suggestions') }}", params)
+                    .done(function(data) {
+                        
+                        $dropdown.empty(); // Clear old results
+
+                        if (data && data.length > 0) {
+                            // Loop through flat array and append custom clickable divs
+                            $.each(data, function(index, value) {
+                                $dropdown.append(
+                                    $('<div>', {
+                                        class: 'custom-dropdown-item',
+                                        text: value
+                                    })
+                                );
+                            });
+
+                            // FORCIBLY SHOW DROPDOWN
+                            $dropdown.show();
+                        } else {
+                            $dropdown.hide();
+                        }
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error("AJAX Error: " + textStatus, errorThrown);
+                    });
+            });
+
+            // Handle Item Selection Click
+            // Using delegation $(document).on() because items are dynamically created
+            $(document).on('click', '.custom-dropdown-item', function() {
+                let selectedValue = $(this).text();
+
+                // Put the text value into the input field
+                $('#measurement_item').val(selectedValue);
+
+                // Hide the dropdown menu completely
+                $('#suggestions_dropdown').hide().empty();
+            });
+
+            // Close the dropdown if the user clicks anywhere else outside the search container
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.search-container').length) {
+                    $('#suggestions_dropdown').hide();
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // $("#add-measurement").click(function(e) {
             //     e.preventDefault();
-            //     debugger;
+            //     
             // });
             // $("#boq_item_id option:selected").data('hassub');
             if ($("#boq_item_id option:selected").data('hassub') == 1) {
@@ -422,7 +543,7 @@
                 $("#boq_subitem_id").prop('disabled', true);
             }
             $('.calculate').on('input', function() {
-                debugger;
+                
                 var nos = parseFloat($('#nos').val()) || 0;
                 var length = parseFloat($('#length').val()) || 1;
                 var width = parseFloat($('#width').val()) || 1;
@@ -437,7 +558,7 @@
 
 
         $('#schemes').change(function(e) {
-            debugger;
+            
             var scheme = $(this).val();
             var url = window.location.href
             var param = {
@@ -447,7 +568,7 @@
 
         });
         $('#boq_part_id').change(function(e) {
-            debugger;
+            
             var boq_part_id = $(this).val();
             var scheme = $("#schemes").val();
             var url = window.location.href
@@ -459,7 +580,7 @@
 
         });
         $('#boq_item_id').change(function(e) {
-            debugger;
+            
             // var hassub = $(this).data('hassub');
             // if (hassub == 1) {
             // Handle the case where the selected item has sub-items
@@ -478,7 +599,7 @@
 
         });
         $('#boq_subitem_id').change(function(e) {
-            debugger;
+            
             // var hassub = $(this).data('hassub');
             // if (hassub == 1) {
             // Handle the case where the selected item has sub-items
@@ -500,7 +621,7 @@
         $(".remove").click(function() {
             var url = $(this).data('url');
 
-            debugger;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -521,7 +642,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            debugger;
+                            
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -545,7 +666,7 @@
                         },
                         error: function(ex) {
 
-                            debugger;
+                            
                             Swal.fire({
 
                                 title: 'ERROR',
@@ -587,7 +708,7 @@
         $(".click_tab").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href")
-            debugger;
+            
             window.location = url;
         });
         $('#boq-version-table').DataTable({

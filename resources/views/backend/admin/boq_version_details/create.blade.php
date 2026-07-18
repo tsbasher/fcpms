@@ -234,14 +234,14 @@
             }
         });
         $(document).ready(function() {
-            // debugger;
+            // 
             $('#description').summernote();
             $('.select2').select2();
             $('#rate').on('input', function() {
                 calculate_total_amount();
             });
             $('.cal').on('input', function() {
-                debugger;
+                
 
                 if ($(this).attr('id') == 'nos')
                     $('#total_quantity').val('');
@@ -283,7 +283,7 @@
                 var boq_sub_item_id = $('#boq_sub_item_id').val();
                 var boq_part_id = $('#boq_part_id').val();
                 var scheme_option_id = $('#scheme_option_id').val();
-                debugger;
+                
                 $.ajax({
                     url: "{{ route('admin.check_existing_boq_version_details') }}",
                     type: 'GET',
@@ -296,7 +296,7 @@
                         "scheme_option_id": scheme_option_id
                     },
                     success: function(data) {
-                        debugger;
+                        
                         // var data = JSON.parse(response);
                         if (data.status == 1) {
                             Swal.fire({
@@ -315,7 +315,7 @@
                         }
                     },
                     error: function(ex) {
-                        debugger;
+                        
                         Swal.fire({
                             timer: 1500,
                             title: 'ERROR',

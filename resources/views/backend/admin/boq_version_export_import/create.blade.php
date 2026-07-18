@@ -101,7 +101,7 @@
 <script type="text/javascript">
     let get_boq_versions_by_package_url = "{{ route('common.get_boq_versions_by_package', '*') }}";
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
         $('.select2').select2();
         $('.datepicker').datepicker({

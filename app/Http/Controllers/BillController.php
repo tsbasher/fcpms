@@ -329,17 +329,22 @@ class BillController extends Controller
         DB::transaction(function () use ($request, $bill, $schemes) {
             // Add new bill parts
             foreach ($schemes as $scheme_id) {
-                BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->delete();
+                // BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->delete();
 
                 if ($request->has('boq_parts') && is_array($request->boq_parts) && count($request->boq_parts) > 0) {
                     foreach ($request->boq_parts as $boq_part_id) {
-                        $bill_parts = [
-                            'bill_id' => $bill->id,
-                            'scheme_id' => $scheme_id,
-                            'project_id' => Auth::guard('web')->user()->project_id,
-                            'boq_part_id' => $boq_part_id,
-                        ];
-                        BillPart::create($bill_parts);
+
+                        $bill_part = BillPart::where('bill_id', $bill->id)->where('scheme_id', $scheme_id)->where('boq_part_id', $boq_part_id)->first();
+
+                        if (!$bill_part) {
+                            $bill_parts = [
+                                'bill_id' => $bill->id,
+                                'scheme_id' => $scheme_id,
+                                'project_id' => Auth::guard('web')->user()->project_id,
+                                'boq_part_id' => $boq_part_id,
+                            ];
+                            BillPart::create($bill_parts);
+                        }
                     }
                 }
             }
@@ -828,46 +833,50 @@ class BillController extends Controller
                 $bill = Bill::findOrFail($bill_id);
 
                 $bill_details = BillDetail::with('measurements')->find($bill_detail_id);
+                if ($bill_details->measurements->count() == 0) {
+                    $bill_details->delete();
+                } else {
 
 
 
-                $old_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
-                    ->where('project_id', Auth::guard('web')->user()->project_id)
-                    ->where('package_id', Auth::guard('web')->user()->package_id)
-                    ->where('id', '!=', $bill_id)
-                    ->where('serial', '<', $bill->serial)
-                    ->get()->pluck('id')->toArray();
+                    $old_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+                        ->where('project_id', Auth::guard('web')->user()->project_id)
+                        ->where('package_id', Auth::guard('web')->user()->package_id)
+                        ->where('id', '!=', $bill_id)
+                        ->where('serial', '<', $bill->serial)
+                        ->get()->pluck('id')->toArray();
 
-                $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
-                    ->where('scheme_id', $bill_details->scheme_id)
-                    ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
-                if (isset($bill_details->boq_subitem_id)) {
-                    $old_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
+                    $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
+                        ->where('scheme_id', $bill_details->scheme_id)
+                        ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
+                    if (isset($bill_details->boq_subitem_id)) {
+                        $old_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
+                    }
+                    $old_bill_details = $old_bill_details->get();
+
+
+                    $this_bill_details = BillDetail::with('measurements')->where('bill_id', $bill_id)
+                        ->where('scheme_id', $bill_details->scheme_id)
+                        ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
+                    if (isset($bill_details->boq_subitem_id)) {
+                        $this_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
+                    }
+                    $this_bill_details = $this_bill_details->first();
+
+
+                    $bill_details->held_up_quantity = 0;
+                    $bill_details->quantity = $bill_details->measurements->sum('quantity');
+                    $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
+                    if ($bill_details->boq_quantity < $bill_details->measurements->sum('quantity')) {
+                        $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity') - $bill_details->boq_quantity;
+                        $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
+                    } else
+                        $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
+                    $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
+                    $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
+                    $bill_details->save(); // dd($bill_details);
+                    $bill_details->save();
                 }
-                $old_bill_details = $old_bill_details->get();
-
-
-                $this_bill_details = BillDetail::with('measurements')->where('bill_id', $bill_id)
-                    ->where('scheme_id', $bill_details->scheme_id)
-                    ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
-                if (isset($bill_details->boq_subitem_id)) {
-                    $this_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
-                }
-                $this_bill_details = $this_bill_details->first();
-
-
-
-                $bill_details->quantity = $bill_details->measurements->sum('quantity');
-                $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
-                if ($bill_details->boq_quantity < $bill_details->measurements->sum('quantity')) {
-                    $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity') - $bill_details->boq_quantity;
-                    $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
-                } else
-                    $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
-                $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
-                $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
-                $bill_details->save(); // dd($bill_details);
-                $bill_details->save();
             });
             $data = new stdClass();
             $data->status = 1;
@@ -882,6 +891,36 @@ class BillController extends Controller
         }
     }
 
+    public function getMeasurementSuggestions(Request $request)
+    {
+        // return response()->json($request->all());
+        $query = $request->input('query');
+        $part_id = $request->input('part_id');
+        $item_id = $request->input('item_id');
+        $subitem_id = $request->input('subitem_id');
+        $lowercaseQuery = mb_strtolower($query, 'UTF-8');
+        $suggestions = Measurement::whereRaw('LOWER(description) LIKE ?', ['%' . $lowercaseQuery . '%'])
+            ->where('project_id', Auth::guard('web')->user()->project_id);
+        // ->where('package_id', Auth::guard('web')->user()->package_id);
+
+        if ($part_id) {
+            $suggestions->where('boq_part_id', $part_id);
+        }
+
+        if ($item_id) {
+            $suggestions->where('boq_item_id', $item_id);
+        }
+
+        if ($subitem_id) {
+            $suggestions->where('boq_subitem_id', $subitem_id);
+        }
+
+        $suggestions = $suggestions->groupByRaw('LOWER(description)')
+            ->selectRaw('MIN(description) as description')
+            ->pluck('description');;
+
+        return response()->json($suggestions);
+    }
     public function shelterWiseView2($id)
     {
 

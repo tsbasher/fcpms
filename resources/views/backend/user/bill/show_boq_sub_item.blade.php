@@ -270,7 +270,7 @@
         $(".remove").click(function() {
             var url = $(this).data('url');
 
-            debugger;
+            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -291,7 +291,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            debugger;
+                            
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -314,7 +314,7 @@
                         },
                         error: function(ex) {
 
-                            debugger;
+                            
                             Swal.fire({
                                 title: 'ERROR',
                                 text: 'Something Went Wrong',
@@ -335,7 +335,7 @@
         });
 
         $('#schemes').change(function(e) {
-            debugger;
+            
             var scheme = $(this).val();
             var url = window.location.href
             var param = {
@@ -345,7 +345,7 @@
 
         });
         $('#boq_part_id').change(function(e) {
-            debugger;
+            
             var boq_part_id = $(this).val();
             var scheme = $("#schemes").val();
             var url = window.location.href
@@ -357,7 +357,7 @@
 
         });
         $('#boq_item_id').change(function(e) {
-            debugger;
+            
             var boq_item_id = $(this).val();
             var boq_part_id = $("#boq_part_id").val();
             var scheme = $("#schemes").val();
@@ -388,7 +388,7 @@
         $(".click_tab").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href")
-            debugger;
+            
             window.location = url;
         });
         $('#boq-version-table').DataTable({

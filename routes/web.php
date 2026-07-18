@@ -50,7 +50,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/boq-versions/export', [BoqVersionController::class, 'export'])->name('admin.boq_versions.export');
         Route::get('/boq-versions/export-data', [BoqVersionController::class, 'export_data'])->name('admin.boq_versions.export_data');
         Route::get('/bills-by-package/{package_id}', [AdminBillController::class, 'getBillsByPackage'])->name('admin.bills.get_bills_by_package');
-                Route::get('bill/details/shelter-wise-details', [AdminBillController::class, 'bill_show'])->name('admin.bills.shelter_wise_view');
+        Route::get('bill/details/shelter-wise-details', [AdminBillController::class, 'bill_show'])->name('admin.bills.shelter_wise_view');
 
 
         Route::resource('regions', RegionController::class)->names('admin.regions');
@@ -126,10 +126,11 @@ Route::group(['prefix' => ''], function () {
         Route::get('/bill/details/unit-wise-view/{id}', [BillController::class, 'unitWiseView'])->name('user.bills.unit_wise_view');
 
         Route::get('bill/details/shelter-wise/{id}', [BillController::class, 'shelterWiseView'])->name('user.bills.shelter_wise_view');
-                Route::get('bill/details', [BillController::class, 'report'])->name('user.bills.report');
+        Route::get('bill/details', [BillController::class, 'report'])->name('user.bills.report');
 
-                Route::get('bill/details/shelter-wise-details', [BillController::class, 'report_show'])->name('user.bills.shelter_wise_view');
-    
+        Route::get('bill/details/shelter-wise-details', [BillController::class, 'report_show'])->name('user.bills.shelter_wise_view');
+
+        Route::get('bill/get-measurement-suggestions', [BillController::class, 'getMeasurementSuggestions'])->name('user.bills.get_measurement_suggestions');
 
         Route::resource('bills', BillController::class)->names('user.bills');
     });

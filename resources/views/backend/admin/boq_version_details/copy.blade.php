@@ -173,7 +173,7 @@
     let get_boq_sub_item_by_boq_item_url = "{{route('common.get_boq_sub_items_by_boq_item','*')}}";
     let get_boq_versions_by_package_url = "{{ route('common.get_boq_versions_by_package', '*') }}";
     $(document).ready(function() {
-        debugger;
+        
         $('#description').summernote();
         $('.select2').select2();
 
@@ -186,7 +186,7 @@
             var boq_sub_item_id = $('#boq_sub_item_id').val();
             var boq_part_id = $('#boq_part_id').val();
             var scheme_option_id = $('#scheme_option_id').val();
-            debugger;
+            
             $.ajax({
                 url: "{{route('admin.check_existing_boq_version_details')}}",
                 type: 'GET',
@@ -199,7 +199,7 @@
                     "scheme_option_id": scheme_option_id
                 },
                 success: function(data) {
-                    debugger;
+                    
                     // var data = JSON.parse(response);
                     if (data.status == 1) {
                         Swal.fire({
@@ -217,7 +217,7 @@
                     }
                 },
                 error: function(ex) {
-                    debugger;
+                    
                     Swal.fire({
                         timer: 1500,
                         title: 'ERROR',
