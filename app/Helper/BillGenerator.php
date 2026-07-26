@@ -254,7 +254,12 @@ class BillGenerator
         // dd($summary_bill);
         // return response()->json($summary_bill);
         $contractor = Contractor::findOrFail($this_bill->contractor_id);
-        $last_bill = Bill::where('id', '!=', $this_bill->id)->where('created_at', '<', $this_bill->created_at)->where('project_id', $this_bill->project_id)->orderBy('id', 'desc')->first();
+        $last_bill = Bill::where('id', '!=', $this_bill->id)
+        ->wherehas('boq_version', function ($query) use ($project_id, $package_id) {
+            $query->where('project_id', $project_id)
+                ->where('package_id', $package_id);
+        })
+        ->where('serial', '<', $this_bill->serial)->where('project_id', $this_bill->project_id)->orderBy('id', 'desc')->first();
         $project = Project::findOrFail($this_bill->project_id);
         $package = Package::findOrFail($this_bill->boq_version->package_id);
         $upazila = Upazila::findOrFail($schemes->first()->upazila_id);
