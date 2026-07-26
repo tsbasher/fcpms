@@ -588,7 +588,15 @@ class BillController extends Controller
             ->distinct('boq_item_id')
             ->get()->pluck('boq_item_id')->toArray();
 
-        $boq_items = BoqItem::wherein('id', $boq_version_details_item)->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
+        $scheme = Scheme::find($request->schemes);
+
+        $boq_items = BoqItem::wherein('id', $boq_version_details_item)->where(function($query)use($scheme){
+            if($scheme){
+                $query->where('pile_type', $scheme->pile_type)->orWhere('pile_type','NA');
+            }
+
+
+        })->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
         COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")->get();
 
         $boq_version_details_subitem = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
@@ -612,7 +620,6 @@ class BillController extends Controller
         }
         $measurements = Measurement::with('unit')->where('bill_id', $id)->where('scheme_id', $request->schemes)
             ->where('boq_part_id', $request->boq_part_id)->where('boq_item_id', $request->boq_item_id);
-        $scheme = Scheme::find($request->schemes);
         $boq_version_item = null;
         if ($scheme) {
             $boq_version_item = BoqVersionDetails::with('unit')->where('boq_version_id', $bill->boq_version_id)

@@ -1,7 +1,13 @@
 <html>
 
 <head>
-    <title>Upazila Wise Details Bill</title>
+    <title>
+            @if (Request::get('report_type') == 'UPZ_DTL')
+                {{$upazila->name}} Upazila Wise Details Bill
+            @elseif(Request::get('report_type') == 'SCH_DTL')
+                {{$info->scheme->code}} Scheme Summary Bill
+            @endif
+        Upazila Wise Details Bill</title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -930,7 +936,7 @@
                                             @else --}}
                                                 <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?1:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
                                                 class="text-right text-bold">Work done Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->quantity, 3) }}</td>
@@ -943,7 +949,7 @@
                                             @else --}}
                                                 <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?1:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
                                                 class="text-right text-bold">Previous Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->previous_quantity, 3) }}</td>
@@ -955,7 +961,7 @@
                                                 @else --}}
                                                 <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?1:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
                                                 class="text-right text-bold">BOQ Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($item->boq_version_details->quantity, 3) }}</td>
@@ -967,7 +973,7 @@
                                             @else --}}
                                                 <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?1:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
                                                 class="text-right text-bold">Held Up Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->held_up_quantity, 3) }}</td>
@@ -979,7 +985,7 @@
                                             @else --}}
                                                 <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?1:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
                                                 class="text-right text-bold">This Bill Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->this_bill_quantity, 3) }}</td>

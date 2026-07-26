@@ -168,7 +168,8 @@ class ContractorController extends Controller
     }
     public function add_package($contractor_id)
     {
-        $contractor = Contractor::findOrFail($contractor_id);
+        $contractor = Contractor::with('packages')->findOrFail($contractor_id);
+
         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->Permitted()->get();
         return view('backend.admin.contractors.add_package', compact('contractor', 'packages'));
     }
@@ -182,9 +183,9 @@ class ContractorController extends Controller
             return redirect()->back()->withErrors($v)->withInput();
         }
 
-        $contractor = Contractor::findOrFail($contractor_id);
+        $contractor = Contractor::with('packages')->findOrFail($contractor_id);
         foreach ($request->package_id as $packageId) {
-            $contractor->packages()->syncWithoutDetaching([$packageId => ['project_id' => Auth::guard('admin')->user()->project_id]]);
+            $contractor->packages()->sync([$packageId => ['project_id' => Auth::guard('admin')->user()->project_id]]);
         }
         // dd($contractor->packages()->sync([$request->package_id => ['project_id' => Auth::guard('admin')->user()->project_id]]));
 
@@ -192,7 +193,7 @@ class ContractorController extends Controller
     }
     public function add_user($contractor_id)
     {
-        $contractor = Contractor::findOrFail($contractor_id);
+        $contractor = Contractor::with('packages')->findOrFail($contractor_id);
         $users = User::where('contractor_id', $contractor->id)->where('project_id', Auth::guard('admin')->user()->project_id)->get();
         return view('backend.admin.contractors.add_user', compact('contractor', 'users'));
     }

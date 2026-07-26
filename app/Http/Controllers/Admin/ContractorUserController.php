@@ -7,6 +7,7 @@ use App\Models\Contractor;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator ;
@@ -63,9 +64,11 @@ class ContractorUserController extends Controller
         }
         $user_data=$request->only(['name','email','phone','contractor_id','is_active']);
         $user_data['password']=Hash::make($request->password);
-        $contractor=Contractor::find($request->contractor_id);
+        $contractor=Contractor::with('packages')->find($request->contractor_id);
         // dd($contractor->packages->first());
-        $user_data['project_id']=$contractor->project_id;
+        $user_data['project_id']=$contractor->packages->first() ? $contractor->packages->first()->project_id : null;
+        $project=Project::find($user_data['project_id']);
+        $user_data['project_code']=$project ? $project->code : null;
         $user_data['package_id']=$contractor->packages->first() ? $contractor->packages->first()->id : null;
         User::create($user_data);
         return redirect()->route('admin.contractor_users.index')->with('success','User created successfully.');

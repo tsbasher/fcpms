@@ -110,7 +110,7 @@
             <select required class="form-control select2" name="package_id[]" multiple id="package_id" placeholder="Select Package">
                 <option value="">Select Package</option>
                 @foreach ($packages as $package)
-                <option value="{{ $package->id }}" @if (is_array(old('package_id')) && in_array($package->id, old('package_id') ?? [])) selected @endif>{{ $package->name }}</option>
+                <option value="{{ $package->id }}" @if (in_array($package->id, old('package_id',$contractor->packages->pluck('id')->toArray()) ?? [])) selected @endif>{{ $package->name }}</option>
                 @endforeach
             </select>
         </div>
