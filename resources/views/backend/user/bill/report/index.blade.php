@@ -31,7 +31,7 @@
                         <div class="row">
 
 
-                            <div class="col-md-4 ">
+                            <div class="col-md-6 ">
                                 <div class="form-group row">
                                     <label for="upazila_id" class="col-sm-2 col-form-label">Upazila</label>
                                     <div class="col-sm-10">
@@ -49,13 +49,34 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6 ">
+                                <div class="form-group row">
+                                    <label for="scheme_id" class="col-sm-2 col-form-label">Scheme</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select2" id="scheme_id" placeholder="Scheme"
+                                            name="scheme_id">
+                                            <option value="">All Shelter</option>
+                                            @foreach ($schemes as $scheme)
+                                                <option value="{{ $scheme->id }}"
+                                                    @if (Request::get('scheme_id') == $scheme->id) selected @endif>
+                                                    {{ $scheme->code }} - {{ $scheme->name }}
+                                                </option>
+                                            @endforeach
 
-                            <div class="col-md-4">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+
+                            <div class="col-md-6">
 
                                 <div class="form-group row">
                                     <label for="bill_id" class="col-sm-2 col-form-label">Bill</label>
                                     <div class="col-sm-10">
-                                        <select class="form-control select2" id="bill_id" placeholder="Bill" required   
+                                        <select class="form-control select2" id="bill_id" placeholder="Bill" required
                                             name="bill_id">
                                             <option value="">Select Bill</option>
                                             @foreach ($bills as $bill)
@@ -70,10 +91,10 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4 ">
+                            <div class="col-md-6 ">
                                 <div class="form-group row">
-                                    <label for="report_type" class="col-sm-3 col-form-label">Report Type</label>
-                                    <div class="col-sm-9">
+                                    <label for="report_type" class="col-sm-2 col-form-label">Report Type</label>
+                                    <div class="col-sm-10">
                                         <select class="form-control select2" id="report_type" placeholder="Report Type"
                                             name="report_type">
                                             <option value="">Select Report Type</option>
@@ -81,6 +102,8 @@
                                                 Package Summary</option>
                                             <option value="UPZ_DTL" @if (Request::get('report_type') == 'UPZ_DTL') selected @endif>
                                                 Upazila Details</option>
+                                            <option value="SCH_DTL" @if (Request::get('report_type') == 'SCH_DTL') selected @endif>
+                                                Scheme Details</option>
                                         </select>
                                     </div>
                                 </div>
@@ -134,7 +157,30 @@
         $('.select2').select2();
 
         $(document).ready(function() {
-            
+
+            $('#upazila_id').on('change', function() {
+                var upazilaId = $(this).val();
+                var url = "{{ route('user.get_scheme_by_upazila', '*') }}";
+                if (upazilaId) {
+                    $.ajax({
+                        url: url.replace('*', upazilaId),
+                        type: "GET",
+                        dataType: "json",
+                        success: function(data) {
+                            $('#scheme_id').empty();
+                            $('#scheme_id').append('<option value="">All Shelter</option>');
+                            $.each(data, function(key, value) {
+                                $('#scheme_id').append('<option value="' + value.id +
+                                    '">' + value.code + ' - ' + value.name +
+                                    '</option>');
+                            });
+                        }
+                    });
+                } else {
+
+                    $('#scheme_id').empty();
+                }
+            });
 
         });
 

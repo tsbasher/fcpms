@@ -107,10 +107,10 @@
 
         <div class="form-group">
             <label for="package_id">Package</label>
-            <select required class="form-control select2" name="package_id" id="package_id" placeholder="Select Package">
+            <select required class="form-control select2" name="package_id[]" multiple id="package_id" placeholder="Select Package">
                 <option value="">Select Package</option>
                 @foreach ($packages as $package)
-                <option value="{{ $package->id }}" @if ($package->id == old('package_id', $contractor->packages->first()->id ?? null)) selected @endif>{{ $package->name }}</option>
+                <option value="{{ $package->id }}" @if (is_array(old('package_id')) && in_array($package->id, old('package_id') ?? [])) selected @endif>{{ $package->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -121,3 +121,10 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        
+        $('.select2').select2();
+    });
+</script>

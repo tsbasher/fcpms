@@ -26,10 +26,13 @@ class Contractor extends ExtendedModel
         'created_by',
         'updated_by'
     ];
-    
+
     public function packages()
     {
-        return $this->belongsToMany(Package::class, 'contractor_packages', 'contractor_id', 'package_id')->with('project')->where('contractor_packages.project_id', Auth::guard('admin')->user()->project_id);
-    }
+        return $this->belongsToMany(Package::class, 'contractor_packages', 'contractor_id', 'package_id')
 
+            ->withPivot('project_id')
+            ->with('project')
+            ->wherePivot('project_id', Auth::guard('admin')->user()->project_id);
+    }
 }

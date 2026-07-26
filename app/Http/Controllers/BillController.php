@@ -34,7 +34,9 @@ class BillController extends Controller
      */
     public function index(Request $request)
     {
-        $bills = Bill::query();
+        $bills = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id);
 
         if ($request->filled('search_text')) {
             $bills->where(function ($query) use ($request) {
@@ -1247,9 +1249,13 @@ class BillController extends Controller
 
         $bills = Bill::where('package_id', $package->id)
             ->get();
-
+            if($request->has('upazila_id') && isset($request->upazila_id)){
+                $schemes = Scheme::where('upazila_id', $request->upazila_id)->get();
+            }
+            else
+                $schemes = [];
         // dd($bills);
-        return view('backend.user.bill.report.index', compact('bills', 'upazilas'));
+        return view('backend.user.bill.report.index', compact('bills', 'upazilas', 'schemes'));
     }
     public function report_show(Request $request)
     {
@@ -1279,15 +1285,22 @@ class BillController extends Controller
                 $query->where('bill_id', $this_bill->id)
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
-        } else {
+        }else if ($request->report_type == "SCH_DTL") {
+            $scheme_ids = BillScheme::where('scheme_id', $request->scheme_id)->where(function ($query) use ($this_bill, $previous_bill_ids) {
+                $query->where('bill_id', $this_bill->id)
+                    ->orwhereIn('bill_id', $previous_bill_ids);
+            })->get()->pluck('scheme_id')->toArray();
+        } 
+        else {
             $scheme_ids = BillScheme::where(function ($query) use ($this_bill, $previous_bill_ids) {
                 $query->where('bill_id', $this_bill->id)
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
         }
-
+        if($scheme_ids && count($scheme_ids)>0)
         return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids, $request->report_type);
-
+    else
+        return "No schemes found for the selected criteria.";
 
 
 

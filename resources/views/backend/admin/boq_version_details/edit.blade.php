@@ -60,7 +60,8 @@
                                         @foreach ($boq_versions as $version)
                                             <option value="{{ $version->id }}"
                                                 @if (old('boq_version_id', $boq_version_detail->boq_version_id) == $version->id) selected @endif>
-                                                {{ $version->name }} - {{ date('Y-m-d', strtotime($version->version_date)) }}</option>
+                                                {{ $version->name }} -
+                                                {{ date('Y-m-d', strtotime($version->version_date)) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -157,8 +158,8 @@
 
                                 <div class="form-group">
                                     <label for="quantity">Quantity per Item</label>
-                                    <input type="text" required class="form-control cal" name="quantity" id="quantity"
-                                        placeholder="Enter Quantity"
+                                    <input type="text" required class="form-control cal" name="quantity"
+                                        id="quantity" placeholder="Enter Quantity"
                                         value="{{ old('quantity', $boq_version_detail->quantity) }}">
                                 </div>
                             </div>
@@ -166,8 +167,8 @@
 
                                 <div class="form-group">
                                     <label for="total_quantity">Total Quantity</label>
-                                    <input type="text" required class="form-control cal" name="total_quantity" id="total_quantity"
-                                        placeholder="Enter Total Quantity"
+                                    <input type="text" required class="form-control cal" name="total_quantity"
+                                        id="total_quantity" placeholder="Enter Total Quantity"
                                         value="{{ old('total_quantity', $boq_version_detail->total_quantity) }}">
                                 </div>
                             </div>
@@ -185,8 +186,9 @@
 
                                 <div class="form-group">
                                     <label for="total_amount">Total Amount</label>
-                                    <input type="text" readonly class="form-control" name="total_amount" id="total_amount"
-                                        placeholder="Enter Total Amount" value="{{ old('total_amount', $boq_version_detail->rate * $boq_version_detail->total_quantity) }}">
+                                    <input type="text" readonly class="form-control" name="total_amount"
+                                        id="total_amount" placeholder="Enter Total Amount"
+                                        value="{{ old('total_amount', $boq_version_detail->rate * $boq_version_detail->total_quantity) }}">
                                 </div>
                             </div>
 
@@ -218,14 +220,14 @@
         let get_unit_by_boq_item_url = "{{ route('common.get_unit_by_boq_item', '*') }}";
         let get_unit_by_boq_sub_item_url = "{{ route('common.get_unit_by_boq_sub_item', '*') }}";
         $(document).ready(function() {
-            
+
             $('#description').summernote();
             $('.select2').select2();
-$('#rate').on('input', function() {
+            $('#rate').on('input', function() {
                 calculate_total_amount();
             });
             $('.cal').on('input', function() {
-                
+
 
                 if ($(this).attr('id') == 'nos')
                     $('#total_quantity').val('');
@@ -257,7 +259,7 @@ $('#rate').on('input', function() {
                 let total_amount = total_quantity * rate;
                 $('#total_amount').val(total_amount.toFixed(2));
             }
-            
+
             $('#btn_submit').on('click', function(e) {
 
                 e.preventDefault();
@@ -268,7 +270,7 @@ $('#rate').on('input', function() {
                 var boq_sub_item_id = $('#boq_sub_item_id').val();
                 var boq_part_id = $('#boq_part_id').val();
                 var scheme_option_id = $('#scheme_option_id').val();
-                
+
                 $.ajax({
                     url: "{{ route('admin.check_existing_boq_version_details') }}",
                     type: 'GET',
@@ -282,7 +284,7 @@ $('#rate').on('input', function() {
                         "scheme_option_id": scheme_option_id
                     },
                     success: function(data) {
-                        
+
                         // var data = JSON.parse(response);
                         if (data.status == 1) {
                             Swal.fire({
@@ -301,7 +303,7 @@ $('#rate').on('input', function() {
                         }
                     },
                     error: function(ex) {
-                        
+
                         Swal.fire({
                             timer: 1500,
                             title: 'ERROR',

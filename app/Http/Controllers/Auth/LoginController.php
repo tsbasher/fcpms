@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Package;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;

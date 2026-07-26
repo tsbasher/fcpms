@@ -1,94 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{config('app.name','PBMS')}} | @yield('title')</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'PBMS') }} | @yield('title')</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="{{asset('backend/plugins/fontawesome-free/css/all.min.css')}}">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="{{asset('backend/dist/css/adminlte.min.css')}}">
-  @yield('style')
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ asset('backend/plugins/fontawesome-free/css/all.min.css') }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ asset('backend/dist/css/adminlte.min.css') }}">
+    @yield('style')
 </head>
+
 <body class="control-sidebar-slide-open layout-navbar-fixed layout-fixed layout-footer-fixed">
-<div class="wrapper">
-    <div class="preloader flex-column justify-content-center align-items-center">
-      <img class="animation__shake" src="{{asset('backend/dist/img/short_logo.png')}}" alt="AdminLTELogo">
+    <div class="wrapper">
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="{{ asset('backend/dist/img/short_logo.png') }}" alt="AdminLTELogo">
+        </div>
+        @include('backend.user.layouts.partials._topbar')
+
+        @include('backend.user.layouts.partials._sidebar')
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+
+            @yield('content_header')
+
+            @yield('content')
+
+        </div>
+        @include('backend.user.layouts.partials._footer')
+
     </div>
-    @include("backend.user.layouts.partials._topbar")
+    
+<div class="modal fade" id="modal-select-package">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Package</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="select-package-body">
 
-    @include("backend.user.layouts.partials._sidebar")
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-
-    @yield('content_header')
-
-    @yield('content')
-
-  </div>
-  @include('backend.user.layouts.partials._footer')
-
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
-<!-- ./wrapper -->
+<!-- /.modal -->
+    <!-- ./wrapper -->
 
-<!-- jQuery -->
-<script src="{{asset('backend/plugins/jquery/jquery.min.js')}}"></script>
-<!-- Bootstrap 4 -->
-<script src="{{asset('backend/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-<!-- bs-custom-file-input -->
-<script src="{{asset('backend/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
-<!-- AdminLTE App -->
-<script src="{{asset('backend/dist/js/adminlte.min.js')}}"></script>
-<!-- AdminLTE for demo purposes -->
-{{-- <script src="{{asset('backend/dist/js/demo.js')}}"></script> --}}
-<!-- Page specific script -->
-<script>
-$(function () {
-  bsCustomFileInput.init();
-});
-$(document).on('select2:open', () => {
-      let searchField = document.querySelector('.select2-container--open .select2-search__field');
-      if (searchField) {
-        searchField.focus();
-      }
-    });
-    $(document).ready(function() {
-      $('input').attr('autocomplete', 'off');
-      var a = $('input[required]');
-      // 
-      a.toArray().forEach(function(item) {
-        // 
-        item.parentNode.childNodes.forEach(function(child) {
-          // 
-          if (child.tagName === 'LABEL') {
-            child.innerHTML = child.innerHTML + ' <span class="text-danger text-bold">*</span>';
-          }
+    <!-- jQuery -->
+    <script src="{{ asset('backend/plugins/jquery/jquery.min.js') }}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{{ asset('backend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- bs-custom-file-input -->
+    <script src="{{ asset('backend/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ asset('backend/dist/js/adminlte.min.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    {{-- <script src="{{asset('backend/dist/js/demo.js')}}"></script> --}}
+    <!-- Page specific script -->
+    <script>
+        $(function() {
+            bsCustomFileInput.init();
         });
-      });
-
-
-
-
-
-      
-      var a = $('select[required]');
-      // 
-      a.toArray().forEach(function(item) {
-        //  
-        item.parentNode.childNodes.forEach(function(child) {
-          // 
-          if (child.tagName === 'LABEL') {
-            child.innerHTML = child.innerHTML + ' <span class="text-danger text-bold">*</span>';
-          }
+        $(document).on('select2:open', () => {
+            let searchField = document.querySelector('.select2-container--open .select2-search__field');
+            if (searchField) {
+                searchField.focus();
+            }
         });
-      });
-    });
-  </script>
-@yield('script')
+        $(document).ready(function() {
+            $('input').attr('autocomplete', 'off');
+            var a = $('input[required]');
+            // 
+            a.toArray().forEach(function(item) {
+                // 
+                item.parentNode.childNodes.forEach(function(child) {
+                    // 
+                    if (child.tagName === 'LABEL') {
+                        child.innerHTML = child.innerHTML +
+                            ' <span class="text-danger text-bold">*</span>';
+                    }
+                });
+            });
+
+
+
+
+
+
+            var a = $('select[required]');
+            // 
+            a.toArray().forEach(function(item) {
+                //  
+                item.parentNode.childNodes.forEach(function(child) {
+                    // 
+                    if (child.tagName === 'LABEL') {
+                        child.innerHTML = child.innerHTML +
+                            ' <span class="text-danger text-bold">*</span>';
+                    }
+                });
+            });
+
+
+            $("#selectedPackage").click(function() {
+                $.ajax({
+                    url: "{{ route('user.get_permitted_packages') }}",
+                    type: "GET",
+                    success: function(data) {
+                        var options = '';
+                        debugger;
+                        $('#select-package-body').html(data);
+                        $('#modal-select-package').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+    @yield('script')
 </body>
+
 </html>

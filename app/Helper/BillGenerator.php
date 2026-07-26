@@ -235,7 +235,9 @@ class BillGenerator
 
                         $item_info->boq_version_details = $boq_details;
 
-                        $summary_bill[$part->id]['items'][$item->id]['boq_quantity'] += $boq_details ? $boq_details->quantity : 0;
+                        if ($item->pile_type == 'NA' || $item->pile_type == $scheme->pile_type) {
+                            $summary_bill[$part->id]['items'][$item->id]['boq_quantity'] += $boq_details ? $boq_details->quantity : 0;
+                        }
                         $summary_bill[$part->id]['items'][$item->id]['rate'] = $boq_details ? $boq_details->rate : 0;
                         $summary_bill[$part->id]['items'][$item->id]['total_quantity'] += $this_bill_detail ? ($this_bill_detail->quantity - $this_bill_detail->held_up_quantity) : ($old_bill_details ? ($old_bill_details->quantity - $old_bill_details->held_up_quantity) : 0);
                         $summary_bill[$part->id]['items'][$item->id]['previous_quantity'] += $this_bill_detail ? $this_bill_detail->previous_quantity : ($old_bill_details ? ($old_bill_details->quantity - $old_bill_details->held_up_quantity) : 0);

@@ -249,4 +249,10 @@ class SchemeController extends Controller
             return response()->json($data);
         }
     }
+
+    public function getSchemebyUpazila($upazila_id)
+    {
+        $schemes=Scheme::where('package_id',Auth::guard('admin')->user()->package_id)->where('upazila_id',$upazila_id)->get();
+        return response()->json($schemes);
+    }
 }

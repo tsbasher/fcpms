@@ -307,7 +307,7 @@ class BoqVersionDetailsController extends Controller
 
             $data = new stdClass();
             $data->status = 1;
-            $data->message = 'Duplicate Entry Found';
+            $data->message = 'Duplicate Entry Found!! \nDo you want to update the existing entry?';
             $data->data = $boq_version_details;
         } else {
             $data = new stdClass();

@@ -70,7 +70,8 @@
                                         @foreach ($boq_versions as $version)
                                             <option value="{{ $version->id }}"
                                                 @if (old('boq_version_id', $boq_version ? $boq_version->id : null) == $version->id) selected @endif>
-                                                {{ $version->name }} - {{ date('Y-m-d', strtotime($version->version_date)) }}</option>
+                                                {{ $version->name }} -
+                                                {{ date('Y-m-d', strtotime($version->version_date)) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -241,7 +242,7 @@
                 calculate_total_amount();
             });
             $('.cal').on('input', function() {
-                
+
 
                 if ($(this).attr('id') == 'nos')
                     $('#total_quantity').val('');
@@ -283,7 +284,7 @@
                 var boq_sub_item_id = $('#boq_sub_item_id').val();
                 var boq_part_id = $('#boq_part_id').val();
                 var scheme_option_id = $('#scheme_option_id').val();
-                
+
                 $.ajax({
                     url: "{{ route('admin.check_existing_boq_version_details') }}",
                     type: 'GET',
@@ -296,16 +297,20 @@
                         "scheme_option_id": scheme_option_id
                     },
                     success: function(data) {
-                        
+
                         // var data = JSON.parse(response);
                         if (data.status == 1) {
                             Swal.fire({
                                 title: 'Warning',
-                                text: data.message,
-                                icon: 'warning'
+                                html: data.message,
+                                icon: 'warning',
+                                showDenyButton: true,
+                                showCancelButton: false,
+                                confirmButtonText: 'Yes',
+                                denyButtonText: 'No',
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // $('#boq_version_detail_form').submit();
+                                    $('#boq_version_detail_form').submit();
                                 }
                             });
                         } else {
@@ -315,7 +320,7 @@
                         }
                     },
                     error: function(ex) {
-                        
+
                         Swal.fire({
                             timer: 1500,
                             title: 'ERROR',
