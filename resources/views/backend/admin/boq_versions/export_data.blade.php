@@ -64,7 +64,7 @@
 
 <body>
     <table class="table table-bordered table-hover" id="boq-version-table">
-        <tbody>
+        <thead>
             <tr class="text-bold">
                 <td colspan="10" class="text-center no-border">Local Government Engineering Department (LGED)</td>
             </tr>
@@ -82,7 +82,7 @@
             <tr class="text-bold">
                 <td colspan="10" class="text-center no-border">&nbsp;</td>
             </tr>
-        </tbody>
+        </thead>
     </table>
     @php
         $part_total = 0;
@@ -100,7 +100,7 @@
             <table class="table table-bordered table-hover" id="boq-version-table">
 
 
-                <tbody>
+                <thead>
                     <tr class="text-center">
                         <th rowspan="2" style="width: 5%; vertical-align: middle;">SL</th>
                         <th rowspan="2" style="width: 5%; vertical-align: middle;">Spec. No</th>
@@ -116,6 +116,9 @@
                         <th style="width: 5%; vertical-align: middle;">In figure</th>
                         <th style="width: 10%; vertical-align: middle; word-wrap: break-word;">In words</th>
                     </tr>
+                </thead>
+                
+                <tbody>
                     <tr>
                         <td></td>
                         <td></td>
@@ -344,7 +347,7 @@
                         <td colspan="10" class="no-border">&nbsp;</td>
 
                     </tr>
-                </tbody>
+                </thead>
             </table>
             @if ($loop->index < count($details) - 1)
                 <div class="page-break"></div>
