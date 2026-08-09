@@ -91,6 +91,9 @@ class BoqPartController extends Controller
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
         }
+        if (!$request->has('has_option_variation')) {
+            $request->merge(['has_option_variation' => 0]);
+        }
         $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:boq_parts,code,' . $boqPart->id,
@@ -99,7 +102,7 @@ class BoqPartController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $data = $request->only(['name', 'code', 'description', 'is_active']);
+        $data = $request->only(['name', 'code', 'has_option_variation', 'description', 'is_active']);
         $boqPart->update($data);
 
         return redirect()->route('admin.boq_parts.index')->with('success', 'BOQ Part updated successfully.');

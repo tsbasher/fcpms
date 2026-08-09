@@ -74,6 +74,10 @@ class BoqVersionDetailsController extends Controller
         } else {
             $boq_sub_items = [];
         }
+        
+        if ($request->has('boq_sub_item_id') && !empty($request->get('boq_sub_item_id'))) {
+            $boq_version_details->where('boq_sub_item_id', $request->get('boq_sub_item_id'));
+        } 
 
         $boq_version_details = $boq_version_details->paginate();
 

@@ -51,7 +51,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/boq-versions/export-data', [BoqVersionController::class, 'export_data'])->name('admin.boq_versions.export_data');
         Route::get('/bills-by-package/{package_id}', [AdminBillController::class, 'getBillsByPackage'])->name('admin.bills.get_bills_by_package');
         Route::get('bill/details/shelter-wise-details', [AdminBillController::class, 'bill_show'])->name('admin.bills.shelter_wise_view');
-    Route::get('/get-scheme-by-upazila/{upazila_id}',[SchemeController::class,'getSchemebyUpazila'])->name('admin.get_scheme_bu_upazila');
+        Route::get('/get-scheme-by-upazila/{upazila_id}', [SchemeController::class, 'getSchemebyUpazila'])->name('admin.get_scheme_bu_upazila');
 
 
         Route::resource('regions', RegionController::class)->names('admin.regions');
@@ -132,9 +132,9 @@ Route::group(['prefix' => ''], function () {
         Route::get('bill/details/shelter-wise-details', [BillController::class, 'report_show'])->name('user.bills.shelter_wise_view');
 
         Route::get('bill/get-measurement-suggestions', [BillController::class, 'getMeasurementSuggestions'])->name('user.bills.get_measurement_suggestions');
-    Route::get('/get-scheme-by-upazila/{upazila_id}',[UserHomeController::class,'getSchemebyUpazila'])->name('user.get_scheme_by_upazila');
-Route::get('get-permitted-packages', [UserHomeController::class, 'getPermittedPackages'])->name('user.get_permitted_packages');
-Route::post('select-package', [UserHomeController::class, 'selectPackage'])->name('user.package.select');
+        Route::get('/get-scheme-by-upazila/{upazila_id}', [UserHomeController::class, 'getSchemebyUpazila'])->name('user.get_scheme_by_upazila');
+        Route::get('get-permitted-packages', [UserHomeController::class, 'getPermittedPackages'])->name('user.get_permitted_packages');
+        Route::post('select-package', [UserHomeController::class, 'selectPackage'])->name('user.package.select');
         Route::resource('bills', BillController::class)->names('user.bills');
     });
 });

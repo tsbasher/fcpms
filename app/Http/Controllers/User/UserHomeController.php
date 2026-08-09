@@ -23,6 +23,7 @@ class UserHomeController extends Controller
     {
         $schemes = Scheme::where('package_id', Auth::guard('web')->user()->package_id)
         ->where('upazila_id', $upazila_id)->orderby('code')->get();
+
         return response()->json($schemes);
     }
 
@@ -30,11 +31,13 @@ class UserHomeController extends Controller
     {
         $package_ids=ContractorPackage::where('contractor_id',Auth::guard('web')->user()->contractor_id)->pluck('package_id');
         $packages = Package::whereIn('id', $package_ids)->get();
+        // dd($packages,$package_ids);
         return view('backend.user.layouts.partials._select_package', compact('packages'));
     }
 
     public function selectPackage(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'package_id' => 'required|exists:packages,id',
         ]);

@@ -175,6 +175,7 @@ class ContractorController extends Controller
     }
     public function store_package(Request $request, $contractor_id)
     {
+        // dd($request->all());
         $v = Validator::make($request->all(), [
             'package_id' => 'required|exists:packages,id',
         ]);
@@ -184,9 +185,15 @@ class ContractorController extends Controller
         }
 
         $contractor = Contractor::with('packages')->findOrFail($contractor_id);
+        $packages = [];
+
         foreach ($request->package_id as $packageId) {
-            $contractor->packages()->sync([$packageId => ['project_id' => Auth::guard('admin')->user()->project_id]]);
+            $packages[$packageId] = [
+                'project_id' => Auth::guard('admin')->user()->project_id
+            ];
         }
+
+        $contractor->packages()->sync($packages);
         // dd($contractor->packages()->sync([$request->package_id => ['project_id' => Auth::guard('admin')->user()->project_id]]));
 
         return redirect()->route('admin.contractors.index')->with('success', 'Package added to contractor successfully.');

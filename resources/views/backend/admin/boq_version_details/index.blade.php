@@ -199,7 +199,7 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer clearfix" style="background: #00000000">
-                    {{ $boq_version_details->links() }}
+                    {{ $boq_version_details->appends(request()->query())->links() }}
                 </div>
             </div>
             <!-- /.card -->
