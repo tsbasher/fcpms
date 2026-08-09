@@ -30,7 +30,7 @@
                         <form method="get">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                    <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}"  onchange="this.form.submit()">
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-default">
                                             <i class="fa fa-search"></i>

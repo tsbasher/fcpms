@@ -22,7 +22,7 @@ class BoqPartController extends Controller
         $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id);
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
-            $boq_parts->where('name', 'ilike', "%{$search}%");
+            $boq_parts->where('name', 'ilike', "%{$search}%")->orwhere('code','ilike',"%{$search}%");
         }
         // Get all boq parts
         $boq_parts = $boq_parts->orderby('code')->get();

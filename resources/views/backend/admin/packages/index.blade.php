@@ -30,7 +30,7 @@
                             <div class="form-group row">
                                 <label for="division_id" class="col-sm-2 col-form-label">Division</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control select2" id="division_id" placeholder="Division" name="division_id">
+                                    <select class="form-control select2" id="division_id" placeholder="Division" name="division_id"  onchange="this.form.submit()">
                                         <option value="">Select Division</option>
                                         @foreach ($divisions as $division)
                                         <option value="{{ $division->id }}" @if(Request::get('division_id')==$division->id) selected @endif>{{ $division->name }}</option>
@@ -43,7 +43,7 @@
                             <div class="form-group row">
                                 <label for="region_id" class="col-sm-2 col-form-label">Region</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control select2" id="region_id" placeholder="Region" name="region_id">
+                                    <select class="form-control select2" id="region_id" placeholder="Region" name="region_id"  onchange="this.form.submit()">
                                         <option value="">Select Region</option>
                                         @foreach ($regions as $region)
                                         <option value="{{ $region->id }}" @if(Request::get('region_id')==$region->id) selected @endif>{{ $region->name }}</option>
@@ -56,7 +56,7 @@
                             <div class="form-group row">
                                 <label for="district_id" class="col-sm-2 col-form-label">District</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control select2" id="district_id" placeholder="District" name="district_id">
+                                    <select class="form-control select2" id="district_id" placeholder="District" name="district_id"  onchange="this.form.submit()">
                                         <option value="">Select District</option>
                                         @foreach ($districts as $district)
                                         <option value="{{ $district->id }}" @if(Request::get('district_id')==$district->id) selected @endif>{{ $district->name }}</option>
@@ -70,7 +70,7 @@
                         <div class="col-md-8 offset-md-2">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control form-control-lg" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                    <input type="search" class="form-control form-control-lg" name="search_text" id="search_text" placeholder="Type your keywords here"  onchange="this.form.submit()" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-lg btn-default">
                                             <i class="fa fa-search"></i>
@@ -170,7 +170,7 @@
 <script src="{{ asset('backend/plugins/select2/js/select2.full.js') }}"></script>
 
 <script type="text/javascript">
-    let district_url = "{{ route('common.get_districts_by_division','*') }}";
+    // let district_url = "{{ route('common.get_districts_by_division','*') }}";
     $(document).ready(function() {
         $('.select2').select2();
         $(".delete_record").click(function() {
@@ -254,5 +254,4 @@
     });
 </script>
 
-<script src="{{asset('backend/dist/js/fcpms/district.js')}}"></script>
 @endsection

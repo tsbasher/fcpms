@@ -30,7 +30,7 @@
                         
                         <div class="col-md-6">
                                 <div class="form-group">
-                                    <select class="form-control select2" name="contractor_id" id="contractor_id">
+                                    <select class="form-control select2" name="contractor_id" id="contractor_id"  onchange="this.form.submit()">
                                         <option value="">-- Select Contractor --</option>
                                         @foreach ($contractors as $contractor)
                                             <option value="{{ $contractor->id }}" {{ Request::has('contractor_id') && Request::get('contractor_id') == $contractor->id ? 'selected' : '' }}>{{ $contractor->company_name }}</option>
@@ -42,7 +42,7 @@
                         <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                        <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here"  onchange="this.form.submit()" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
                                         <div class="input-group-append">
                                             <button type="submit" class="btn btn-default">
                                                 <i class="fa fa-search"></i>

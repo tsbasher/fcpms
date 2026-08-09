@@ -32,7 +32,7 @@
                             <div class="form-group row">
                                 <label for="package_id" class="col-sm-2 col-form-label">Package</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control select2" id="package_id" placeholder="Package" name="package_id">
+                                    <select class="form-control select2" id="package_id" placeholder="Package" name="package_id" onchange="this.form.submit()">
                                         <option value="">Select Package</option>
                                         @foreach ($packages as $package)
                                             <option value="{{ $package->id }}" @if(Request::get('package_id')==$package->id) selected @endif>{{ $package->name }}</option>
@@ -44,7 +44,7 @@
                         <div class="col-md-6 ">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                    <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}" onchange="this.form.submit()">
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-default">
                                             <i class="fa fa-search"></i>
