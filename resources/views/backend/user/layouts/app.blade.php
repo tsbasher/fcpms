@@ -116,7 +116,8 @@
             });
 
 
-            $("#selectedPackage").click(function() {
+            $("#selectedPackage").click(function(e) {
+                e.preventDefault();
                 $.ajax({
                     url: "{{ route('user.get_permitted_packages') }}",
                     type: "GET",

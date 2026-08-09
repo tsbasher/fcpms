@@ -12,7 +12,7 @@
         <a href="#" class="nav-link text-bold">{{Auth::guard('web')->user()->project->name}}</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" id="selectedPackage" class="nav-link text-bold">{{Auth::guard('web')->user()->package->name}}</a>
+        <a href="" id="selectedPackage" class="nav-link text-bold">{{Auth::guard('web')->user()->package->name}}</a>
       </li>
     </ul>
 
