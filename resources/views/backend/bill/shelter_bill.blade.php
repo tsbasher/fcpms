@@ -2,11 +2,12 @@
 
 <head>
     <title>
-            @if (Request::get('report_type') == 'UPZ_DTL')
-                {{$upazila->name}} Upazila Wise Details Bill
-            @elseif(Request::get('report_type') == 'SCH_DTL')
-                 Scheme Details Bill
-            @endif</title>
+        @if (Request::get('report_type') == 'UPZ_DTL')
+            {{ $upazila->name }} Upazila Wise Details Bill
+        @elseif(Request::get('report_type') == 'SCH_DTL')
+            Scheme Details Bill
+        @endif
+    </title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -23,7 +24,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            break-inside: avoid;
+            break-inside: auto !important;
         }
 
         .no-border {
@@ -34,7 +35,7 @@
 
         .no-border-summary {
             border: none !important;
-            font-size: 30px !important;
+            font-size: 20px !important;
             padding-top: 40px !important;
             font-weight: normal !important;
         }
@@ -50,6 +51,14 @@
             padding: 5px !important;
         }
 
+        .heading{
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+        .sub-heading{
+            font-size: 12px !important;
+            /* font-weight: bold !important; */
+        }
         .text-right {
             text-align: right;
         }
@@ -80,43 +89,52 @@
         /* Base print setups */
         @media print {
 
-            /* Define a standard portrait layout */
             @page portrait-layout {
                 size: portrait;
-                /* margin: 20mm; */
             }
 
-            /* Define a custom landscape layout */
             @page landscape-layout {
                 size: landscape;
-                /* margin: 20mm; */
             }
 
-            /* Force standard page breaks */
-            /* .page {
-                break-after: page;
-            } */
-
-            /* Assign layouts to specific classes */
             .portrait-page {
                 page: portrait-layout;
                 break-before: page;
-                /* Forces a clean start */
-                break-after: avoid;
-                /* Prevents trailing empty pages */
             }
 
             .landscape-page {
                 page: landscape-layout;
                 break-before: page;
-                /* Forces a clean start */
-                break-after: avoid;
-                /* Prevents trailing empty pages */
             }
 
             .portrait-page:first-of-type,
             .landscape-page:first-of-type {
                 break-before: auto;
+            }
+
+            /* IMPORTANT */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                break-inside: auto !important;
+                page-break-inside: auto !important;
+            }
+
+            thead {
+                display: table-header-group !important;
+            }
+
+            tfoot {
+                display: table-footer-group !important;
+            }
+
+            tbody {
+                display: table-row-group !important;
+            }
+
+            tr {
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -141,17 +159,18 @@
                         </td>
                     </tr>
                     <tr class="">
-                        <td class="text-center no-border-summary">Local Government Engineering
+                        <td class="text-center no-border-summary heading" style="font-size: 30px !important;">
+                            Local Government Engineering
                             Department (LGED)
                         </td>
                     </tr>
 
                     <tr class="text-bold">
-                        <td class="text-center no-border-summary">
+                        <td class="text-center no-border-summary heading">
                             {{ $project->name }}({{ $project->short_name }})</td>
                     </tr>
                     <tr class="">
-                        <td class="text-center no-border-summary">
+                        <td class="text-center no-border-summary heading">
                             Package: {{ $package->name }} {{ $package->code }}</br>
                             {{ $this_bill->name }}
                         </td>
@@ -162,7 +181,7 @@
                         </td>
                     </tr>
                     <tr class="text-bold">
-                        <td class="text-center no-border-summary" style="font-size: 80px !important;">
+                        <td class="text-center no-border-summary" style="font-size: 40px !important;">
                             {{ strtoupper($upazila->name) }}
                         </td>
                     </tr>
@@ -202,11 +221,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-bold no-border-summary">
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
                         <td class="text-center no-border-summary">
                             SUBMITTED BY:</br>
                             {{ $contractor->company_name }}</br>
@@ -217,49 +231,50 @@
             </table>
         </div>
         <div class="page landscape-page">
-            <table class="table table-bordered table-hover" id="boq-version-table">
+            <table class="table table-bordered table-hover" id="boq-version-table123">
 
 
-                <tbody>
+                <thead>
                     <tr class="text-bold">
-                        <td colspan="{{ $colspan }}" class="text-center no-border">Local Government Engineering
+                        <th colspan="{{ $colspan }}" class="text-center no-border heading">Local Government Engineering
                             Department (LGED)
-                        </td>
+                        </th>
                     </tr>
                     <tr class="text-bold">
-                        <td colspan="{{ $colspan }}" class="text-center no-border">
-                            {{ $project->name }}({{ $project->short_name }})</td>
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">
+                            {{ $project->name }}({{ $project->short_name }})</th>
                     </tr>
                     <tr class="text-bold">
-                        <td colspan="{{ $colspan }}" class="text-center no-border">Package:
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Package:
                             {{ $package->name }}
-                            {{ $package->code }}</td>
+                            {{ $package->code }}</th>
                     </tr>
                     <tr class="text-bold">
-                        <td colspan="{{ $colspan }}" class="text-center no-border">Summary of Bill</td>
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill</th>
                     </tr>
                     <tr class="text-bold">
-                        <td colspan="{{ $colspan }}" class="text-center no-border">{{ $this_bill->name }}</td>
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">{{ $this_bill->name }}</th>
                     </tr>
+                </thead>
+            </table>
+            <table class="table table-bordered table-hover" id="boq-version-table">
+                <thead>
                     <tr class="text-bold">
-                        <td colspan="7">
+                        <th colspan="{{ $colspan - 4 }}">
                             @if (Request::get('report_type') == 'UPZ_DTL')
                                 Upazila: {{ $upazila->name }}
                             @elseif(Request::get('report_type') == 'PKG_SUM')
                                 Package: {{ $package->name }}
                             @endif
-                        </td>
+                        </th>
 
-                        <td colspan="4" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
+                        <th colspan="4" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
                                 {{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to
                                 {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}
                             @endif
-                        </td>
+                        </th>
                     </tr>
 
-                    <tr>
-                        <td class="text-bold no-border" colspan="{{ $colspan }}">&nbsp;</td>
-                    </tr>
 
                     @php
                         $part_boq_total = 0;
@@ -292,6 +307,9 @@
                         <th>Quantity</th>
                         <th>Amount</th>
                     </tr>
+                </thead>
+
+                <tbody>
                     @foreach ($summary_bill as $sb)
                         @if (!$loop->first)
                             <tr>
@@ -463,6 +481,22 @@
 
 
                 </tbody>
+
+                <tfoot>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                </tfoot>
+
             </table>
         </div>
     @endif
@@ -470,47 +504,47 @@
         {{-- @dd($shelter_bill) --}}
         @if ($info->has_bill_details)
             <div class="page landscape-page">
+                <table class="table table-bordered table-hover" id="boq-version-table1">
+
+
+                    <tr class="text-bold">
+                        <th colspan="{{ $colspan }}" class="text-center no-border heading">Local Government
+                            Engineering
+                            Department (LGED)
+                        </th>
+                    </tr>
+                    <tr class="text-bold">
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">
+                            {{ $project->name }}({{ $project->short_name }})</th>
+                    </tr>
+                    <tr class="text-bold">
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Package:
+                            {{ $info->scheme->package->name }}
+                            {{ $info->scheme->package->code }}</th>
+                    </tr>
+                    <tr class="text-bold">
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill</th>
+                    </tr>
+                    <tr class="text-bold">
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">{{ $this_bill->name }}
+                        </th>
+                    </tr>
+                </table>
+
                 <table class="table table-bordered table-hover" id="boq-version-table">
-
-
-                    <tbody>
+                    <thead>
                         <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">Local Government
-                                Engineering
-                                Department (LGED)
-                            </td>
-                        </tr>
-                        <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">
-                                {{ $project->name }}({{ $project->short_name }})</td>
-                        </tr>
-                        <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">Package:
-                                {{ $info->scheme->package->name }}
-                                {{ $info->scheme->package->code }}</td>
-                        </tr>
-                        <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">Summary of Bill</td>
-                        </tr>
-                        <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">{{ $this_bill->name }}
-                            </td>
-                        </tr>
-                        <tr class="text-bold">
-                            <td colspan="2">Name of Shelter:{{ $info->scheme->name }}</td>
-                            <td colspan="2">Upazila: {{ $info->scheme->upazila->name }}</td>
-                            <td colspan="2" class="text-center">Shelter ID: {{ $info->scheme->code }}</td>
-                            <td colspan="2" class="text-center">{{ $info->scheme->scheme_option->name }}</td>
-                            <td colspan="4" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
+                            <th colspan="2">Name of Shelter:{{ $info->scheme->name }}</th>
+                            <th colspan="2">Upazila: {{ $info->scheme->upazila->name }}</th>
+                            <th colspan="@if($last_bill) 3 @else 2 @endif" class="text-center">Shelter ID: {{ $info->scheme->code }}</th>
+                            <th class="text-center">{{ $info->scheme->scheme_option->name }}</th>
+                            <th colspan="@if($last_bill) 5 @else 4 @endif" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
                                     {{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to
                                     {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}
                                 @endif
-                            </td>
+                            </th>
                         </tr>
 
-                        <tr>
-                            <td class="text-bold no-border" colspan="{{ $colspan }}">&nbsp;</td>
-                        </tr>
                         @php
                             $part_boq_total = 0;
                             $part_total = 0;
@@ -542,6 +576,8 @@
                             <th>Quantity</th>
                             <th>Amount</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         @foreach ($info->parts as $part)
                             @if (!$loop->first)
                                 <tr>
@@ -800,6 +836,23 @@
                         </tr>
 
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                    </tfoot>
                 </table>
 
             </div>
@@ -819,28 +872,33 @@
             <div class="page portrait-page">
 
 
-                <table class="table table-bordered table-hover" id="boq-version-table">
+                <table class="table table-bordered table-hover pb-5" id="boq-version-table76">
 
 
                     <tbody>
                         <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">Local Government
+                            <td colspan="{{ $colspan }}" class="text-center no-border heading">Local Government
                                 Engineering
                                 Department (LGED)
                             </td>
                         </tr>
                         <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">
+                            <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">
                                 {{ $project->name }}({{ $project->short_name }})</td>
                         </tr>
                         <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">Package:
+                            <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">Package:
                                 {{ $info->scheme->package->name }}
                                 {{ $info->scheme->package->code }}</td>
                         </tr>
                         <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border">Measurement Sheet</td>
+                            <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">Measurement Sheet</td>
                         </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-hover no break" id="boq-version-table1212">
+                    
+                    <tbody>
                         <tr class="text-bold">
                             <td colspan="3">Name of Shelter:{{ $info->scheme->name }}</td>
                             <td colspan="2">Upazila: {{ $info->scheme->upazila->name }}</td>
@@ -852,7 +910,6 @@
                                 @endif
                             </td>
                         </tr>
-
                         @foreach ($info->parts as $part)
                             <tr>
                                 <td colspan="10" class="text-bold no-border">Bill - ({{ $part->part->code }})
@@ -933,9 +990,9 @@
                                             {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
                                             @else --}}
-                                                <td colspan="4" class="no-border"></td>
+                                            <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Work done Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->quantity, 3) }}</td>
@@ -946,21 +1003,21 @@
                                             {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
                                             @else --}}
-                                                <td colspan="4" class="no-border"></td>
+                                            <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Previous Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->previous_quantity, 3) }}</td>
                                             <td></td>
                                         </tr>
                                         <tr>
-                                                {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                            {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
                                                     <td colspan="3" class="no-border"></td>
                                                 @else --}}
-                                                <td colspan="4" class="no-border"></td>
+                                            <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">BOQ Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($item->boq_version_details->quantity, 3) }}</td>
@@ -970,9 +1027,9 @@
                                             {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
                                             @else --}}
-                                                <td colspan="4" class="no-border"></td>
+                                            <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Held Up Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->held_up_quantity, 3) }}</td>
@@ -982,9 +1039,9 @@
                                             {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
                                             @else --}}
-                                                <td colspan="4" class="no-border"></td>
+                                            <td colspan="4" class="no-border"></td>
                                             {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields))?0:(count(json_decode($item->item->unit->fields)) + 1) }}"
+                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">This Bill Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($measurements->this_bill_quantity, 3) }}</td>
@@ -1001,7 +1058,12 @@
                                                     {{ $item->item->code }} : {{ $item->item->name }}</td>
                                             </tr>
                                             @php
-                                                $m_colspan = in_array('piece', json_decode($sub_item->sub_item->unit->fields)) ? count(json_decode($sub_item->sub_item->unit->fields)) + 6 : count(json_decode($sub_item->sub_item->unit->fields)) + 7;
+                                                $m_colspan = in_array(
+                                                    'piece',
+                                                    json_decode($sub_item->sub_item->unit->fields),
+                                                )
+                                                    ? count(json_decode($sub_item->sub_item->unit->fields)) + 6
+                                                    : count(json_decode($sub_item->sub_item->unit->fields)) + 7;
                                             @endphp
                                             @if (!$loop->first)
                                                 <tr>
@@ -1140,6 +1202,20 @@
                             @endforeach
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         @endif
