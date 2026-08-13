@@ -35,9 +35,9 @@
                                 <div class="form-group row">
                                     <label for="upazila_id" class="col-sm-2 col-form-label">Upazila</label>
                                     <div class="col-sm-10">
-                                        <select class="form-control select2" id="upazila_id" placeholder="Upazila" required
+                                        <select class="form-control select2" id="upazila_id" placeholder="Upazila"
                                             name="upazila_id">
-                                            <option value="">Select Upazila</option>
+                                            <option value="">All Upazila</option>
                                             @foreach ($upazilas as $upazila)
                                                 <option value="{{ $upazila->id }}"
                                                     @if (Request::get('upazila_id') == $upazila->id) selected @endif>
