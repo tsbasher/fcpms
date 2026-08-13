@@ -18,7 +18,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            break-inside: avoid;
+            break-inside: auto !important;
         }
 
         .no-border {
@@ -29,7 +29,7 @@
 
         .no-border-summary {
             border: none !important;
-            font-size: 30px !important;
+            font-size: 20px !important;
             padding-top: 40px !important;
             font-weight: normal !important;
         }
@@ -45,6 +45,14 @@
             padding: 5px !important;
         }
 
+        .heading{
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+        .sub-heading{
+            font-size: 12px !important;
+            /* font-weight: bold !important; */
+        }
         .text-right {
             text-align: right;
         }
@@ -75,43 +83,52 @@
         /* Base print setups */
         @media print {
 
-            /* Define a standard portrait layout */
             @page portrait-layout {
                 size: portrait;
-                /* margin: 20mm; */
             }
 
-            /* Define a custom landscape layout */
             @page landscape-layout {
                 size: landscape;
-                /* margin: 20mm; */
             }
 
-            /* Force standard page breaks */
-            /* .page {
-                break-after: page;
-            } */
-
-            /* Assign layouts to specific classes */
             .portrait-page {
                 page: portrait-layout;
                 break-before: page;
-                /* Forces a clean start */
-                break-after: avoid;
-                /* Prevents trailing empty pages */
             }
 
             .landscape-page {
                 page: landscape-layout;
                 break-before: page;
-                /* Forces a clean start */
-                break-after: avoid;
-                /* Prevents trailing empty pages */
             }
 
             .portrait-page:first-of-type,
             .landscape-page:first-of-type {
                 break-before: auto;
+            }
+
+            /* IMPORTANT */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                break-inside: auto !important;
+                page-break-inside: auto !important;
+            }
+
+            thead {
+                display: table-header-group !important;
+            }
+
+            tfoot {
+                display: table-footer-group !important;
+            }
+
+            tbody {
+                display: table-row-group !important;
+            }
+
+            tr {
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -135,17 +152,17 @@
                     </td>
                 </tr>
                 <tr class="">
-                    <td class="text-center no-border-summary">Local Government Engineering
+                    <td class="text-center no-border-summary heading">Local Government Engineering
                         Department (LGED)
                     </td>
                 </tr>
 
                 <tr class="text-bold">
-                    <td class="text-center no-border-summary">
+                    <td class="text-center no-border-summary heading">
                         {{ $project->name }}({{ $project->short_name }})</td>
                 </tr>
                 <tr class="">
-                    <td class="text-center no-border-summary">
+                    <td class="text-center no-border-summary heading">
                         Package: {{ $package->name }} {{ $package->code }}</br>
                         
                     </td>
@@ -156,7 +173,7 @@
                     </td>
                 </tr>
                 <tr class="text-bold">
-                    <td class="text-center no-border-summary" style="font-size: 80px !important;">
+                    <td class="text-center no-border-summary" style="font-size: 40px !important;">
                         {{ strtoupper( $this_bill->name) }}
                     </td>
                 </tr>
@@ -216,27 +233,31 @@
 
             <tbody>
                 <tr class="text-bold">
-                    <td colspan="{{ $colspan }}" class="text-center no-border">Local Government Engineering
+                    <td colspan="{{ $colspan }}" class="text-center no-border heading">Local Government Engineering
                         Department (LGED)
                     </td>
                 </tr>
                 <tr class="text-bold">
-                    <td colspan="{{ $colspan }}" class="text-center no-border">
+                    <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">
                         {{ $project->name }}({{ $project->short_name }})</td>
                 </tr>
                 <tr class="text-bold">
-                    <td colspan="{{ $colspan }}" class="text-center no-border">Package:
+                    <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">Package:
                         {{ $package->name }}
                         {{ $package->code }}</td>
                 </tr>
                 <tr class="text-bold">
-                    <td colspan="{{ $colspan }}" class="text-center no-border">Summary of Bill</td>
+                    <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill</td>
                 </tr>
                 <tr class="text-bold">
-                    <td colspan="{{ $colspan }}" class="text-center no-border">{{ $this_bill->name }}</td>
+                    <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">{{ $this_bill->name }}</td>
                 </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered table-hover" id="boq-version-table">
+            <thead>
                 <tr class="text-bold">
-                    <td colspan="7">
+                    <td colspan="{{ $colspan - 5 }}">
                         @if (Request::get('report_type') == 'UPZ_DTL')
                             Upazila: {{ $upazila->name }}
                         @elseif(Request::get('report_type') == 'PKG_SUM')
@@ -244,15 +265,11 @@
                         @endif
                     </td>
 
-                    <td colspan="4" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
+                    <td colspan="5" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
                             {{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to
                             {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}
                         @endif
                     </td>
-                </tr>
-
-                <tr>
-                    <td class="text-bold no-border" colspan="{{ $colspan }}">&nbsp;</td>
                 </tr>
 
                 @php
@@ -286,6 +303,8 @@
                     <th>Quantity</th>
                     <th>Amount</th>
                 </tr>
+            </thead>
+            <tbody>
                 @foreach ($summary_bill as $sb)
                     @if (!$loop->first)
                         <tr>
@@ -457,6 +476,22 @@
 
 
             </tbody>
+
+            
+                <tfoot>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $colspan }}" class="text-bold no-border">&nbsp;</td>
+                    </tr>
+                </tfoot>
         </table>
     </div>
 
