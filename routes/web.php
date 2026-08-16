@@ -22,7 +22,6 @@ use App\Http\Controllers\Common\UnionController;
 use App\Http\Controllers\Common\UpazilaController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\User\UserHomeController;
-use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -52,6 +51,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/bills-by-package/{package_id}', [AdminBillController::class, 'getBillsByPackage'])->name('admin.bills.get_bills_by_package');
         Route::get('bill/details/shelter-wise-details', [AdminBillController::class, 'bill_show'])->name('admin.bills.shelter_wise_view');
         Route::get('/get-scheme-by-upazila/{upazila_id}', [SchemeController::class, 'getSchemebyUpazila'])->name('admin.get_scheme_bu_upazila');
+
+                        Route::get('bill/held-up-status/{id}', [AdminBillController::class, 'heldUpStatus'])->name('user.bills.held_up_status');
 
 
         Route::resource('regions', RegionController::class)->names('admin.regions');
@@ -135,6 +136,9 @@ Route::group(['prefix' => ''], function () {
         Route::get('/get-scheme-by-upazila/{upazila_id}', [UserHomeController::class, 'getSchemebyUpazila'])->name('user.get_scheme_by_upazila');
         Route::get('get-permitted-packages', [UserHomeController::class, 'getPermittedPackages'])->name('user.get_permitted_packages');
         Route::post('select-package', [UserHomeController::class, 'selectPackage'])->name('user.package.select');
+        
+        Route::get('bill/regenerate/{id}', [BillController::class, 'regenerate'])->name('user.bills.regenerate');
+
         Route::resource('bills', BillController::class)->names('user.bills');
     });
 });

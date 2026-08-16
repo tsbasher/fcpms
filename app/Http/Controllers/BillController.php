@@ -590,12 +590,10 @@ class BillController extends Controller
 
         $scheme = Scheme::find($request->schemes);
 
-        $boq_items = BoqItem::wherein('id', $boq_version_details_item)->where(function($query)use($scheme){
-            if($scheme){
-                $query->where('pile_type', $scheme->pile_type)->orWhere('pile_type','NA');
+        $boq_items = BoqItem::wherein('id', $boq_version_details_item)->where(function ($query) use ($scheme) {
+            if ($scheme) {
+                $query->where('pile_type', $scheme->pile_type)->orWhere('pile_type', 'NA');
             }
-
-
         })->orderbyraw("regexp_replace(code, '[0-9]+', '', 'g') ASC,
         COALESCE(NULLIF(regexp_replace(code, '[^0-9]', '', 'g'), ''),'0')::int ASC")->get();
 
@@ -819,11 +817,13 @@ class BillController extends Controller
 
             $bill_details->quantity = $bill_details->measurements->sum('quantity');
             $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
-            if ($bill_details->boq_quantity < $bill_details->measurements->sum('quantity')) {
-                $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity') - $bill_details->boq_quantity;
-                $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
-            } else
-                $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
+
+            if ($bill->calculate_with_heldup == 1) {
+                $bill_details->held_up_quantity = 0;
+            } else {
+                $bill_details->held_up_quantity = $bill_details->quantity > $bill_details->boq_quantity ? $bill_details->quantity - $bill_details->boq_quantity : 0;
+            }
+            $bill_details->this_bill_quantity = $bill_details->quantity - $bill_details->previous_quantity - $bill_details->held_up_quantity;
             $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
             $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
             $bill_details->save();
@@ -873,17 +873,17 @@ class BillController extends Controller
                     $this_bill_details = $this_bill_details->first();
 
 
-                    $bill_details->held_up_quantity = 0;
                     $bill_details->quantity = $bill_details->measurements->sum('quantity');
                     $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
-                    if ($bill_details->boq_quantity < $bill_details->measurements->sum('quantity')) {
-                        $bill_details->held_up_quantity = $bill_details->measurements->sum('quantity') - $bill_details->boq_quantity;
-                        $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity') - $bill_details->held_up_quantity;
-                    } else
-                        $bill_details->this_bill_quantity = $bill_details->measurements->sum('quantity') - $old_bill_details->sum('this_bill_quantity');
+
+                    if ($bill->calculate_with_heldup == 1) {
+                        $bill_details->held_up_quantity = 0;
+                    } else {
+                        $bill_details->held_up_quantity = $bill_details->quantity > $bill_details->boq_quantity ? $bill_details->quantity - $bill_details->boq_quantity : 0;
+                    }
+                    $bill_details->this_bill_quantity = $bill_details->quantity - $bill_details->previous_quantity - $bill_details->held_up_quantity;
                     $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
                     $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
-                    $bill_details->save(); // dd($bill_details);
                     $bill_details->save();
                 }
             });
@@ -1256,11 +1256,10 @@ class BillController extends Controller
 
         $bills = Bill::where('package_id', $package->id)
             ->get();
-            if($request->has('upazila_id') && isset($request->upazila_id)){
-                $schemes = Scheme::where('upazila_id', $request->upazila_id)->get();
-            }
-            else
-                $schemes = [];
+        if ($request->has('upazila_id') && isset($request->upazila_id)) {
+            $schemes = Scheme::where('upazila_id', $request->upazila_id)->get();
+        } else
+            $schemes = [];
         // dd($bills);
         return view('backend.user.bill.report.index', compact('bills', 'upazilas', 'schemes'));
     }
@@ -1292,25 +1291,63 @@ class BillController extends Controller
                 $query->where('bill_id', $this_bill->id)
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
-        }else if ($request->report_type == "SCH_DTL") {
+        } else if ($request->report_type == "SCH_DTL") {
             $scheme_ids = BillScheme::where('scheme_id', $request->scheme_id)->where(function ($query) use ($this_bill, $previous_bill_ids) {
                 $query->where('bill_id', $this_bill->id)
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
-        } 
-        else {
+        } else {
             $scheme_ids = BillScheme::where(function ($query) use ($this_bill, $previous_bill_ids) {
                 $query->where('bill_id', $this_bill->id)
                     ->orwhereIn('bill_id', $previous_bill_ids);
             })->get()->pluck('scheme_id')->toArray();
         }
-        if($scheme_ids && count($scheme_ids)>0)
-        return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids, $request->report_type);
-    else
-        return "No schemes found for the selected criteria.";
+        if ($scheme_ids && count($scheme_ids) > 0)
+            return BillGenerator::shelterWiseView($this_bill, $previous_bill_ids, $project_id, $package_id, $scheme_ids, $request->report_type);
+        else
+            return "No schemes found for the selected criteria.";
 
 
 
         // return view('backend.admin.bill.shelter_wise_details', compact('bill', 'scheme_ids', 'project_id', 'package_id'));
+    }
+
+    public function regenerate($id)
+    {
+        $status = BillGenerator::regenerate($id, Auth::guard('web')->user()->contractor_id, Auth::guard('web')->user()->project_id, Auth::guard('web')->user()->package_id);
+        // $bill = Bill::with('boq_version', 'bill_details')->findOrFail($id);
+        // foreach ($bill->bill_details as $bill_detail) {
+        //     $old_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+        //         ->where('project_id', Auth::guard('web')->user()->project_id)
+        //         ->where('package_id', Auth::guard('web')->user()->package_id)
+        //         ->where('id', '!=', $id)
+        //         ->where('serial', '<', $bill->serial)
+        //         ->get()->pluck('id')->toArray();
+        //     $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
+        //         ->where('scheme_id', $bill_detail->scheme_id)
+        //         ->where('boq_part_id', $bill_detail->boq_part_id)->where('boq_item_id', $bill_detail->boq_item_id);
+        //     if (isset($bill_detail->boq_subitem_id)) {
+        //         $old_bill_details->where('boq_subitem_id', $bill_detail->boq_subitem_id);
+        //     }
+        //     $old_bill_details = $old_bill_details->get();
+        //     $bill_detail->quantity = $bill_detail->measurements->sum('quantity');
+        //     $bill_detail->previous_quantity = $old_bill_details->sum('this_bill_quantity');
+        //     if ($bill->calculate_with_heldup == 1) {
+        //         $bill_detail->held_up_quantity = 0;
+        //     } else {
+        //         $bill_detail->held_up_quantity = ($bill_detail->quantity > $bill_detail->boq_quantity) ? ($bill_detail->quantity - $bill_detail->boq_quantity) : 0;
+        //     }
+        //     $bill_detail->this_bill_quantity = $bill_detail->quantity - $bill_detail->previous_quantity - $bill_detail->held_up_quantity;
+        //     $bill_detail->amount = ($bill_detail->quantity - $bill_detail->held_up_quantity) * $bill_detail->rate;
+        //     $bill_detail->this_bill_amount = $bill_detail->this_bill_quantity * $bill_detail->rate;
+        //     $bill_detail->save();
+        // }
+        // dd($bill->bill_details);
+        // $bill->status = 'pending';
+        // $bill->save();
+        if ($status)
+            return redirect()->back()->with('success', 'Bill regenerated successfully.');
+        else
+            return redirect()->back()->with('error', 'Bill regeneration failed.');
     }
 }

@@ -21,6 +21,7 @@ class Bill extends ExtendedModelUser
         'measurement_to_date',
         'name',
         'status',
+        'calculate_with_heldup',
         'remarks',
         'created_by',
         'updated_by',
@@ -61,6 +62,6 @@ class Bill extends ExtendedModelUser
     }
     public function bill_details()
     {
-        return $this->hasMany(BillDetail::class,'bill_id','id');
+        return $this->hasMany(BillDetail::class,'bill_id','id')->with('scheme','scheme_option','boq_part','boq_item','boq_subitem', 'measurements');
     }
 }

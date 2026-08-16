@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Package Summary Bill</title>
+    <title>({{$this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB'}}) - Package Summary Bill</title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">

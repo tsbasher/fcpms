@@ -3,7 +3,7 @@
 <head>
     <title>
         @if (Request::get('report_type') == 'UPZ_DTL')
-            {{ $upazila->name }} Upazila Wise Details Bill
+            ({{$this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB'}}) - {{ $upazila->name }} Upazila Wise Details Bill
         @elseif(Request::get('report_type') == 'SCH_DTL')
             Scheme Details Bill
         @endif
@@ -937,7 +937,7 @@
                                         </tr>
                                         <tr>
                                             <th style="width: 5px;">SL No.</th>
-                                            <th style="width: 5px;">Sspec. No</th>
+                                            <th style="width: 5px;">Spec. No</th>
                                             <th>Description</th>
                                             <th style="width: 5px;">Unit</th>
                                             <th>Nos</th>
@@ -964,6 +964,12 @@
                                                     : []);
                                         @endphp
                                         @foreach ($measurements->measurements as $measurement)
+                                        @php
+                                            $workdone=$measurement->quantity;
+                                            $previous=$item->this_bill_detail?$item->this_bill_detail->previous_quantity:($item->old_bill_detail?($item->old_bill_detail->previous_quantity+$item->old_bill_detail->this_bill_quantity):0);
+                                            $heldup=$item->this_bill_detail?$item->this_bill_detail->held_up_quantity:($item->old_bill_detail?$item->old_bill_detail->held_up_quantity:0);
+                                            $thisbill=$item->this_bill_detail?$item->this_bill_detail->this_bill_quantity:0;
+                                        @endphp
                                             <tr>
                                                 <td class="text-center">{{ $item->item->code }}</td>
                                                 <td class="text-center"></td>
@@ -995,7 +1001,7 @@
                                             <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Work done Quantity</td>
                                             <td class="text-right text-bold">
-                                                {{ number_format($measurements->quantity, 3) }}</td>
+                                                {{ number_format($workdone, 3) }}</td>
                                             <td></td>
                                         </tr>
 
@@ -1008,7 +1014,7 @@
                                             <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Previous Quantity</td>
                                             <td class="text-right text-bold">
-                                                {{ number_format($measurements->previous_quantity, 3) }}</td>
+                                                {{ number_format($previous, 3) }}</td>
                                             <td></td>
                                         </tr>
                                         <tr>
@@ -1032,7 +1038,7 @@
                                             <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Held Up Quantity</td>
                                             <td class="text-right text-bold">
-                                                {{ number_format($measurements->held_up_quantity, 3) }}</td>
+                                                {{ number_format($heldup, 3) }}</td>
                                             <td></td>
                                         </tr>
                                         <tr>
@@ -1044,7 +1050,7 @@
                                             <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">This Bill Quantity</td>
                                             <td class="text-right text-bold">
-                                                {{ number_format($measurements->this_bill_quantity, 3) }}</td>
+                                                {{ number_format($thisbill, 3) }}</td>
                                             <td></td>
                                         </tr>
                                     @endif
@@ -1111,6 +1117,12 @@
                                                         : []);
                                             @endphp
                                             @foreach ($measurements->measurements as $measurement)
+                                             @php
+                                            $workdone=$measurement->quantity;
+                                            $previous=$item->this_bill_detail?$item->this_bill_detail->previous_quantity:($item->old_bill_detail?($item->old_bill_detail->previous_quantity+$item->old_bill_detail->this_bill_quantity):0);
+                                            $heldup=$item->this_bill_detail?$item->this_bill_detail->held_up_quantity:($item->old_bill_detail?$item->old_bill_detail->held_up_quantity:0);
+                                            $thisbill=$item->this_bill_detail?$item->this_bill_detail->this_bill_quantity:0;
+                                        @endphp
                                                 <tr>
                                                     <td class="text-center">{{ $sub_item->sub_item->code }}</td>
                                                     <td class="text-center"></td>
@@ -1143,7 +1155,7 @@
                                                 <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                     class="text-right text-bold">Work done Quantity</td>
                                                 <td class="text-right text-bold">
-                                                    {{ number_format($measurements->quantity, 3) }}</td>
+                                                    {{ number_format($workdone, 3) }}</td>
                                                 <td></td>
                                             </tr>
 
@@ -1156,7 +1168,7 @@
                                                 <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                     class="text-right text-bold">Previous Quantity</td>
                                                 <td class="text-right text-bold">
-                                                    {{ number_format($measurements->previous_quantity, 3) }}</td>
+                                                    {{ number_format($previous, 3) }}</td>
                                                 <td></td>
                                             </tr>
                                             <tr>
@@ -1181,7 +1193,7 @@
                                                 <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                     class="text-right text-bold">Held Up Quantity</td>
                                                 <td class="text-right text-bold">
-                                                    {{ number_format($measurements->held_up_quantity, 3) }}</td>
+                                                    {{ number_format($heldup, 3) }}</td>
                                                 <td></td>
                                             </tr>
                                             <tr>
@@ -1193,7 +1205,7 @@
                                                 <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                     class="text-right text-bold">This Bill Quantity</td>
                                                 <td class="text-right text-bold">
-                                                    {{ number_format($measurements->this_bill_quantity, 3) }}</td>
+                                                    {{ number_format($thisbill, 3) }}</td>
                                                 <td></td>
                                             </tr>
                                         @endif

@@ -113,7 +113,19 @@
                     <!-- /.card-body -->
 
                     <div class="card-footer clearfix text-center" style="background: #00000000">
-                        <input type="submit" class="btn btn-success" value="View Bill">
+                        <div class="row">
+                            <div class="col-md-6 text-right">
+
+                                <input type="submit" class="btn btn-success" value="View Bill">
+                            </div>
+                            <div class="col-md-6 text-left">
+
+                                <div id="heldup">
+
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -190,7 +202,10 @@
                         $('#bill_id').append('<option value="">Select Bill</option>');
                         $.each(data, function(key, value) {
                             $('#bill_id').append('<option value="' + value.id +
-                                '">' + value.name + '</option>');
+                                '" data-heldup="' + value.calculate_with_heldup +
+                                '">' + value.name + ' (' + (value
+                                    .calculate_with_heldup == 1 ? 'Not Verify BOQ' :
+                                    'Verify BOQ') + ')' + '</option>');
                         });
                         $('.select2').select2(); // Reinitialize Select2 after updating options
                     }
@@ -199,6 +214,80 @@
                 //     $('#bill_id').empty();
                 //     $('#bill_id').append('<option value="">Select Bill</option>');
                 // }
+            });
+
+            $('#bill_id').on('change', function() {
+                var calculateWithHeldup = $(this).find(':selected').data('heldup');
+                var billId = $('#bill_id').val();
+                if (!billId) {
+                    $('#heldup').html('');
+                    return; // Exit if no bill is selected
+                }
+                debugger;
+                if (calculateWithHeldup == 0) {
+                    $('#heldup').html(
+                        '<a href="" id="change_status" class="btn btn-danger">Not Verify BOQ</a>'
+                    );
+
+                } else {
+                    $('#heldup').html(
+                        '<a href="" id="change_status" class="btn btn-warning">Verify BOQ</a>'
+                    );
+
+                }
+            });
+            $(document).on('click', '#change_status', function(e) {
+                // $("#change_status").on('click', function(e) {
+                e.preventDefault();
+                var billId = $('#bill_id').val();
+                if (billId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You Want to change the held-up status?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, change it!',
+                        cancelButtonText: 'No, cancel!',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: ("{{ route('user.bills.held_up_status', '*') }}")
+                                    .replace('*',
+                                        billId),
+                                type: 'GET',
+                                dataType: 'json',
+                                success: function(response) {
+                                    debugger;
+                                    if (response.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: response.message,
+                                        }).then(() => {
+                                            $("#package_id").trigger('change'); // Trigger change event to refresh the bill list
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: response.message,
+                                        });
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'An error occurred while updating the held-up status.',
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    $('#heldup').html('');
+                }
             });
 
         });

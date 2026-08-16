@@ -15,6 +15,9 @@ use App\Models\Package;
 use App\Models\Project;
 use App\Models\Scheme;
 use App\Models\Upazila;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BillGenerator
 {
@@ -255,11 +258,11 @@ class BillGenerator
         // return response()->json($summary_bill);
         $contractor = Contractor::findOrFail($this_bill->contractor_id);
         $last_bill = Bill::where('id', '!=', $this_bill->id)
-        ->wherehas('boq_version', function ($query) use ($project_id, $package_id) {
-            $query->where('project_id', $project_id)
-                ->where('package_id', $package_id);
-        })
-        ->where('serial', '<', $this_bill->serial)->where('project_id', $this_bill->project_id)->orderBy('id', 'desc')->first();
+            ->wherehas('boq_version', function ($query) use ($project_id, $package_id) {
+                $query->where('project_id', $project_id)
+                    ->where('package_id', $package_id);
+            })
+            ->where('serial', '<', $this_bill->serial)->where('project_id', $this_bill->project_id)->orderBy('id', 'desc')->first();
         $project = Project::findOrFail($this_bill->project_id);
         $package = Package::findOrFail($this_bill->boq_version->package_id);
         $upazila = Upazila::findOrFail($schemes->first()->upazila_id);
@@ -269,5 +272,53 @@ class BillGenerator
             return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill', 'package', 'summary_bill', 'upazila', 'contractor'));
         }
         // return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill', 'package', 'summary_bill', 'upazila', 'contractor'));
+    }
+
+
+    public static function regenerate($bill_id, $contractor_id, $project_id, $package_id)
+    {
+        try {
+            DB::transaction(function () use ($bill_id, $contractor_id, $project_id, $package_id) {
+                // dd($bill_id, $contractor_id, $project_id, $package_id);
+                $bill = Bill::with('boq_version', 'bill_details')->findOrFail($bill_id);
+                foreach ($bill->bill_details as $bill_detail) {
+
+                    $old_bill = Bill::where('contractor_id', $contractor_id)
+                        ->where('project_id', $project_id)
+                        ->where('package_id', $package_id)
+                        ->where('id', '!=', $bill_id)
+                        ->where('serial', '<', $bill->serial)
+                        ->get()->pluck('id')->toArray();
+
+                    $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
+                        ->where('scheme_id', $bill_detail->scheme_id)
+                        ->where('boq_part_id', $bill_detail->boq_part_id)->where('boq_item_id', $bill_detail->boq_item_id);
+                    if (isset($bill_detail->boq_subitem_id)) {
+                        $old_bill_details->where('boq_subitem_id', $bill_detail->boq_subitem_id);
+                    }
+                    $old_bill_details = $old_bill_details->get();
+                    $bill_detail->quantity = $bill_detail->measurements->sum('quantity');
+                    $bill_detail->previous_quantity = $old_bill_details->sum('this_bill_quantity');
+                    // dd($bill);
+                    if ($bill->calculate_with_heldup == 1) {
+                        $bill_detail->held_up_quantity = 0;
+                    } else {
+                        $bill_detail->held_up_quantity = ($bill_detail->quantity > $bill_detail->boq_quantity) ? ($bill_detail->quantity - $bill_detail->boq_quantity) : 0;
+                    }
+                    $bill_detail->this_bill_quantity = $bill_detail->quantity - $bill_detail->previous_quantity - $bill_detail->held_up_quantity;
+                    $bill_detail->amount = ($bill_detail->quantity - $bill_detail->held_up_quantity) * $bill_detail->rate;
+                    $bill_detail->this_bill_amount = $bill_detail->this_bill_quantity * $bill_detail->rate;
+                    $bill_detail->save();
+                }
+                $bill->status = 'pending';
+                $bill->save();
+            });
+        } catch (Exception $e) {
+            // Handle the exception, log it, or return an error response
+            // For example, you can log the error message:
+            Log::error('Error regenerating bill: ' . $e->getMessage());
+            return false; // Indicate that the regeneration failed
+        }
+        return true;
     }
 }

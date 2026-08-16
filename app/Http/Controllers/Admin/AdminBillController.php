@@ -11,6 +11,7 @@ use App\Models\Package;
 use App\Models\Scheme;
 use App\Models\Upazila;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminBillController extends Controller
 {
@@ -82,5 +83,22 @@ class AdminBillController extends Controller
     {
         $bills = Bill::where('package_id', $package_id)->get();
         return response()->json($bills);
+    }
+    public function heldUpStatus($bill_id)
+    {
+        $status = false;
+        // dd($bill_id);
+        DB::transaction(function () use ($bill_id, &$status) {
+
+            $bill = Bill::findOrFail($bill_id);
+            $bill->calculate_with_heldup = $bill->calculate_with_heldup==1 ? 0 : 1;
+            $bill->save();
+            $status = BillGenerator::regenerate($bill_id, $bill->contractor_id, $bill->project_id, $bill->package_id);
+        });
+        if ($status) {
+            return response()->json(['success' => true, 'message' => 'Bill held-up status updated successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to update bill held-up status.']);
+        }
     }
 }
