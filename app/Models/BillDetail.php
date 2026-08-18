@@ -57,7 +57,7 @@ class BillDetail extends ExtendedModelUser
 
     public function measurements()
     {
-        return $this->hasMany(Measurement::class);
+        return $this->hasMany(Measurement::class)->with('measurement_details');
     }
 
 }

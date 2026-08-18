@@ -58,4 +58,8 @@ class Measurement extends ExtendedModelUser
     {
         return $this->belongsTo(Unit::class);
     }
+    public function measurement_details()
+    {
+        return $this->hasMany(MeasurementDetails::class)->orderByRaw('CAST(dia AS INTEGER) DESC')->orderBy('created_at', 'asc');
+    }
 }

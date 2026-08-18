@@ -125,6 +125,7 @@ Route::group(['prefix' => ''], function () {
         Route::get('/bill/details/measurement/{id}', [BillController::class, 'show_measurement'])->name('user.bills.details.measurement');
         Route::post('/bill/details/add-measurement/{bill_id}', [BillController::class, 'storeMeasurement'])->name('user.bills.store_measurement');
         Route::get('/bill/details/remove-measurement/{id}/{bill_id}', [BillController::class, 'removeMeasurement'])->name('user.bills.remove_measurement');
+        Route::get('/bill/details/remove-measurement-details/{id}/{bill_id}', [BillController::class, 'removeMeasurementDetails'])->name('user.bills.remove_measurement_details');
         Route::get('/bill/details/unit-wise-view/{id}', [BillController::class, 'unitWiseView'])->name('user.bills.unit_wise_view');
 
         Route::get('bill/details/shelter-wise/{id}', [BillController::class, 'shelterWiseView'])->name('user.bills.shelter_wise_view');

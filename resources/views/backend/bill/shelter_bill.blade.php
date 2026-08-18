@@ -3,9 +3,10 @@
 <head>
     <title>
         @if (Request::get('report_type') == 'UPZ_DTL')
-            ({{$this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB'}}) - {{ $upazila->name }} Upazila Wise Details Bill
+            ({{ $this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB' }}) - {{ $upazila->name }} Upazila Wise Details
+            Bill
         @elseif(Request::get('report_type') == 'SCH_DTL')
-            Scheme Details Bill
+            ({{ $this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB' }}) -  Scheme Details Bill
         @endif
     </title>
     <!-- Google Font: Source Sans Pro -->
@@ -51,14 +52,16 @@
             padding: 5px !important;
         }
 
-        .heading{
+        .heading {
             font-size: 14px !important;
             font-weight: bold !important;
         }
-        .sub-heading{
+
+        .sub-heading {
             font-size: 12px !important;
             /* font-weight: bold !important; */
         }
+
         .text-right {
             text-align: right;
         }
@@ -91,11 +94,35 @@
 
             @page portrait-layout {
                 size: portrait;
+
+                @bottom-center {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-family: sans-serif;
+                    font-size: 10pt;
+                }
             }
 
             @page landscape-layout {
                 size: landscape;
+
+                @bottom-center {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-family: sans-serif;
+                    font-size: 10pt;
+                }
             }
+
+            @page portrait-layout:first {
+        @bottom-center {
+            content: normal; /* Hides footer if first page is portrait */
+        }
+    }
+
+    @page landscape-layout:first {
+        @bottom-center {
+            content: normal; /* Hides footer if first page is landscape */
+        }
+    }
 
             .portrait-page {
                 page: portrait-layout;
@@ -236,7 +263,8 @@
 
                 <thead>
                     <tr class="text-bold">
-                        <th colspan="{{ $colspan }}" class="text-center no-border heading">Local Government Engineering
+                        <th colspan="{{ $colspan }}" class="text-center no-border heading">Local Government
+                            Engineering
                             Department (LGED)
                         </th>
                     </tr>
@@ -250,10 +278,12 @@
                             {{ $package->code }}</th>
                     </tr>
                     <tr class="text-bold">
-                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill</th>
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill
+                        </th>
                     </tr>
                     <tr class="text-bold">
-                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">{{ $this_bill->name }}</th>
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">
+                            {{ $this_bill->name }}</th>
                     </tr>
                 </thead>
             </table>
@@ -501,6 +531,10 @@
         </div>
     @endif
     @foreach ($shelter_bill as $info)
+    @php
+        
+        $measurement_details_view=[];
+    @endphp
         {{-- @dd($shelter_bill) --}}
         @if ($info->has_bill_details)
             <div class="page landscape-page">
@@ -523,10 +557,12 @@
                             {{ $info->scheme->package->code }}</th>
                     </tr>
                     <tr class="text-bold">
-                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill</th>
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">Summary of Bill
+                        </th>
                     </tr>
                     <tr class="text-bold">
-                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">{{ $this_bill->name }}
+                        <th colspan="{{ $colspan }}" class="text-center no-border sub-heading">
+                            {{ $this_bill->name }}
                         </th>
                     </tr>
                 </table>
@@ -536,9 +572,11 @@
                         <tr class="text-bold">
                             <th colspan="2">Name of Shelter:{{ $info->scheme->name }}</th>
                             <th colspan="2">Upazila: {{ $info->scheme->upazila->name }}</th>
-                            <th colspan="@if($last_bill) 3 @else 2 @endif" class="text-center">Shelter ID: {{ $info->scheme->code }}</th>
+                            <th colspan="@if ($last_bill) 3 @else 2 @endif" class="text-center">
+                                Shelter ID: {{ $info->scheme->code }}</th>
                             <th class="text-center">{{ $info->scheme->scheme_option->name }}</th>
-                            <th colspan="@if($last_bill) 5 @else 4 @endif" class="text-center">Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
+                            <th colspan="@if ($last_bill) 5 @else 4 @endif" class="text-center">
+                                Measurement Date: @if ($this_bill->measurement_from_date && $this_bill->measurement_to_date)
                                     {{ date('d F, Y', strtotime($this_bill->measurement_from_date)) }} to
                                     {{ date('d F, Y', strtotime($this_bill->measurement_to_date)) }}
                                 @endif
@@ -892,12 +930,13 @@
                                 {{ $info->scheme->package->code }}</td>
                         </tr>
                         <tr class="text-bold">
-                            <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">Measurement Sheet</td>
+                            <td colspan="{{ $colspan }}" class="text-center no-border sub-heading">Measurement
+                                Sheet</td>
                         </tr>
                     </tbody>
                 </table>
                 <table class="table table-bordered table-hover no break" id="boq-version-table1212">
-                    
+
                     <tbody>
                         <tr class="text-bold">
                             <td colspan="3">Name of Shelter:{{ $info->scheme->name }}</td>
@@ -910,6 +949,9 @@
                                 @endif
                             </td>
                         </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-hover no break" id="boq-version-table1212">
                         @foreach ($info->parts as $part)
                             <tr>
                                 <td colspan="10" class="text-bold no-border">Bill - ({{ $part->part->code }})
@@ -964,12 +1006,29 @@
                                                     : []);
                                         @endphp
                                         @foreach ($measurements->measurements as $measurement)
-                                        @php
-                                            $workdone=$measurement->quantity;
-                                            $previous=$item->this_bill_detail?$item->this_bill_detail->previous_quantity:($item->old_bill_detail?($item->old_bill_detail->previous_quantity+$item->old_bill_detail->this_bill_quantity):0);
-                                            $heldup=$item->this_bill_detail?$item->this_bill_detail->held_up_quantity:($item->old_bill_detail?$item->old_bill_detail->held_up_quantity:0);
-                                            $thisbill=$item->this_bill_detail?$item->this_bill_detail->this_bill_quantity:0;
-                                        @endphp
+                                            @php
+                                                $workdone = $measurement->quantity;
+                                                $previous = $item->this_bill_detail
+                                                    ? $item->this_bill_detail->previous_quantity
+                                                    : ($item->old_bill_detail
+                                                        ? $item->old_bill_detail->previous_quantity +
+                                                            $item->old_bill_detail->this_bill_quantity
+                                                        : 0);
+                                                $heldup = $item->this_bill_detail
+                                                    ? $item->this_bill_detail->held_up_quantity
+                                                    : ($item->old_bill_detail
+                                                        ? $item->old_bill_detail->held_up_quantity
+                                                        : 0);
+                                                $thisbill = $item->this_bill_detail
+                                                    ? $item->this_bill_detail->this_bill_quantity
+                                                    : 0;
+                                                    if($measurement->measurement_details && count($measurement->measurement_details) > 0){
+                                                        $measurement_details= $measurement->measurement_details;
+                                                        $scheme= $info->scheme;
+                                                        $boq_item= $item;
+                                                        array_push($measurement_details_view, View::make('backend.bill.partials.measurement_details', compact('project','colspan','measurement_details','scheme','this_bill','boq_item'))->render());
+                                                    }
+                                            @endphp
                                             <tr>
                                                 <td class="text-center">{{ $item->item->code }}</td>
                                                 <td class="text-center"></td>
@@ -1117,12 +1176,30 @@
                                                         : []);
                                             @endphp
                                             @foreach ($measurements->measurements as $measurement)
-                                             @php
-                                            $workdone=$measurement->quantity;
-                                            $previous=$item->this_bill_detail?$item->this_bill_detail->previous_quantity:($item->old_bill_detail?($item->old_bill_detail->previous_quantity+$item->old_bill_detail->this_bill_quantity):0);
-                                            $heldup=$item->this_bill_detail?$item->this_bill_detail->held_up_quantity:($item->old_bill_detail?$item->old_bill_detail->held_up_quantity:0);
-                                            $thisbill=$item->this_bill_detail?$item->this_bill_detail->this_bill_quantity:0;
-                                        @endphp
+                                                @php
+                                                    $workdone = $measurement->quantity;
+                                                    $previous = $item->this_bill_detail
+                                                        ? $item->this_bill_detail->previous_quantity
+                                                        : ($item->old_bill_detail
+                                                            ? $item->old_bill_detail->previous_quantity +
+                                                                $item->old_bill_detail->this_bill_quantity
+                                                            : 0);
+                                                    $heldup = $item->this_bill_detail
+                                                        ? $item->this_bill_detail->held_up_quantity
+                                                        : ($item->old_bill_detail
+                                                            ? $item->old_bill_detail->held_up_quantity
+                                                            : 0);
+                                                    $thisbill = $item->this_bill_detail
+                                                        ? $item->this_bill_detail->this_bill_quantity
+                                                        : 0;
+                                                        
+                                                    if($measurement->measurement_details && count($measurement->measurement_details) > 0){
+                                                        $measurement_details= $measurement->measurement_details;
+                                                        $scheme= $info->scheme;
+                                                        $boq_item= $sub_item;
+                                                        array_push($measurement_details_view, View::make('backend.bill.partials.measurement_details', compact('project','colspan','measurement_details','scheme','this_bill','boq_item'))->render());
+                                                    }
+                                                @endphp
                                                 <tr>
                                                     <td class="text-center">{{ $sub_item->sub_item->code }}</td>
                                                     <td class="text-center"></td>
@@ -1230,6 +1307,12 @@
                     </tfoot>
                 </table>
             </div>
+
+            @if($measurement_details_view && count($measurement_details_view) > 0)
+                @foreach ($measurement_details_view as $view)
+                    {!! $view !!}
+                @endforeach
+                @endif
         @endif
     @endforeach
 

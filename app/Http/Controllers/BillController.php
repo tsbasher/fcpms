@@ -15,6 +15,7 @@ use App\Models\BoqSubItem;
 use App\Models\BoqVersion;
 use App\Models\BoqVersionDetails;
 use App\Models\Measurement;
+use App\Models\MeasurementDetails;
 use App\Models\Package;
 use App\Models\Project;
 use App\Models\Scheme;
@@ -616,7 +617,7 @@ class BillController extends Controller
                 $measurement_view = view('backend.user.bill.measurement.measurement', compact('unit', 'fields'));
             }
         }
-        $measurements = Measurement::with('unit')->where('bill_id', $id)->where('scheme_id', $request->schemes)
+        $measurements = Measurement::with('unit', 'measurement_details')->where('bill_id', $id)->where('scheme_id', $request->schemes)
             ->where('boq_part_id', $request->boq_part_id)->where('boq_item_id', $request->boq_item_id);
         $boq_version_item = null;
         if ($scheme) {
@@ -665,7 +666,7 @@ class BillController extends Controller
             $this_bill_details->where('boq_subitem_id', $request->boq_subitem_id);
         }
         $this_bill_details = $this_bill_details->first();
-
+        // dd($measurements);
         // dd($old_bill_details->sum('this_bill_quantity'));
 
         return view('backend.user.bill.show_measurement', compact('bill', 'schemes', 'bill_parts', 'boq_items', 'boq_subitems', 'measurement_view', 'measurements', 'boq_version_item', 'old_bill_details', 'this_bill_details'));
@@ -673,6 +674,7 @@ class BillController extends Controller
     public function storeMeasurement($id, Request $request)
     {
         // dd($request->all());
+        // dd(json_decode($request->unit_fields));
         // Implementation for storing measurement
         $v = Validator($request->all(), [
             'schemes' => 'required|exists:schemes,id',
@@ -717,23 +719,25 @@ class BillController extends Controller
             // dd(Auth::guard('web')->user()->project_id);
             if ($bill_detail) {
                 $bill_detail_id = $bill_detail->id;
-                $measurement = Measurement::create([
-                    'project_id' => Auth::guard('web')->user()->project_id,
-                    'bill_id' => $id,
-                    'bill_detail_id' => $bill_detail->id,
-                    'scheme_id' => $request->schemes,
-                    'boq_part_id' => $request->boq_part_id,
-                    'boq_item_id' => $request->boq_item_id,
-                    'boq_subitem_id' => $request->boq_subitem_id,
-                    'unit_id' => $request->unit_id,
-                    'description' => $request->measurement_item,
-                    'nos' => $request->nos,
-                    'length' => $request->length,
-                    'width' => $request->width,
-                    'height' => $request->height,
-                    'weight' => $request->weight,
-                    'quantity' => ($request->nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
-                ]);
+
+                $this->savemeasurement($bill_detail_id, $request, $id);
+                // $measurement = Measurement::create([
+                //     'project_id' => Auth::guard('web')->user()->project_id,
+                //     'bill_id' => $id,
+                //     'bill_detail_id' => $bill_detail->id,
+                //     'scheme_id' => $request->schemes,
+                //     'boq_part_id' => $request->boq_part_id,
+                //     'boq_item_id' => $request->boq_item_id,
+                //     'boq_subitem_id' => $request->boq_subitem_id,
+                //     'unit_id' => $request->unit_id,
+                //     'description' => $request->measurement_item,
+                //     'nos' => $request->nos,
+                //     'length' => $request->length,
+                //     'width' => $request->width,
+                //     'height' => $request->height,
+                //     'weight' => $request->weight,
+                //     'quantity' => ($request->nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
+                // ]);
                 // $bill_details=BillDetail::
 
             } else {
@@ -764,23 +768,24 @@ class BillController extends Controller
                 ]);
 
                 $bill_detail_id = $bill_details->id;
-                $measurement = Measurement::create([
-                    'project_id' => Auth::guard('web')->user()->project_id,
-                    'bill_id' => $id,
-                    'bill_detail_id' => $bill_details->id,
-                    'scheme_id' => $request->schemes,
-                    'boq_part_id' => $request->boq_part_id,
-                    'boq_item_id' => $request->boq_item_id,
-                    'boq_subitem_id' => $request->boq_subitem_id,
-                    'unit_id' => $request->unit_id,
-                    'description' => $request->measurement_item,
-                    'nos' => $request->nos,
-                    'length' => $request->length,
-                    'width' => $request->width,
-                    'height' => $request->height,
-                    'weight' => $request->weight,
-                    'quantity' => ($request->nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
-                ]);
+                $this->savemeasurement($bill_detail_id, $request, $id);
+                // $measurement = Measurement::create([
+                //     'project_id' => Auth::guard('web')->user()->project_id,
+                //     'bill_id' => $id,
+                //     'bill_detail_id' => $bill_details->id,
+                //     'scheme_id' => $request->schemes,
+                //     'boq_part_id' => $request->boq_part_id,
+                //     'boq_item_id' => $request->boq_item_id,
+                //     'boq_subitem_id' => $request->boq_subitem_id,
+                //     'unit_id' => $request->unit_id,
+                //     'description' => $request->measurement_item,
+                //     'nos' => $request->nos,
+                //     'length' => $request->length,
+                //     'width' => $request->width,
+                //     'height' => $request->height,
+                //     'weight' => $request->weight,
+                //     'quantity' => ($request->nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
+                // ]);
             }
 
             // $bill->contractor_id = Auth::guard('web')->user()->contractor_id;
@@ -831,6 +836,99 @@ class BillController extends Controller
         return redirect()->back()->with('success', 'Measurement added successfully.')->withInput();
     }
 
+    private function savemeasurement($bill_detail_id, $request, $id)
+    {
+
+        $unit_fields = json_decode($request->unit_fields, true);
+        if (in_array('weight', $unit_fields)) {
+
+            $m = Measurement::where('bill_id', $id)->where('bill_detail_id', $bill_detail_id)->first();
+            if ($m) {
+
+
+                MeasurementDetails::create([
+                    'project_id' => Auth::guard('web')->user()->project_id,
+                    'bill_id' => $id,
+                    'bill_detail_id' => $bill_detail_id,
+                    'measurement_id' => $m->id,
+                    'scheme_id' => $request->schemes,
+                    'boq_part_id' => $request->boq_part_id,
+                    'boq_item_id' => $request->boq_item_id,
+                    'boq_subitem_id' => $request->boq_subitem_id,
+                    'description' => $request->measurement_item,
+                    'unit_id' => $request->unit_id,
+                    'dia' => $request->dia,
+                    'spacing' => $request->spacing,
+                    'rebar_nos' => $request->rebar_nos,
+                    'rebar_length' => $request->rebar_length,
+                    'unit_weight' => $request->unit_weight,
+                    'quantity_per_pile' => $request->rebar_nos * $request->rebar_length * $request->unit_weight,
+                ]);
+            } else {
+                $measurement_item = $request->boq_subitem_id ? BoqSubItem::find($request->boq_subitem_id)->name : BoqItem::find($request->boq_item_id)->name;
+                $m = Measurement::create([
+                    'project_id' => Auth::guard('web')->user()->project_id,
+                    'bill_id' => $id,
+                    'bill_detail_id' => $bill_detail_id,
+                    'scheme_id' => $request->schemes,
+                    'boq_part_id' => $request->boq_part_id,
+                    'boq_item_id' => $request->boq_item_id,
+                    'boq_subitem_id' => $request->boq_subitem_id,
+                    'unit_id' => $request->unit_id,
+                    'description' => $measurement_item,
+                    'nos' => $request->nos,
+                    'length' => $request->length,
+                    'width' => $request->width,
+                    'height' => $request->height,
+                    'weight' => 0,
+                    'quantity' => 0,
+                ]);
+                MeasurementDetails::create([
+                    'project_id' => Auth::guard('web')->user()->project_id,
+                    'bill_id' => $id,
+                    'bill_detail_id' => $bill_detail_id,
+                    'measurement_id' => $m->id,
+                    'scheme_id' => $request->schemes,
+                    'boq_part_id' => $request->boq_part_id,
+                    'boq_item_id' => $request->boq_item_id,
+                    'boq_subitem_id' => $request->boq_subitem_id,
+                    'description' => $request->measurement_item,
+                    'unit_id' => $request->unit_id,
+                    'dia' => $request->dia,
+                    'spacing' => $request->spacing,
+                    'rebar_nos' => $request->rebar_nos,
+                    'rebar_length' => $request->rebar_length,
+                    'unit_weight' => $request->unit_weight,
+                    'quantity_per_pile' => $request->rebar_nos * $request->rebar_length * $request->unit_weight,
+                ]);
+            }
+            $md = MeasurementDetails::where('measurement_id', $m->id)->get();
+            $m->weight = $md->sum('quantity_per_pile');
+            $m->quantity = $m->nos * $m->weight;
+            $m->save();
+        } else {
+            $measurement = Measurement::create([
+                'project_id' => Auth::guard('web')->user()->project_id,
+                'bill_id' => $id,
+                'bill_detail_id' => $bill_detail_id,
+                'scheme_id' => $request->schemes,
+                'boq_part_id' => $request->boq_part_id,
+                'boq_item_id' => $request->boq_item_id,
+                'boq_subitem_id' => $request->boq_subitem_id,
+                'unit_id' => $request->unit_id,
+                'description' => $request->measurement_item,
+                'nos' => $request->nos,
+                'length' => $request->length,
+                'width' => $request->width,
+                'height' => $request->height,
+                'weight' => $request->weight,
+                'quantity' => ($request->nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
+            ]);
+        }
+    }
+
+
+
     public function removeMeasurement($id, $bill_id)
     {
         try {
@@ -840,52 +938,7 @@ class BillController extends Controller
                 $bill_detail_id = $measurement->bill_detail_id;
                 $measurement->delete();
                 $bill = Bill::findOrFail($bill_id);
-
-                $bill_details = BillDetail::with('measurements')->find($bill_detail_id);
-                if ($bill_details->measurements->count() == 0) {
-                    $bill_details->delete();
-                } else {
-
-
-
-                    $old_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
-                        ->where('project_id', Auth::guard('web')->user()->project_id)
-                        ->where('package_id', Auth::guard('web')->user()->package_id)
-                        ->where('id', '!=', $bill_id)
-                        ->where('serial', '<', $bill->serial)
-                        ->get()->pluck('id')->toArray();
-
-                    $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
-                        ->where('scheme_id', $bill_details->scheme_id)
-                        ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
-                    if (isset($bill_details->boq_subitem_id)) {
-                        $old_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
-                    }
-                    $old_bill_details = $old_bill_details->get();
-
-
-                    $this_bill_details = BillDetail::with('measurements')->where('bill_id', $bill_id)
-                        ->where('scheme_id', $bill_details->scheme_id)
-                        ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
-                    if (isset($bill_details->boq_subitem_id)) {
-                        $this_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
-                    }
-                    $this_bill_details = $this_bill_details->first();
-
-
-                    $bill_details->quantity = $bill_details->measurements->sum('quantity');
-                    $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
-
-                    if ($bill->calculate_with_heldup == 1) {
-                        $bill_details->held_up_quantity = 0;
-                    } else {
-                        $bill_details->held_up_quantity = $bill_details->quantity > $bill_details->boq_quantity ? $bill_details->quantity - $bill_details->boq_quantity : 0;
-                    }
-                    $bill_details->this_bill_quantity = $bill_details->quantity - $bill_details->previous_quantity - $bill_details->held_up_quantity;
-                    $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
-                    $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
-                    $bill_details->save();
-                }
+                $this->adjustBillDetails($bill_detail_id, $bill_id);
             });
             $data = new stdClass();
             $data->status = 1;
@@ -912,23 +965,82 @@ class BillController extends Controller
             ->where('project_id', Auth::guard('web')->user()->project_id);
         // ->where('package_id', Auth::guard('web')->user()->package_id);
 
+            $setails_suggestions = MeasurementDetails::whereRaw('LOWER(description) LIKE ?', ['%' . $lowercaseQuery . '%'])
+            ->where('project_id', Auth::guard('web')->user()->project_id);
         if ($part_id) {
             $suggestions->where('boq_part_id', $part_id);
+            $setails_suggestions->where('boq_part_id', $part_id);
         }
 
         if ($item_id) {
             $suggestions->where('boq_item_id', $item_id);
+            // $setails_suggestions->where('boq_item_id', $item_id);
         }
 
         if ($subitem_id) {
             $suggestions->where('boq_subitem_id', $subitem_id);
+            // $setails_suggestions->where('boq_subitem_id', $subitem_id);
         }
 
         $suggestions = $suggestions->groupByRaw('LOWER(description)')
             ->selectRaw('MIN(description) as description')
-            ->pluck('description');;
+            ->pluck('description');
+        $setails_suggestions = $setails_suggestions->groupByRaw('LOWER(description)')
+            ->selectRaw('MIN(description) as description')
+            ->pluck('description');
+        $suggestions = $suggestions->merge($setails_suggestions)->unique()->values();
+        
 
         return response()->json($suggestions);
+    }
+    private function adjustBillDetails($bill_detail_id, $bill_id)
+    {
+        $bill = Bill::findOrFail($bill_id);
+        $bill_details = BillDetail::with('measurements')->find($bill_detail_id);
+        if ($bill_details->measurements->count() == 0) {
+            $bill_details->delete();
+        } else {
+
+
+
+            $old_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+                ->where('project_id', Auth::guard('web')->user()->project_id)
+                ->where('package_id', Auth::guard('web')->user()->package_id)
+                ->where('id', '!=', $bill_id)
+                ->where('serial', '<', $bill->serial)
+                ->get()->pluck('id')->toArray();
+
+            $old_bill_details = BillDetail::with('measurements')->whereIn('bill_id', $old_bill)
+                ->where('scheme_id', $bill_details->scheme_id)
+                ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
+            if (isset($bill_details->boq_subitem_id)) {
+                $old_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
+            }
+            $old_bill_details = $old_bill_details->get();
+
+
+            $this_bill_details = BillDetail::with('measurements')->where('bill_id', $bill_id)
+                ->where('scheme_id', $bill_details->scheme_id)
+                ->where('boq_part_id', $bill_details->boq_part_id)->where('boq_item_id', $bill_details->boq_item_id);
+            if (isset($bill_details->boq_subitem_id)) {
+                $this_bill_details->where('boq_subitem_id', $bill_details->boq_subitem_id);
+            }
+            $this_bill_details = $this_bill_details->first();
+
+
+            $bill_details->quantity = $bill_details->measurements->sum('quantity');
+            $bill_details->previous_quantity = $old_bill_details->sum('this_bill_quantity');
+
+            if ($bill->calculate_with_heldup == 1) {
+                $bill_details->held_up_quantity = 0;
+            } else {
+                $bill_details->held_up_quantity = $bill_details->quantity > $bill_details->boq_quantity ? $bill_details->quantity - $bill_details->boq_quantity : 0;
+            }
+            $bill_details->this_bill_quantity = $bill_details->quantity - $bill_details->previous_quantity - $bill_details->held_up_quantity;
+            $bill_details->amount = ($bill_details->quantity - $bill_details->held_up_quantity) * $bill_details->rate;
+            $bill_details->this_bill_amount = $bill_details->this_bill_quantity * $bill_details->rate;
+            $bill_details->save();
+        }
     }
     public function shelterWiseView2($id)
     {
@@ -1312,6 +1424,39 @@ class BillController extends Controller
         // return view('backend.admin.bill.shelter_wise_details', compact('bill', 'scheme_ids', 'project_id', 'package_id'));
     }
 
+    public function removeMeasurementDetails($id, $bill_id)
+    {
+        try {
+            DB::transaction(function () use ($bill_id, $id) {
+                $measurement_details = MeasurementDetails::findOrFail($id);
+                $measurement_id = $measurement_details->measurement_id;
+                $bill_detail_id = $measurement_details->bill_detail_id;
+                $measurement_details->delete();
+                $m = Measurement::with('measurement_details')->findOrFail($measurement_id);
+
+                if ($m->measurement_details->count() == 0) {
+                    $m->delete();
+                } else {
+                    $md = $m->measurement_details;
+
+                    $m->weight = $md->sum('quantity_per_pile');
+                    $m->quantity = $m->nos * $m->weight;
+                    $m->save();
+                }
+                $this->adjustBillDetails($bill_detail_id, $bill_id);
+            });
+            $data = new stdClass();
+            $data->status = 1;
+            $data->message = 'Measurement details removed from bill successfully.';
+            return response()->json($data);
+        } catch (\Exception $e) {
+            Log::error('Error deleting bill Measurement Details: ' . $e->getMessage());
+            $data = new stdClass();
+            $data->status = 0;
+            $data->message = 'An error occurred while deleting bill Measurement Details.' . $e->getMessage();
+            return response()->json($data);
+        }
+    }
     public function regenerate($id)
     {
         $status = BillGenerator::regenerate($id, Auth::guard('web')->user()->contractor_id, Auth::guard('web')->user()->project_id, Auth::guard('web')->user()->package_id);

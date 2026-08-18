@@ -382,6 +382,50 @@
                                             </tr>
                                         </tfoot>
                                     </table>
+                                </hr>
+                                    @if($measurements&& $measurements->count()>0 && $measurements->first()->measurement_details && $measurements->first()->measurement_details->count()>0)
+                                <h2>Measurement Details</h2>
+                                    <table class="table table-bordered table-hover table-head-fixed" id="boq_part-table">
+                                        <thead>
+                                            <tr>
+                                                <th>SL</th>
+                                                <th>Description</th>
+                                                <th>Dia</th>
+                                                <th>Spacing</th>
+                                                <th>Rebar Nos</th>
+                                                <th>Rebar Length</th>
+                                                <th>Unit Weight</th>
+                                                <th>Quantity</th>
+                                                <th style="width: 10px">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($measurements->first()->measurement_details as $item)
+                                                <tr>
+                                                    <td>{{ $loop->index + 1 }}</td>
+                                                    <td>{{ $item->description }}</td>
+                                                    <td>{{ $item->dia }} </td>
+                                                    <td> {{ $item->spacing ?? '-' }}</td>
+                                                    <td>{{ $item->rebar_nos ?? '-' }}</td>
+                                                    <td> {{ $item->rebar_length ?? '-' }}</td>
+                                                    <td>{{ $item->unit_weight ?? '-' }} </td>
+                                                    <td> {{ $item->quantity_per_pile ?? '' }}</td>
+                                                    <td>
+                                                        <a class="btn btn-sm btn-danger remove"
+                                                            data-url="{{ route('user.bills.remove_measurement_details', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="7" class="text-right">Total</td>
+                                                <td colspan="2">{{ $measurements->first()->measurement_details->sum('quantity_per_pile') }}
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    
+                                    @endif
                                 </div>
 
 
@@ -455,7 +499,7 @@
                 let part_id = $('#boq_part_id').val();
                 let item_id = $('#boq_item_id').val();
                 let subitem_id = $('#boq_subitem_id').val();
-                
+
                 // Hide and empty dropdown if search query is too short
                 if (query.length < 2) {
                     $dropdown.hide().empty();
@@ -472,7 +516,7 @@
                 // Fetch filtered data from database backend
                 $.getJSON("{{ route('user.bills.get_measurement_suggestions') }}", params)
                     .done(function(data) {
-                        
+
                         $dropdown.empty(); // Clear old results
 
                         if (data && data.length > 0) {
@@ -527,6 +571,7 @@
 
 
 
+            debugger;
 
 
 
@@ -543,22 +588,34 @@
                 $("#boq_subitem_id").prop('disabled', true);
             }
             $('.calculate').on('input', function() {
-                
-                var nos = parseFloat($('#nos').val()) || 0;
-                var length = parseFloat($('#length').val()) || 1;
-                var width = parseFloat($('#width').val()) || 1;
-                var height = parseFloat($('#height').val()) || 1;
-                var weight = parseFloat($('#weight').val()) || 1;
+                debugger;
+                var unitFields = JSON.parse($("#unit_fields").val());
+                if ( $.inArray("weight", unitFields) != -1) {
+                    var nos = parseFloat($('#nos').val()) || 0;
+                    var rebar_nos = parseFloat($('#rebar_nos').val()) || 0;
+                    var rebar_length = parseFloat($('#rebar_length').val()) || 0;
+                    var unit_weight = parseFloat($('#unit_weight').val()) || 0;
+                    var quantity_per_pile= rebar_nos * rebar_length * unit_weight;
+                    var quantity = nos * rebar_nos * rebar_length * unit_weight;
+                    $('#quantity_per_pile').val(quantity_per_pile.toFixed(4));
+                } else {
+                    var nos = parseFloat($('#nos').val()) || 0;
+                    var length = parseFloat($('#length').val()) || 1;
+                    var width = parseFloat($('#width').val()) || 1;
+                    var height = parseFloat($('#height').val()) || 1;
+                    var weight = parseFloat($('#weight').val()) || 1;
 
-                var quantity = nos * length * width * height * weight;
+                    var quantity = nos * length * width * height * weight;
+                }
                 $('#quantity').val(quantity.toFixed(4));
+
             });
         });
         $(".select2").select2();
 
 
         $('#schemes').change(function(e) {
-            
+
             var scheme = $(this).val();
             var url = window.location.href
             var param = {
@@ -568,7 +625,7 @@
 
         });
         $('#boq_part_id').change(function(e) {
-            
+
             var boq_part_id = $(this).val();
             var scheme = $("#schemes").val();
             var url = window.location.href
@@ -580,7 +637,7 @@
 
         });
         $('#boq_item_id').change(function(e) {
-            
+
             // var hassub = $(this).data('hassub');
             // if (hassub == 1) {
             // Handle the case where the selected item has sub-items
@@ -599,7 +656,7 @@
 
         });
         $('#boq_subitem_id').change(function(e) {
-            
+
             // var hassub = $(this).data('hassub');
             // if (hassub == 1) {
             // Handle the case where the selected item has sub-items
@@ -621,7 +678,7 @@
         $(".remove").click(function() {
             var url = $(this).data('url');
 
-            
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -642,7 +699,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            
+
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -666,7 +723,7 @@
                         },
                         error: function(ex) {
 
-                            
+
                             Swal.fire({
 
                                 title: 'ERROR',
@@ -708,7 +765,7 @@
         $(".click_tab").click(function(e) {
             e.preventDefault();
             var url = $(this).attr("href")
-            
+
             window.location = url;
         });
         $('#boq-version-table').DataTable({
