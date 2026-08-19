@@ -41,7 +41,7 @@ class BillGenerator
         // dd($this_bill, $previous_bill_ids);
 
         $boq_version = BoqVersion::findOrFail($this_bill->boq_version_id);
-
+$package = Package::findOrFail($package_id);
 
         // $scheme_ids = BillScheme::where(function ($query) use ($this_bill, $previous_bill_ids) {
         //     $query->where('bill_id', $this_bill->id)
@@ -70,7 +70,21 @@ class BillGenerator
                     $query->where('serial', '<', $next_bill->serial);
                 });
             $bill_part_ids = $bill_part_ids->distinct('boq_part_id')->get()->pluck('boq_part_id')->toArray();
-            $parts = BoqPart::whereIn('id', $bill_part_ids)->orderby('code')->get();
+            $parts = BoqPart::whereIn('id', $bill_part_ids);
+            
+        if ($package->boq_type == "EGP") {
+                $parts->where('boq_type', 'EGP')
+                    ->where(function ($q) use ($scheme) {
+                        $q->where('has_option_variation', 1)
+                            ->orWhere(function ($q2) use ($scheme) {
+                                $q2->where('has_option_variation', 0)
+                                    ->where('scheme_option_id', $scheme->scheme_option_id);
+                            });
+                    })
+                ;
+        }
+            
+            $parts = $parts->orderby('code')->get();
             // dd($parts);
             foreach ($parts as $part) {
                 $part_data = new \stdClass();
@@ -279,9 +293,35 @@ class BillGenerator
     {
         try {
             DB::transaction(function () use ($bill_id, $contractor_id, $project_id, $package_id) {
+                $package = Package::findOrFail($package_id);
                 // dd($bill_id, $contractor_id, $project_id, $package_id);
                 $bill = Bill::with('boq_version', 'bill_details')->findOrFail($bill_id);
                 foreach ($bill->bill_details as $bill_detail) {
+
+                
+                     $boq_version_details = BoqVersionDetails::where('boq_version_id', $bill->boq_version_id)
+                        ->where('package_id', $package_id)
+                        ->where('boq_part_id', $bill_detail->boq_part_id)
+                        ->where('boq_item_id', $bill_detail->boq_item_id);
+                        // ->where('scheme_option_id', $scheme->scheme_option_id);
+                        $boq_version_details->where('boq_sub_item_id', $bill_detail->boq_subitem_id);
+                    
+
+                    $boq_part=BoqPart::find($bill_detail->boq_part_id);
+                    if($boq_part->has_option_variation==1){
+                        $boq_version_details->where('scheme_option_id', $bill_detail->scheme_option_id);
+                    }
+                    else
+                    {
+                        $boq_version_details->whereHas('boq_part', function ($query) use ($bill_detail) {
+                            $query->where('scheme_option_id', $bill_detail->scheme_option_id);
+                        });
+                    }
+
+                    $boq_version_details = $boq_version_details->first();
+
+                    $bill_detail->boq_quantity = $boq_version_details ? $boq_version_details->quantity : $bill_detail->boq_quantity;
+                    $bill_detail->rate = $boq_version_details ? $boq_version_details->rate : $bill_detail->rate;
 
                     $old_bill = Bill::where('contractor_id', $contractor_id)
                         ->where('project_id', $project_id)

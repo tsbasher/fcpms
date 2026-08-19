@@ -14,6 +14,8 @@ class BoqPart extends ExtendedModel
         'has_option_variation',
         'name',
         'code',
+        'boq_type',
+        'scheme_option_id',
         'description',
         'is_active',
         'project_id',
@@ -33,5 +35,10 @@ class BoqPart extends ExtendedModel
     public function boq_item()
     {
         return $this->hasMany(BoqItem::class, 'boq_part_id', 'id');
+    }
+
+    public function scheme_option()
+    {
+        return $this->belongsTo(SchemeOption::class, 'scheme_option_id', 'id');
     }
 }

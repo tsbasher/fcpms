@@ -36,7 +36,7 @@
                         @endif
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
 
                             <div class="form-group">
                                 <label for="name">Package Name</label>
@@ -44,10 +44,19 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="alias">Package Alias</label>
                                 <input type="text" required class="form-control" name="alias" id="alias" placeholder="Enter Package Alias" value="{{ old('alias', $package->alias) }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="boq_type">Package BOQ Type</label>
+                                <select class="form-control" name="boq_type" id="boq_type">
+                                    <option value="NONEGP" {{ old('boq_type', $package->boq_type) == 'NONEGP' ? 'selected' : '' }}>NONEGP</option>
+                                    <option value="EGP" {{ old('boq_type', $package->boq_type) == 'EGP' ? 'selected' : '' }}>EGP</option>
+                                </select>
                             </div>
                         </div>
                     </div>

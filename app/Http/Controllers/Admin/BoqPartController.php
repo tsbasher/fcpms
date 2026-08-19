@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BillPart;
 use App\Models\BoqPart;
+use App\Models\SchemeOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -34,7 +35,8 @@ class BoqPartController extends Controller
      */
     public function create()
     {
-        return view('backend.admin.boq_parts.create');
+        $scheme_options= SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        return view('backend.admin.boq_parts.create', compact('scheme_options'));
     }
 
 
@@ -51,13 +53,16 @@ class BoqPartController extends Controller
         }
         $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:boq_parts,code',
+            'code' => 'required|string|max:50',
             'description' => 'nullable|string|max:1000',
+            'boq_type' => 'required|in:EGP,NONEGP',
+            'scheme_option_id' => 'nullable|exists:scheme_options,id',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $data = $request->only(['name', 'code', 'has_option_variation', 'description', 'is_active']);
+
+        $data = $request->only(['name', 'code', 'has_option_variation', 'description', 'is_active', 'boq_type', 'scheme_option_id']);
         $data['project_id'] = Auth::guard('admin')->user()->project_id; // Assuming the user is authenticated
         BoqPart::create($data);
 
@@ -77,8 +82,10 @@ class BoqPartController extends Controller
      */
     public function edit(BoqPart $boqPart)
     {
+        
+        $scheme_options= SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
         $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
-        return view('backend.admin.boq_parts.edit', compact('boqPart'));
+        return view('backend.admin.boq_parts.edit', compact('boqPart', 'scheme_options'));
     }
 
     /**
@@ -96,13 +103,15 @@ class BoqPartController extends Controller
         }
         $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:boq_parts,code,' . $boqPart->id,
+            'code' => 'required|string|max:50',
             'description' => 'nullable|string|max:1000',
+            'boq_type' => 'required|in:EGP,NONEGP',
+            'scheme_option_id' => 'nullable|exists:scheme_options,id',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $data = $request->only(['name', 'code', 'has_option_variation', 'description', 'is_active']);
+        $data = $request->only(['name', 'code', 'has_option_variation', 'description', 'is_active', 'boq_type', 'scheme_option_id']);
         $boqPart->update($data);
 
         return redirect()->route('admin.boq_parts.index')->with('success', 'BOQ Part updated successfully.');

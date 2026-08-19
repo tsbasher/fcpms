@@ -123,7 +123,7 @@
                             <th colspan="3">As Per Original Contract</th>
                             <th colspan="2">Up to {{ $bill->name }}</th>
                             @if($last_bill)
-                                <th colspan="2">Up to Previous {{ $last_bill->name }}</th>
+                                <th colspan="2">Up to Previous {{ $this_bill->bill_no }}</th>
                             @endif
                             <th colspan="2">Net Amount of this {{ $bill->name }}</th>
                             <th rowspan="2" style="width: 5px; vertical-align: middle;">Remarks</th>

@@ -50,6 +50,31 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="boq_type">BOQ Type</label>
+                                    <select class="form-control" name="boq_type" id="boq_type">
+                                        <option value="NONEGP" @if (old('boq_type') == 'NONEGP') selected @endif>NONEGP
+                                        </option>
+                                        <option value="EGP" @if (old('boq_type') == 'EGP') selected @endif>EGP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="scheme_option_id">Scheme Option</label>
+                                    <select class="form-control" name="scheme_option_id" id="scheme_option_id">
+                                        <option value="">Select Scheme Option</option>
+                                        @foreach ($scheme_options as $scheme_option)
+                                            <option value="{{ $scheme_option->id }}" @if (old('scheme_option_id') == $scheme_option->id) selected @endif>
+                                                {{ $scheme_option->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label for="description">Description</label>

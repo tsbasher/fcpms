@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Helper\ExtendedModel;
 use App\Helper\ExtendedModelUser;
-use Illuminate\Database\Eloquent\Model;
 
 class Measurement extends ExtendedModelUser
 {

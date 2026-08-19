@@ -18,6 +18,7 @@ class Package extends ExtendedModel
         'project_id',
         'name',
         'code',
+        'boq_type',
         'alias',
         'division_id',
         'region_id',

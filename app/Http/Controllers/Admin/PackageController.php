@@ -86,6 +86,7 @@ class PackageController extends Controller
             'actual_end_date' => 'nullable|date',
             'planned_budget' => 'nullable|string|max:255',
             'actual_budget' => 'nullable|string|max:255',
+            'boq_type' => 'required|in:NONEGP,EGP',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
@@ -107,6 +108,7 @@ class PackageController extends Controller
             'actual_end_date' => $request->actual_end_date,
             'planned_budget' => $request->planned_budget,
             'actual_budget' => $request->actual_budget,
+            'boq_type' => $request->boq_type,
             'is_active' => $request->is_active,
         ]);
         // Attach the current admin to the package
@@ -158,6 +160,7 @@ class PackageController extends Controller
             'actual_end_date' => 'nullable|date',
             'planned_budget' => 'nullable|string|max:255',
             'actual_budget' => 'nullable|string|max:255',
+            'boq_type' => 'required|in:NONEGP,EGP',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
@@ -180,6 +183,7 @@ class PackageController extends Controller
             'planned_budget' => $request->planned_budget,
             'actual_budget' => $request->actual_budget,
             'is_active' => $request->is_active,
+            'boq_type' => $request->boq_type,
         ]);
         return redirect()->route('admin.packages.index')->with('success', 'Package updated successfully.');
     }

@@ -104,7 +104,7 @@
                                 <th>Code</th>
                                 <th>Alias</th>
                                 <th>District</th>
-                                <th>Status</th>
+                                <th>BOQ Type</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -117,10 +117,10 @@
                                 <td>{{ $package->alias }}</td>
                                 <td>{{ $package->district->name ?? 'N/A' }}</td>
                                 <td>
-                                    @if ($package->is_active == 1)
-                                    <span class="badge bg-success" style="font-size: 100%">Yes</span>
+                                    @if ($package->boq_type == "NONEGP")
+                                    <span class="badge bg-warning" style="font-size: 100%">NONEGP</span>
                                     @else
-                                    <span class="badge bg-danger" style="font-size: 100%">No</span>
+                                    <span class="badge bg-success" style="font-size: 100%">EGP</span>
                                     @endif
                                 </td>
                                 <td>

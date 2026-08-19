@@ -64,7 +64,9 @@
                                     <th style="width: 10px">#</th>
                                     <th>Name</th>
                                     <th>Code</th>
+                                    <th>BOQ Type</th>
                                     <th>Option Variation</th>
+                                    <th>Option</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -76,6 +78,13 @@
                                         <td>{{ $boq_part->name }}</td>
                                         <td>{{ $boq_part->code }}</td>
                                         <td>
+                                            @if ($boq_part->boq_type == 'NONEGP')
+                                                <span class="badge bg-warning" style="font-size: 100%">NONEGP</span>
+                                            @else
+                                                <span class="badge bg-success" style="font-size: 100%">EGP</span>
+                                            @endif
+                                        </td>
+                                        <td>
                                             @if ($boq_part->has_option_variation == 1)
                                                 <span class="badge bg-success" style="font-size: 100%">Yes</span>
                                             @else
@@ -83,6 +92,9 @@
                                             @endif
                                         </td>
 
+                                        <td>
+                                           <span class="badge bg-success" style="font-size: 100%"> {{ $boq_part->scheme_option ? $boq_part->scheme_option->name : 'N/A' }}</span>
+                                        </td>
                                         <td>
                                             @if ($boq_part->is_active == 1)
                                                 <span class="badge bg-success" style="font-size: 100%">Yes</span>
@@ -142,7 +154,7 @@
         $(".delete_record").click(function() {
             var url = $(this).data('url');
 
-            
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -163,7 +175,7 @@
                             "_token": token,
                         },
                         success: function(data) {
-                            
+
                             // var data = JSON.parse(response);
                             if (data.status == 1) {
                                 Swal.fire({
@@ -187,7 +199,7 @@
                         },
                         error: function(ex) {
 
-                            
+
                             Swal.fire({
                                 timer: 1500,
                                 title: 'ERROR',

@@ -6,7 +6,7 @@
             ({{ $this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB' }}) - {{ $upazila->name }} Upazila Wise Details
             Bill
         @elseif(Request::get('report_type') == 'SCH_DTL')
-            ({{ $this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB' }}) -  Scheme Details Bill
+            ({{ $this_bill->calculate_with_heldup == 1 ? 'NVB' : 'VB' }}) - Scheme Details Bill
         @endif
     </title>
     <!-- Google Font: Source Sans Pro -->
@@ -113,16 +113,18 @@
             }
 
             @page portrait-layout:first {
-        @bottom-center {
-            content: normal; /* Hides footer if first page is portrait */
-        }
-    }
+                @bottom-center {
+                    content: normal;
+                    /* Hides footer if first page is portrait */
+                }
+            }
 
-    @page landscape-layout:first {
-        @bottom-center {
-            content: normal; /* Hides footer if first page is landscape */
-        }
-    }
+            @page landscape-layout:first {
+                @bottom-center {
+                    content: normal;
+                    /* Hides footer if first page is landscape */
+                }
+            }
 
             .portrait-page {
                 page: portrait-layout;
@@ -317,11 +319,11 @@
                         <th rowspan="2" style="vertical-align: middle;">Description</th>
                         <th rowspan="2" style="width: 5px; vertical-align: middle;">Unit</th>
                         <th colspan="3">As Per Original Contract</th>
-                        <th colspan="2">Up to {{ $this_bill->name }}</th>
+                        <th colspan="2">Up to {{ $this_bill->bill_no }}</th>
                         @if ($last_bill)
-                            <th colspan="2">Up to Previous {{ $last_bill->name }}</th>
+                            <th colspan="2">Up to Previous {{ $last_bill->bill_no }}</th>
                         @endif
-                        <th colspan="2">Net Amount of this {{ $this_bill->name }}</th>
+                        <th colspan="2">Net Amount of this {{ $this_bill->bill_no }}</th>
                         <th rowspan="2" style="width: 5px; vertical-align: middle;">Remarks</th>
                     </tr>
                     <tr class="text-center">
@@ -531,10 +533,10 @@
         </div>
     @endif
     @foreach ($shelter_bill as $info)
-    @php
-        
-        $measurement_details_view=[];
-    @endphp
+        @php
+
+            $measurement_details_view = [];
+        @endphp
         {{-- @dd($shelter_bill) --}}
         @if ($info->has_bill_details)
             <div class="page landscape-page">
@@ -594,11 +596,11 @@
                             <th rowspan="2" style="vertical-align: middle;">Description</th>
                             <th rowspan="2" style="width: 5px; vertical-align: middle;">Unit</th>
                             <th colspan="3">As Per Original Contract</th>
-                            <th colspan="2">Up to {{ $this_bill->name }}</th>
+                            <th colspan="2">Up to {{ $this_bill->bill_no }}</th>
                             @if ($last_bill)
-                                <th colspan="2">Up to Previous {{ $last_bill->name }}</th>
+                                <th colspan="2">Up to Previous {{ $last_bill->bill_no }}</th>
                             @endif
-                            <th colspan="2">Net Amount of this {{ $this_bill->name }}</th>
+                            <th colspan="2">Net Amount of this {{ $this_bill->bill_no }}</th>
                             <th rowspan="2" style="width: 5px; vertical-align: middle;">Remarks</th>
                         </tr>
                         <tr class="text-center">
@@ -952,57 +954,243 @@
                     </tbody>
                 </table>
                 <table class="table table-bordered table-hover no break" id="boq-version-table1212">
-                        @foreach ($info->parts as $part)
-                            <tr>
-                                <td colspan="10" class="text-bold no-border">Bill - ({{ $part->part->code }})
-                                    {{ $part->part->name }}</td>
-                            </tr>
-                            @foreach ($part->items as $item)
-                                @if (!$item->item->has_sub_items)
-                                    @if ($item->this_bill_detail || $item->old_bill_detail)
+                    @foreach ($info->parts as $part)
+                        <tr>
+                            <td colspan="10" class="text-bold no-border">Bill - ({{ $part->part->code }})
+                                {{ $part->part->name }}</td>
+                        </tr>
+                        @foreach ($part->items as $item)
+                            @if (!$item->item->has_sub_items)
+                                @if ($item->this_bill_detail || $item->old_bill_detail)
+                                    @php
+                                        $m_colspan = count(json_decode($item->item->unit->fields)) + 7;
+                                    @endphp
+                                    @if (!$loop->first)
+                                        <tr>
+                                            <td class="text-bold no-border">&nbsp;</td>
+                                        </tr>
+                                        {{-- <tr>
+                                                <td class="text-bold no-border">&nbsp;</td>
+                                            </tr> --}}
+                                    @endif
+
+                                    <tr>
+                                        <td colspan="{{ $m_colspan }}" class="text-bold no-border">Name of
+                                            Item:
+                                            {{ $item->item->code }} : {{ $item->item->name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 5px;">SL No.</th>
+                                        <th style="width: 5px;">Spec. No</th>
+                                        <th>Description</th>
+                                        <th style="width: 5px;">Unit</th>
+                                        <th>Nos</th>
+                                        @if (in_array('length', json_decode($item->item->unit->fields)))
+                                            <th>Length</th>
+                                        @endif
+                                        @if (in_array('width', json_decode($item->item->unit->fields)))
+                                            <th>Width</th>
+                                        @endif
+                                        @if (in_array('height', json_decode($item->item->unit->fields)))
+                                            <th>Height</th>
+                                        @endif
+                                        @if (in_array('weight', json_decode($item->item->unit->fields)))
+                                            <th>Weight</th>
+                                        @endif
+                                        <th>Quantity</th>
+                                        <th style="width: 5px;">Remarks</th>
+                                    </tr>
+                                    @php
+                                        $measurements = $item->this_bill_detail
+                                            ? $item->this_bill_detail
+                                            : ($item->old_bill_detail
+                                                ? $item->old_bill_detail
+                                                : []);
+                                    @endphp
+                                    @foreach ($measurements->measurements as $measurement)
                                         @php
-                                            $m_colspan = count(json_decode($item->item->unit->fields)) + 7;
+                                            $workdone = $measurement->quantity;
+                                            $previous = $item->this_bill_detail
+                                                ? $item->this_bill_detail->previous_quantity
+                                                : ($item->old_bill_detail
+                                                    ? $item->old_bill_detail->previous_quantity +
+                                                        $item->old_bill_detail->this_bill_quantity
+                                                    : 0);
+                                            $heldup = $item->this_bill_detail
+                                                ? $item->this_bill_detail->held_up_quantity
+                                                : ($item->old_bill_detail
+                                                    ? $item->old_bill_detail->held_up_quantity
+                                                    : 0);
+                                            $thisbill = $item->this_bill_detail
+                                                ? $item->this_bill_detail->this_bill_quantity
+                                                : 0;
+                                            if (
+                                                $measurement->measurement_details &&
+                                                count($measurement->measurement_details) > 0
+                                            ) {
+                                                $measurement_details = $measurement->measurement_details;
+                                                $scheme = $info->scheme;
+                                                $boq_item = $item;
+                                                array_push(
+                                                    $measurement_details_view,
+                                                    View::make(
+                                                        'backend.bill.partials.measurement_details',
+                                                        compact(
+                                                            'project',
+                                                            'colspan',
+                                                            'measurement_details',
+                                                            'scheme',
+                                                            'this_bill',
+                                                            'boq_item',
+                                                        ),
+                                                    )->render(),
+                                                );
+                                            }
+                                        @endphp
+                                        <tr>
+                                            <td class="text-center">{{ $item->item->code }}</td>
+                                            <td class="text-center"></td>
+                                            <td>{{ $measurement->description }}</td>
+                                            <td class="text-center">{{ $item->item->unit->code }}</td>
+                                            <td class="text-right">{{ $measurement->nos }}</td>
+                                            @if (in_array('length', json_decode($item->item->unit->fields)))
+                                                <td class="text-right">{{ $measurement->length }}</td>
+                                            @endif
+                                            @if (in_array('width', json_decode($item->item->unit->fields)))
+                                                <td class="text-right">{{ $measurement->width }}</td>
+                                            @endif
+                                            @if (in_array('height', json_decode($item->item->unit->fields)))
+                                                <td class="text-right">{{ $measurement->height }}</td>
+                                            @endif
+                                            @if (in_array('weight', json_decode($item->item->unit->fields)))
+                                                <td class="text-right">{{ $measurement->weight }}</td>
+                                            @endif
+                                            <td class="text-right">{{ $measurement->quantity }}</td>
+                                            <td></td>
+                                        </tr>
+                                    @endforeach
+                                    <tr>
+                                        {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                                <td colspan="3" class="no-border"></td>
+                                            @else --}}
+                                        <td colspan="4" class="no-border"></td>
+                                        {{-- @endif --}}
+                                        <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            class="text-right text-bold">Work done Quantity</td>
+                                        <td class="text-right text-bold">
+                                            {{ number_format($workdone, 3) }}</td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                                <td colspan="3" class="no-border"></td>
+                                            @else --}}
+                                        <td colspan="4" class="no-border"></td>
+                                        {{-- @endif --}}
+                                        <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            class="text-right text-bold">Previous Quantity</td>
+                                        <td class="text-right text-bold">
+                                            {{ number_format($previous, 3) }}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                                    <td colspan="3" class="no-border"></td>
+                                                @else --}}
+                                        <td colspan="4" class="no-border"></td>
+                                        {{-- @endif --}}
+                                        <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            class="text-right text-bold">BOQ Quantity</td>
+                                        <td class="text-right text-bold">
+                                            {{ number_format($item->boq_version_details->quantity, 3) }}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                                <td colspan="3" class="no-border"></td>
+                                            @else --}}
+                                        <td colspan="4" class="no-border"></td>
+                                        {{-- @endif --}}
+                                        <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            class="text-right text-bold">Held Up Quantity</td>
+                                        <td class="text-right text-bold">
+                                            {{ number_format($heldup, 3) }}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                                <td colspan="3" class="no-border"></td>
+                                            @else --}}
+                                        <td colspan="4" class="no-border"></td>
+                                        {{-- @endif --}}
+                                        <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            class="text-right text-bold">This Bill Quantity</td>
+                                        <td class="text-right text-bold">
+                                            {{ number_format($thisbill, 3) }}</td>
+                                        <td></td>
+                                    </tr>
+                                @endif
+                            @else
+                                @foreach ($item->sub_items as $sub_item)
+                                    @if ($sub_item->this_bill_detail || $sub_item->old_bill_detail)
+                                        <tr>
+                                            <td colspan="{{ $colspan }}" class="text-bold no-border">Name
+                                                of
+                                                Item:
+                                                {{ $item->item->code }} : {{ $item->item->name }}</td>
+                                        </tr>
+                                        @php
+                                            $m_colspan = in_array(
+                                                'piece',
+                                                json_decode($sub_item->sub_item->unit->fields),
+                                            )
+                                                ? count(json_decode($sub_item->sub_item->unit->fields)) + 6
+                                                : count(json_decode($sub_item->sub_item->unit->fields)) + 7;
                                         @endphp
                                         @if (!$loop->first)
                                             <tr>
                                                 <td class="text-bold no-border">&nbsp;</td>
                                             </tr>
-                                            {{-- <tr>
+                                            <tr>
                                                 <td class="text-bold no-border">&nbsp;</td>
-                                            </tr> --}}
+                                            </tr>
                                         @endif
-
                                         <tr>
-                                            <td colspan="{{ $m_colspan }}" class="text-bold no-border">Name of
+                                            <td colspan="{{ $m_colspan }}" class="text-bold no-border">Name
+                                                of
+                                                Sub
                                                 Item:
-                                                {{ $item->item->code }} : {{ $item->item->name }}</td>
+                                                {{ $sub_item->sub_item->code }} :
+                                                {{ $sub_item->sub_item->name }}
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th style="width: 5px;">SL No.</th>
-                                            <th style="width: 5px;">Spec. No</th>
+                                            <th style="width: 5px;">Sspec. No</th>
                                             <th>Description</th>
                                             <th style="width: 5px;">Unit</th>
                                             <th>Nos</th>
-                                            @if (in_array('length', json_decode($item->item->unit->fields)))
+                                            @if (in_array('length', json_decode($sub_item->sub_item->unit->fields)))
                                                 <th>Length</th>
                                             @endif
-                                            @if (in_array('width', json_decode($item->item->unit->fields)))
+                                            @if (in_array('width', json_decode($sub_item->sub_item->unit->fields)))
                                                 <th>Width</th>
                                             @endif
-                                            @if (in_array('height', json_decode($item->item->unit->fields)))
+                                            @if (in_array('height', json_decode($sub_item->sub_item->unit->fields)))
                                                 <th>Height</th>
                                             @endif
-                                            @if (in_array('weight', json_decode($item->item->unit->fields)))
+                                            @if (in_array('weight', json_decode($sub_item->sub_item->unit->fields)))
                                                 <th>Weight</th>
                                             @endif
                                             <th>Quantity</th>
                                             <th style="width: 5px;">Remarks</th>
                                         </tr>
                                         @php
-                                            $measurements = $item->this_bill_detail
-                                                ? $item->this_bill_detail
-                                                : ($item->old_bill_detail
-                                                    ? $item->old_bill_detail
+                                            $measurements = $sub_item->this_bill_detail
+                                                ? $sub_item->this_bill_detail
+                                                : ($sub_item->old_bill_detail
+                                                    ? $sub_item->old_bill_detail
                                                     : []);
                                         @endphp
                                         @foreach ($measurements->measurements as $measurement)
@@ -1022,29 +1210,47 @@
                                                 $thisbill = $item->this_bill_detail
                                                     ? $item->this_bill_detail->this_bill_quantity
                                                     : 0;
-                                                    if($measurement->measurement_details && count($measurement->measurement_details) > 0){
-                                                        $measurement_details= $measurement->measurement_details;
-                                                        $scheme= $info->scheme;
-                                                        $boq_item= $item;
-                                                        array_push($measurement_details_view, View::make('backend.bill.partials.measurement_details', compact('project','colspan','measurement_details','scheme','this_bill','boq_item'))->render());
-                                                    }
+
+                                                if (
+                                                    $measurement->measurement_details &&
+                                                    count($measurement->measurement_details) > 0
+                                                ) {
+                                                    $measurement_details = $measurement->measurement_details;
+                                                    $scheme = $info->scheme;
+                                                    $boq_item = $sub_item;
+                                                    array_push(
+                                                        $measurement_details_view,
+                                                        View::make(
+                                                            'backend.bill.partials.measurement_details',
+                                                            compact(
+                                                                'project',
+                                                                'colspan',
+                                                                'measurement_details',
+                                                                'scheme',
+                                                                'this_bill',
+                                                                'boq_item',
+                                                            ),
+                                                        )->render(),
+                                                    );
+                                                }
                                             @endphp
                                             <tr>
-                                                <td class="text-center">{{ $item->item->code }}</td>
+                                                <td class="text-center">{{ $sub_item->sub_item->code }}</td>
                                                 <td class="text-center"></td>
                                                 <td>{{ $measurement->description }}</td>
-                                                <td class="text-center">{{ $item->item->unit->code }}</td>
+                                                <td class="text-center">{{ $sub_item->sub_item->unit->code }}
+                                                </td>
                                                 <td class="text-right">{{ $measurement->nos }}</td>
-                                                @if (in_array('length', json_decode($item->item->unit->fields)))
+                                                @if (in_array('length', json_decode($sub_item->sub_item->unit->fields)))
                                                     <td class="text-right">{{ $measurement->length }}</td>
                                                 @endif
-                                                @if (in_array('width', json_decode($item->item->unit->fields)))
+                                                @if (in_array('width', json_decode($sub_item->sub_item->unit->fields)))
                                                     <td class="text-right">{{ $measurement->width }}</td>
                                                 @endif
-                                                @if (in_array('height', json_decode($item->item->unit->fields)))
+                                                @if (in_array('height', json_decode($sub_item->sub_item->unit->fields)))
                                                     <td class="text-right">{{ $measurement->height }}</td>
                                                 @endif
-                                                @if (in_array('weight', json_decode($item->item->unit->fields)))
+                                                @if (in_array('weight', json_decode($sub_item->sub_item->unit->fields)))
                                                     <td class="text-right">{{ $measurement->weight }}</td>
                                                 @endif
                                                 <td class="text-right">{{ $measurement->quantity }}</td>
@@ -1052,12 +1258,12 @@
                                             </tr>
                                         @endforeach
                                         <tr>
-                                            {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                            @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
-                                            @else --}}
-                                            <td colspan="4" class="no-border"></td>
-                                            {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            @else
+                                                <td colspan="4" class="no-border"></td>
+                                            @endif
+                                            <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Work done Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($workdone, 3) }}</td>
@@ -1065,231 +1271,59 @@
                                         </tr>
 
                                         <tr>
-                                            {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                            @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
-                                            @else --}}
-                                            <td colspan="4" class="no-border"></td>
-                                            {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            @else
+                                                <td colspan="4" class="no-border"></td>
+                                            @endif
+                                            <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Previous Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($previous, 3) }}</td>
                                             <td></td>
                                         </tr>
                                         <tr>
-                                            {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
-                                                    <td colspan="3" class="no-border"></td>
-                                                @else --}}
-                                            <td colspan="4" class="no-border"></td>
-                                            {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
+                                                <td colspan="3" class="no-border"></td>
+                                            @else
+                                                <td colspan="4" class="no-border"></td>
+                                            @endif
+                                            <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">BOQ Quantity</td>
                                             <td class="text-right text-bold">
-                                                {{ number_format($item->boq_version_details->quantity, 3) }}</td>
+                                                {{ number_format($sub_item->boq_version_details->quantity, 3) }}
+                                            </td>
                                             <td></td>
                                         </tr>
                                         <tr>
-                                            {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                            @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
-                                            @else --}}
-                                            <td colspan="4" class="no-border"></td>
-                                            {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            @else
+                                                <td colspan="4" class="no-border"></td>
+                                            @endif
+                                            <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">Held Up Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($heldup, 3) }}</td>
                                             <td></td>
                                         </tr>
                                         <tr>
-                                            {{-- @if (in_array('piece', json_decode($item->item->unit->fields)))
+                                            @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
                                                 <td colspan="3" class="no-border"></td>
-                                            @else --}}
-                                            <td colspan="4" class="no-border"></td>
-                                            {{-- @endif --}}
-                                            <td colspan="{{ in_array('piece', json_decode($item->item->unit->fields)) ? 0 : count(json_decode($item->item->unit->fields)) + 1 }}"
+                                            @else
+                                                <td colspan="4" class="no-border"></td>
+                                            @endif
+                                            <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
                                                 class="text-right text-bold">This Bill Quantity</td>
                                             <td class="text-right text-bold">
                                                 {{ number_format($thisbill, 3) }}</td>
                                             <td></td>
                                         </tr>
                                     @endif
-                                @else
-                                    @foreach ($item->sub_items as $sub_item)
-                                        @if ($sub_item->this_bill_detail || $sub_item->old_bill_detail)
-                                            <tr>
-                                                <td colspan="{{ $colspan }}" class="text-bold no-border">Name
-                                                    of
-                                                    Item:
-                                                    {{ $item->item->code }} : {{ $item->item->name }}</td>
-                                            </tr>
-                                            @php
-                                                $m_colspan = in_array(
-                                                    'piece',
-                                                    json_decode($sub_item->sub_item->unit->fields),
-                                                )
-                                                    ? count(json_decode($sub_item->sub_item->unit->fields)) + 6
-                                                    : count(json_decode($sub_item->sub_item->unit->fields)) + 7;
-                                            @endphp
-                                            @if (!$loop->first)
-                                                <tr>
-                                                    <td class="text-bold no-border">&nbsp;</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-bold no-border">&nbsp;</td>
-                                                </tr>
-                                            @endif
-                                            <tr>
-                                                <td colspan="{{ $m_colspan }}" class="text-bold no-border">Name
-                                                    of
-                                                    Sub
-                                                    Item:
-                                                    {{ $sub_item->sub_item->code }} :
-                                                    {{ $sub_item->sub_item->name }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th style="width: 5px;">SL No.</th>
-                                                <th style="width: 5px;">Sspec. No</th>
-                                                <th>Description</th>
-                                                <th style="width: 5px;">Unit</th>
-                                                <th>Nos</th>
-                                                @if (in_array('length', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <th>Length</th>
-                                                @endif
-                                                @if (in_array('width', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <th>Width</th>
-                                                @endif
-                                                @if (in_array('height', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <th>Height</th>
-                                                @endif
-                                                @if (in_array('weight', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <th>Weight</th>
-                                                @endif
-                                                <th>Quantity</th>
-                                                <th style="width: 5px;">Remarks</th>
-                                            </tr>
-                                            @php
-                                                $measurements = $sub_item->this_bill_detail
-                                                    ? $sub_item->this_bill_detail
-                                                    : ($sub_item->old_bill_detail
-                                                        ? $sub_item->old_bill_detail
-                                                        : []);
-                                            @endphp
-                                            @foreach ($measurements->measurements as $measurement)
-                                                @php
-                                                    $workdone = $measurement->quantity;
-                                                    $previous = $item->this_bill_detail
-                                                        ? $item->this_bill_detail->previous_quantity
-                                                        : ($item->old_bill_detail
-                                                            ? $item->old_bill_detail->previous_quantity +
-                                                                $item->old_bill_detail->this_bill_quantity
-                                                            : 0);
-                                                    $heldup = $item->this_bill_detail
-                                                        ? $item->this_bill_detail->held_up_quantity
-                                                        : ($item->old_bill_detail
-                                                            ? $item->old_bill_detail->held_up_quantity
-                                                            : 0);
-                                                    $thisbill = $item->this_bill_detail
-                                                        ? $item->this_bill_detail->this_bill_quantity
-                                                        : 0;
-                                                        
-                                                    if($measurement->measurement_details && count($measurement->measurement_details) > 0){
-                                                        $measurement_details= $measurement->measurement_details;
-                                                        $scheme= $info->scheme;
-                                                        $boq_item= $sub_item;
-                                                        array_push($measurement_details_view, View::make('backend.bill.partials.measurement_details', compact('project','colspan','measurement_details','scheme','this_bill','boq_item'))->render());
-                                                    }
-                                                @endphp
-                                                <tr>
-                                                    <td class="text-center">{{ $sub_item->sub_item->code }}</td>
-                                                    <td class="text-center"></td>
-                                                    <td>{{ $measurement->description }}</td>
-                                                    <td class="text-center">{{ $sub_item->sub_item->unit->code }}
-                                                    </td>
-                                                    <td class="text-right">{{ $measurement->nos }}</td>
-                                                    @if (in_array('length', json_decode($sub_item->sub_item->unit->fields)))
-                                                        <td class="text-right">{{ $measurement->length }}</td>
-                                                    @endif
-                                                    @if (in_array('width', json_decode($sub_item->sub_item->unit->fields)))
-                                                        <td class="text-right">{{ $measurement->width }}</td>
-                                                    @endif
-                                                    @if (in_array('height', json_decode($sub_item->sub_item->unit->fields)))
-                                                        <td class="text-right">{{ $measurement->height }}</td>
-                                                    @endif
-                                                    @if (in_array('weight', json_decode($sub_item->sub_item->unit->fields)))
-                                                        <td class="text-right">{{ $measurement->weight }}</td>
-                                                    @endif
-                                                    <td class="text-right">{{ $measurement->quantity }}</td>
-                                                    <td></td>
-                                                </tr>
-                                            @endforeach
-                                            <tr>
-                                                @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <td colspan="3" class="no-border"></td>
-                                                @else
-                                                    <td colspan="4" class="no-border"></td>
-                                                @endif
-                                                <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
-                                                    class="text-right text-bold">Work done Quantity</td>
-                                                <td class="text-right text-bold">
-                                                    {{ number_format($workdone, 3) }}</td>
-                                                <td></td>
-                                            </tr>
-
-                                            <tr>
-                                                @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <td colspan="3" class="no-border"></td>
-                                                @else
-                                                    <td colspan="4" class="no-border"></td>
-                                                @endif
-                                                <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
-                                                    class="text-right text-bold">Previous Quantity</td>
-                                                <td class="text-right text-bold">
-                                                    {{ number_format($previous, 3) }}</td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <td colspan="3" class="no-border"></td>
-                                                @else
-                                                    <td colspan="4" class="no-border"></td>
-                                                @endif
-                                                <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
-                                                    class="text-right text-bold">BOQ Quantity</td>
-                                                <td class="text-right text-bold">
-                                                    {{ number_format($sub_item->boq_version_details->quantity, 3) }}
-                                                </td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <td colspan="3" class="no-border"></td>
-                                                @else
-                                                    <td colspan="4" class="no-border"></td>
-                                                @endif
-                                                <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
-                                                    class="text-right text-bold">Held Up Quantity</td>
-                                                <td class="text-right text-bold">
-                                                    {{ number_format($heldup, 3) }}</td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                @if (in_array('piece', json_decode($sub_item->sub_item->unit->fields)))
-                                                    <td colspan="3" class="no-border"></td>
-                                                @else
-                                                    <td colspan="4" class="no-border"></td>
-                                                @endif
-                                                <td colspan="{{ count(json_decode($sub_item->sub_item->unit->fields)) + 1 }}"
-                                                    class="text-right text-bold">This Bill Quantity</td>
-                                                <td class="text-right text-bold">
-                                                    {{ number_format($thisbill, 3) }}</td>
-                                                <td></td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                @endif
-                            @endforeach
+                                @endforeach
+                            @endif
                         @endforeach
+                    @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
@@ -1308,11 +1342,11 @@
                 </table>
             </div>
 
-            @if($measurement_details_view && count($measurement_details_view) > 0)
+            @if ($measurement_details_view && count($measurement_details_view) > 0)
                 @foreach ($measurement_details_view as $view)
                     {!! $view !!}
                 @endforeach
-                @endif
+            @endif
         @endif
     @endforeach
 

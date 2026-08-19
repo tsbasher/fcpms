@@ -283,11 +283,11 @@
                     <th rowspan="2" style="vertical-align: middle;">Description</th>
                     <th rowspan="2" style="width: 5px; vertical-align: middle;">Unit</th>
                     <th colspan="3">As Per Original Contract</th>
-                    <th colspan="2">Up to {{ $this_bill->name }}</th>
+                    <th colspan="2">Up to {{ $this_bill->bill_no }}</th>
                     @if ($last_bill)
-                        <th colspan="2">Up to Previous {{ $last_bill->name }}</th>
+                        <th colspan="2">Up to Previous {{ $last_bill->bill_no }}</th>
                     @endif
-                    <th colspan="2">Net Amount of this {{ $this_bill->name }}</th>
+                    <th colspan="2">Net Amount of this {{ $this_bill->bill_no }}</th>
                     <th rowspan="2" style="width: 5px; vertical-align: middle;">Remarks</th>
                 </tr>
                 <tr class="text-center">
