@@ -1,4 +1,4 @@
-<aside class="main-sidebar sidebar-light-indigo">
+<aside class="main-sidebar sidebar-dark-indigo">
     <!-- Brand Logo -->
     <a href="{{route('user.home')}}" class="brand-link">
       <span class="brand-text font-weight-bolder">      <img src="{{asset('backend/dist/img/short_logo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3">

@@ -701,6 +701,11 @@ class BillController extends Controller
     }
     public function storeMeasurement($id, Request $request)
     {
+        if(!$request->nos)
+            $request->merge([
+                'nos' => 0,
+            ]);
+        // dd($request->all());
         // dd($request->all());
         // dd(json_decode($request->unit_fields));
         // Implementation for storing measurement
@@ -891,11 +896,13 @@ class BillController extends Controller
 
     private function savemeasurement($bill_detail_id, $request, $id)
     {
-
+        $nos=$request->nos==0?1:$request->nos;
         $unit_fields = json_decode($request->unit_fields, true);
         if (in_array('weight', $unit_fields)) {
 
-            $m = Measurement::where('bill_id', $id)->where('bill_detail_id', $bill_detail_id)->first();
+            $m = Measurement::where('bill_id', $id)->where('bill_detail_id', $bill_detail_id)
+            ->where('description', $request->measurement_item)
+            ->first();
             if ($m) {
 
 
@@ -908,7 +915,7 @@ class BillController extends Controller
                     'boq_part_id' => $request->boq_part_id,
                     'boq_item_id' => $request->boq_item_id,
                     'boq_subitem_id' => $request->boq_subitem_id,
-                    'description' => $request->measurement_item,
+                    'description' => $request->measurement_detail_item,
                     'unit_id' => $request->unit_id,
                     'dia' => $request->dia,
                     'spacing' => $request->spacing,
@@ -918,7 +925,7 @@ class BillController extends Controller
                     'quantity_per_pile' => $request->rebar_nos * $request->rebar_length * $request->unit_weight,
                 ]);
             } else {
-                $measurement_item = $request->boq_subitem_id ? BoqSubItem::find($request->boq_subitem_id)->name : BoqItem::find($request->boq_item_id)->name;
+                // $measurement_item = $request->boq_subitem_id ? BoqSubItem::find($request->boq_subitem_id)->name : BoqItem::find($request->boq_item_id)->name;
                 $m = Measurement::create([
                     'project_id' => Auth::guard('web')->user()->project_id,
                     'bill_id' => $id,
@@ -928,7 +935,7 @@ class BillController extends Controller
                     'boq_item_id' => $request->boq_item_id,
                     'boq_subitem_id' => $request->boq_subitem_id,
                     'unit_id' => $request->unit_id,
-                    'description' => $measurement_item,
+                    'description' => $request->measurement_item,
                     'nos' => $request->nos,
                     'length' => $request->length,
                     'width' => $request->width,
@@ -945,7 +952,7 @@ class BillController extends Controller
                     'boq_part_id' => $request->boq_part_id,
                     'boq_item_id' => $request->boq_item_id,
                     'boq_subitem_id' => $request->boq_subitem_id,
-                    'description' => $request->measurement_item,
+                    'description' => $request->measurement_detail_item,
                     'unit_id' => $request->unit_id,
                     'dia' => $request->dia,
                     'spacing' => $request->spacing,
@@ -957,7 +964,7 @@ class BillController extends Controller
             }
             $md = MeasurementDetails::where('measurement_id', $m->id)->get();
             $m->weight = $md->sum('quantity_per_pile');
-            $m->quantity = $m->nos * $m->weight;
+            $m->quantity = $nos * $m->weight;
             $m->save();
         } else {
             $measurement = Measurement::create([
@@ -975,7 +982,7 @@ class BillController extends Controller
                 'width' => $request->width,
                 'height' => $request->height,
                 'weight' => $request->weight,
-                'quantity' => ($request->nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
+                'quantity' => ($nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
             ]);
         }
     }

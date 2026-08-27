@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">
-            <label for="measurement_item">Measurement description</label>
+            <label for="measurement_item">Measurement @if (in_array('weight', $fields)) Group @else description @endif</label>
             <input class="form-control" name="measurement_item" id="measurement_item" autocomplete="off"
                 value="{{ old('measurement_item') }}" placeholder="Enter Measurement description" required>
             {{-- <datalist id="suggestions"></datalist> --}}
@@ -14,7 +14,7 @@
         <div class="form-group">
             <label for="nos">Nos</label>
             <input class="form-control calculate" name="nos" id="nos" placeholder="Enter Nos"
-                value="{{ old('nos') }}" required>
+                value="{{ old('nos') }}">
 
         </div>
     </div>
@@ -64,6 +64,16 @@
     @endif
 
     @if (in_array('weight', $fields))
+    
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="measurement_item">Measurement description</label>
+            <input class="form-control" name="measurement_detail_item" id="measurement_detail_item" autocomplete="off"
+                value="{{ old('measurement_detail_item') }}" placeholder="Enter Measurement Details description" required>
+            {{-- <datalist id="suggestions"></datalist> --}}
+            <div id="suggestions_dropdown" class="custom-dropdown-menu"></div>
+        </div>
+    </div>
         <div class="col-md-3">
             <div class="form-group">
                 <label for="weight">Dia of Rebar (mm)</label>

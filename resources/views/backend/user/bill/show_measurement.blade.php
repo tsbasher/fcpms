@@ -362,7 +362,7 @@
                                                 <tr>
                                                     <td>{{ $loop->index + 1 }}</td>
                                                     <td>{{ $item->description }}</td>
-                                                    <td>{{ $item->nos }} </td>
+                                                    <td>{{ $item->nos==0?'-' : $item->nos }}</td>
                                                     <td> {{ $item->length ?? '-' }}</td>
                                                     <td>{{ $item->width ?? '-' }}</td>
                                                     <td> {{ $item->height ?? '-' }}</td>
@@ -389,6 +389,7 @@
                                         <thead>
                                             <tr>
                                                 <th>SL</th>
+                                                <th>Group</th>
                                                 <th>Description</th>
                                                 <th>Dia</th>
                                                 <th>Spacing</th>
@@ -400,9 +401,12 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($measurements->first()->measurement_details as $item)
+                                            @foreach ($measurements as $measurement)
+                                                
+                                            @foreach ($measurement->measurement_details as $item)
                                                 <tr>
                                                     <td>{{ $loop->index + 1 }}</td>
+                                                    <td>{{ $measurement->description }}</td>
                                                     <td>{{ $item->description }}</td>
                                                     <td>{{ $item->dia }} </td>
                                                     <td> {{ $item->spacing ?? '-' }}</td>
@@ -416,13 +420,15 @@
                                                     </td>
                                                 </tr>
                                             @endforeach
+                                            
+                                            @endforeach
                                         </tbody>
-                                        <tfoot>
+                                        {{-- <tfoot>
                                             <tr>
                                                 <td colspan="7" class="text-right">Total</td>
                                                 <td colspan="2">{{ $measurements->first()->measurement_details->sum('quantity_per_pile') }}
                                             </tr>
-                                        </tfoot>
+                                        </tfoot> --}}
                                     </table>
                                     
                                     @endif
@@ -591,7 +597,7 @@
                 debugger;
                 var unitFields = JSON.parse($("#unit_fields").val());
                 if ( $.inArray("weight", unitFields) != -1) {
-                    var nos = parseFloat($('#nos').val()) || 0;
+                    var nos = parseFloat($('#nos').val()) || 1;
                     var rebar_nos = parseFloat($('#rebar_nos').val()) || 0;
                     var rebar_length = parseFloat($('#rebar_length').val()) || 0;
                     var unit_weight = parseFloat($('#unit_weight').val()) || 0;
@@ -599,7 +605,7 @@
                     var quantity = nos * rebar_nos * rebar_length * unit_weight;
                     $('#quantity_per_pile').val(quantity_per_pile.toFixed(4));
                 } else {
-                    var nos = parseFloat($('#nos').val()) || 0;
+                    var nos = parseFloat($('#nos').val()) || 1;
                     var length = parseFloat($('#length').val()) || 1;
                     var width = parseFloat($('#width').val()) || 1;
                     var height = parseFloat($('#height').val()) || 1;
