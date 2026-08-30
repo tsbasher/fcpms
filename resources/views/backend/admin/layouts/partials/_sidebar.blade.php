@@ -46,7 +46,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.projects.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.projects.index' || Route::currentRouteName() == 'admin.projects.create' || Route::currentRouteName() == 'admin.projects.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-project-diagram"></i>
               <p>
                 Projects
               </p>
@@ -55,7 +55,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.regions.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.regions.index' || Route::currentRouteName() == 'admin.regions.create' || Route::currentRouteName() == 'admin.regions.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-map-marked-alt"></i>
               <p>
                 Regions
               </p>
@@ -64,7 +64,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.packages.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.packages.index' || Route::currentRouteName() == 'admin.packages.create' || Route::currentRouteName() == 'admin.packages.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-box"></i>
               <p>
                 Packages
               </p>
@@ -74,7 +74,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.scheme_options.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.scheme_options.index' || Route::currentRouteName() == 'admin.scheme_options.create' || Route::currentRouteName() == 'admin.scheme_options.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-list-ul"></i>
               <p>
                 Scheme Options
               </p>
@@ -83,7 +83,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.schemes.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.schemes.index' || Route::currentRouteName() == 'admin.schemes.create' || Route::currentRouteName() == 'admin.schemes.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-home"></i>
               <p>
                 Schemes
               </p>
@@ -92,7 +92,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.units.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.units.index' || Route::currentRouteName() == 'admin.units.create' || Route::currentRouteName() == 'admin.units.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-balance-scale"></i>
               <p>
                 Units
               </p>
@@ -102,7 +102,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.boq_parts.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.boq_parts.index' || Route::currentRouteName() == 'admin.boq_parts.create' || Route::currentRouteName() == 'admin.boq_parts.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-layer-group"></i>
               <p>
                 BOQ Parts
               </p>
@@ -111,7 +111,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.boq_items.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.boq_items.index' || Route::currentRouteName() == 'admin.boq_items.create' || Route::currentRouteName() == 'admin.boq_items.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-tasks"></i>
               <p>
                 BOQ Items
               </p>
@@ -121,7 +121,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.boq_sub_items.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.boq_sub_items.index' || Route::currentRouteName() == 'admin.boq_sub_items.create' || Route::currentRouteName() == 'admin.boq_sub_items.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-stream"></i>
               <p>
                 BOQ Sub Items
               </p>
@@ -130,7 +130,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.boq_versions.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.boq_versions.index' || Route::currentRouteName() == 'admin.boq_versions.create' || Route::currentRouteName() == 'admin.boq_versions.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-history"></i>
               <p>
                 BOQ Versions
               </p>
@@ -140,7 +140,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.boq_version_details.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.boq_version_details.index' || Route::currentRouteName() == 'admin.boq_version_details.create' || Route::currentRouteName() == 'admin.boq_version_details.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-table"></i>
               <p>
                 BOQ Versions Details
               </p>
@@ -150,7 +150,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.contractors.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.contractors.index' || Route::currentRouteName() == 'admin.contractors.create' || Route::currentRouteName() == 'admin.contractors.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-hard-hat"></i>
               <p>
                 Contractors
               </p>
@@ -159,7 +159,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.contractor_users.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.contractor_users.index' || Route::currentRouteName() == 'admin.contractor_users.create' || Route::currentRouteName() == 'admin.contractor_users.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-users"></i>
               <p>
                 Contractor Users
               </p>
@@ -169,7 +169,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('admin.bills.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.bills.index' || Route::currentRouteName() == 'admin.bills.create' || Route::currentRouteName() == 'admin.bills.edit') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-file-invoice-dollar"></i>
               <p>
                 Bill
               </p>

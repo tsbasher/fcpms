@@ -46,7 +46,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('user.bills.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'user.bills.index' || Route::currentRouteName() == 'user.bills.create' || Route::currentRouteName() == 'user.bills.edit' || Route::currentRouteName() == 'user.bills.show') active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-file-invoice-dollar"></i>
               <p>
                 Bills
               </p>
@@ -55,7 +55,7 @@ F C P M S 2.0</span>
           <li class="nav-item">
             <a href="{{route('user.bills.report')}}" class="nav-link
             @if(Route::currentRouteName() == 'user.bills.report' ) active @endif">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-file-alt"></i>
               <p>
                 Bill Report
               </p>

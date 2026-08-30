@@ -683,6 +683,7 @@ class BillController extends Controller
         $measurements = $measurements->get();
 
         if ($package->boq_type == "EGP") {
+            if( $boq_version_item)
             $boq_version_item->whereHas('boq_part', function ($query) use ($scheme) {
                 $query->where('boq_type', 'EGP')
                     ->where(function ($q) use ($scheme) {

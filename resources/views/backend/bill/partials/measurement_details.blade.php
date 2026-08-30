@@ -95,7 +95,7 @@
         </tr>
     @endforeach
     <tr>
-        <td colspan="7" class="text-right text-bold">Total Quantity (Per Pile)</td>
+        <td colspan="7" class="text-right text-bold">Total Quantity </td>
         <td class="text-right text-bold">
             {{ number_format($measurement_details->sum('quantity_per_pile'), 4) }}
         </td>
