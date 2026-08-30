@@ -31,7 +31,7 @@ class AdminBillController extends Controller
             ->get();
 
         // dd($bills);
-        return view('backend.admin.bill.index', compact('bills', 'packages', 'upazilas', 'bills'));
+        return view('backend.admin.bill.index', compact('bills', 'packages', 'upazilas'));
     }
     public function bill_show(Request $request)
     {

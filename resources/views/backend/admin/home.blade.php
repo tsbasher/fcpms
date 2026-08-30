@@ -175,33 +175,16 @@
             <!-- Left col -->
             <section class="col-lg-12">
 
-                <!-- Charts with tabs -->
+                <!-- Monthly Bill Amount chart -->
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
                             <i class="fas fa-chart-line mr-1"></i>
-                            Bill Analytics
+                            Monthly Bill Amount
                         </h3>
-                        <div class="card-tools">
-                            <ul class="nav nav-pills ml-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="#monthly-trend-tab" data-toggle="tab">Amount</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#status-tab" data-toggle="tab">Donut</a>
-                                </li>
-                            </ul>
-                        </div>
                     </div><!-- /.card-header -->
                     <div class="card-body">
-                        <div class="tab-content p-0">
-                            <div class="chart tab-pane active" id="monthly-trend-tab" style="position: relative; height: 300px;">
-                                <canvas id="monthlyBillTrendChart" height="300" style="height: 300px;"></canvas>
-                            </div>
-                            <div class="chart tab-pane" id="status-tab" style="position: relative; height: 300px;">
-                                <canvas id="billsByStatusChart" height="300" style="height: 300px;"></canvas>
-                            </div>
-                        </div>
+                        <canvas id="monthlyBillTrendChart" style="min-height: 300px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
                     </div><!-- /.card-body -->
                 </div>
                 <!-- /.card -->
@@ -330,65 +313,52 @@
 <script>
 $(function () {
 
-    // Monthly Bill Amount Trend Area Chart
+    // Monthly Bill Amount Trend Bar Chart
     var trendLabels = {!! json_encode($monthlyBillAmountTrend->pluck('month')) !!};
     var trendData = {!! json_encode($monthlyBillAmountTrend->pluck('total_amount')) !!};
 
     new Chart(document.getElementById('monthlyBillTrendChart').getContext('2d'), {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: trendLabels,
             datasets: [{
                 label: 'Bill Amount (BDT)',
                 data: trendData,
-                backgroundColor: 'rgba(60,141,188,0.9)',
-                borderColor: 'rgba(60,141,188,0.8)',
-                pointRadius: false,
-                pointColor: '#3b8bba',
-                pointStrokeColor: 'rgba(60,141,188,1)',
-                pointHighlightFill: '#fff',
-                pointHighlightStroke: 'rgba(60,141,188,1)',
-                fill: true
+                backgroundColor: 'rgba(60,141,188,0.85)',
+                borderColor: 'rgba(60,141,188,1)',
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(60,141,188,1)'
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return '৳' + Number(context.parsed.y).toLocaleString('en-IN');
-                        }
+            legend: { display: false },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem) {
+                        return '৳' + Number(tooltipItem.yLabel).toLocaleString('en-IN');
                     }
                 }
             },
             scales: {
-                y: { beginAtZero: true }
+                xAxes: [{
+                    ticks: {
+                        callback: function (value) {
+                            var parts = value.split('-');
+                            return parts.length === 2 ? parts[1] + '/' + parts[0].slice(2) : value;
+                        }
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function (value) {
+                            return '৳' + (Number(value) / 1000000) + 'M';
+                        }
+                    }
+                }]
             }
-        }
-    });
-
-    // Bills by Status Doughnut
-    var statusLabels = {!! json_encode($billsByStatus->pluck('status')) !!};
-    var statusData = {!! json_encode($billsByStatus->pluck('total')) !!};
-    var statusColors = ['#ffc107', '#28a745', '#17a2b8', '#dc3545', '#6c757d', '#343a40'];
-    var statusBgColors = statusColors.slice(0, statusLabels.length);
-
-    new Chart(document.getElementById('billsByStatusChart').getContext('2d'), {
-        type: 'doughnut',
-        data: {
-            labels: statusLabels,
-            datasets: [{
-                data: statusData,
-                backgroundColor: statusBgColors
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } }
         }
     });
 

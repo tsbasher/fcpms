@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'admin'], function () {
 
     Route::get('/login', [LoginController::class, 'admin_login'])->name('admin.login');
-    Route::post('/login', [LoginController::class, 'admin_login_post'])->name('admin.login_post');
+    Route::post('/login', [LoginController::class, 'admin_login_post'])->middleware('throttle:login')->name('admin.login_post');
 
     Route::group(['middleware' => ['admin']], function () {
         Route::get('/logout', [LoginController::class, 'admin_logout'])->name('admin.logout');
@@ -92,7 +92,7 @@ Route::group(['prefix' => 'common'], function () {
 
 Route::group(['prefix' => ''], function () {
     Route::get('/login', [LoginController::class, 'user_login'])->name('user.login');
-    Route::post('/login', [LoginController::class, 'user_login_post'])->name('user.login_post');
+    Route::post('/login', [LoginController::class, 'user_login_post'])->middleware('throttle:login')->name('user.login_post');
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/logout', [LoginController::class, 'user_logout'])->name('user.logout');
         Route::get('/', [UserHomeController::class, 'index'])->name('user.home');

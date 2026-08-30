@@ -226,7 +226,7 @@ class SchemeController extends Controller
             'pile_type' => $request->pile_type,
         ];
         $scheme->update($data);
-        return redirect()->route('admin.schemes.index')->with('success', 'Scheme created successfully.');
+        return redirect()->route('admin.schemes.index')->with('success', 'Scheme Updated successfully.');
     }
 
     /**

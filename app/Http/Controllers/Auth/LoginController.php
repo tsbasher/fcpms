@@ -74,11 +74,11 @@ class LoginController extends Controller
         $data = [
             'email' => $check['email'],
             'password' => $check['password'],
+            'is_active' => 1,
         ];
-        if (Auth::guard('web')->attempt($data)) {
+        if (Auth::guard('web')->attempt($data, $check['remember'] ?? false)) {
             return redirect()->route('user.home');
         } else {
-            // dd('asd');
             return redirect()->back()->with('error', 'Invalid credentials');
         }
     }
@@ -108,29 +108,23 @@ class LoginController extends Controller
         $data = [
             'email' => $check['email'],
             'password' => $check['password'],
+            'is_active' => 1,
         ];
 
-        $admin = Admin::with("projects")->where('email', $check['email'])->first();
-        if ($admin) {
-
+        if (Auth::guard('admin')->attempt($data, $check['remember'] ?? false)) {
+            $admin = Auth::guard('admin')->user();
             $project = $admin->projects->first(function ($project) use ($check) {
                 return strtoupper($project->code) === strtoupper($check['project_code']);
             });
 
             if ($project) {
-
-                if (Auth::guard('admin')->attempt($data, $check['remember'] ?? false)) {
-                    $this->finalize_admin_login($check['project_code']);
-                    return redirect()->route('admin.home');
-                } else {
-                    // dd('asd');
-                    return redirect()->back()->with('error', 'Invalid credentials');
-                }
-            } else {
-                return redirect()->back()->with('error', 'You have no permission to this project');
+                $this->finalize_admin_login($check['project_code']);
+                return redirect()->route('admin.home');
             }
+
+            Auth::guard('admin')->logout();
+            return redirect()->back()->with('error', 'Invalid credentials');
         } else {
-            // dd('asd');
             return redirect()->back()->with('error', 'Invalid credentials');
         }
     }

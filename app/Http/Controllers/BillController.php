@@ -121,18 +121,24 @@ class BillController extends Controller
 
         $menu = $request->has('menu') && isset($request->menu) ? $request->menu : "";
         if ($menu == "") {
-            $bill = Bill::with('schemes')->findOrFail($id);
+            $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+                ->where('package_id', Auth::guard('web')->user()->package_id)->with('schemes')->findOrFail($id);
             $schemes = Scheme::where('project_id', Auth::guard('web')->user()->project_id)
                 ->where('package_id', Auth::guard('web')->user()->package_id)->get();
             return view('backend.user.bill.show', compact('bill', 'schemes'));
         }
         if ($menu == "#scheme") {
-            $bill = Bill::with('schemes')->findOrFail($id);
+            $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+                ->where('project_id', Auth::guard('web')->user()->project_id)
+                ->where('package_id', Auth::guard('web')->user()->package_id)->with('schemes')->findOrFail($id);
             $schemes = Scheme::where('project_id', Auth::guard('web')->user()->project_id)
                 ->where('package_id', Auth::guard('web')->user()->package_id)->get();
             return view('backend.user.bill.partials.scheme', compact('bill', 'schemes'));
         }
-        $bill = Bill::with('contractor', 'project', 'boq_version', 'schemes');
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)->with('contractor', 'project', 'boq_version', 'schemes');
         if ($request->filled('part_scheme')) {
             $bill->with('bill_parts', function ($q) use ($request) {
                 $q->where('scheme_id', $request->part_scheme);
@@ -205,9 +211,9 @@ class BillController extends Controller
             $bill->name = $request->name;
             $bill->remarks = $request->remarks;
             $bill->boq_version_id = $request->boq_version_id;
-            $bill->contractor_id = Auth::guard('web')->user()->contractor_id;
-            $bill->project_id = Auth::guard('web')->user()->project_id;
-            $bill->package_id = Auth::guard('web')->user()->package_id;
+            // $bill->contractor_id = Auth::guard('web')->user()->contractor_id;
+            // $bill->project_id = Auth::guard('web')->user()->project_id;
+            // $bill->package_id = Auth::guard('web')->user()->package_id;
             $bill->updated_by = Auth::guard('web')->user()->id;
             $bill->save();
             $bill->schemes()->sync($request->schemes);
@@ -241,7 +247,9 @@ class BillController extends Controller
 
     public function show_scheme($id, Request $request)
     {
-        $bill = Bill::with('schemes')->findOrFail($id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+                ->where('package_id', Auth::guard('web')->user()->package_id)->with('schemes')->findOrFail($id);
         $schemes = Scheme::where('project_id', Auth::guard('web')->user()->project_id)
             ->where('package_id', Auth::guard('web')->user()->package_id)->get();
         return view('backend.user.bill.show_scheme', compact('bill', 'schemes'));
@@ -257,7 +265,10 @@ class BillController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $bill = Bill::findOrFail($bill_id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($bill_id);
         BillScheme::where('bill_id', $bill->id)->delete();
         foreach ($request->schemes as $scheme_id) {
             BillScheme::create([
@@ -272,7 +283,10 @@ class BillController extends Controller
     public function removeScheme($scheme_id, $bill_id)
     {
         try {
-            $bill = Bill::findOrFail($bill_id);
+            $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+                ->where('project_id', Auth::guard('web')->user()->project_id)
+                ->where('package_id', Auth::guard('web')->user()->package_id)
+                ->findOrFail($bill_id);
             $bill->schemes()->detach($scheme_id);
             $data = new stdClass();
             $data->status = 1;
@@ -290,7 +304,9 @@ class BillController extends Controller
 
     public function show_boq_part($id, Request $request)
     {
-        $bill = Bill::with('schemes'); //->findOrFail($id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)->with('schemes'); //->findOrFail($id);
         if ($request->has('schemes') && isset($request->schemes) && $request->schemes != "All")
             $bill->with('bill_parts', function ($q) use ($request) {
                 $q->where('scheme_id', $request->schemes);
@@ -321,7 +337,10 @@ class BillController extends Controller
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
         }
-        $bill = Bill::findOrFail($bill_id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($bill_id);
         if ($request->schemes == "All") {
             $schemes = BillScheme::where('project_id', Auth::guard('web')->user()->project_id)
                 // ->where('package_id', Auth::guard('web')->user()->package_id)
@@ -570,8 +589,16 @@ class BillController extends Controller
 
     public function show_measurement($id, Request $request)
     {
-        $schemes = Bill::with('schemes')->findOrFail($id)->schemes;
-        $bill = Bill::find($id);
+        $schemes = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->with('schemes')
+            ->findOrFail($id)
+            ->schemes;
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($id);
         $bill_parts = BillPart::with('boq_part');
         // $bill_items=BoqItem::
         $package = Package::where('id', Auth::guard('web')->user()->package_id)->first();
@@ -734,7 +761,10 @@ class BillController extends Controller
         if ($package->boq_type == "EGP") {
             DB::transaction(function () use ($request, $id) {
 
-                $bill = Bill::findOrFail($id);
+                $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+                    ->where('project_id', Auth::guard('web')->user()->project_id)
+                    ->where('package_id', Auth::guard('web')->user()->package_id)
+                    ->findOrFail($id);
                 $scheme = Scheme::findOrFail($request->schemes);
                 // dd($scheme);
                 $bill_detail = BillDetail::where('bill_id', $id)->where('scheme_id', $request->schemes)
@@ -792,7 +822,10 @@ class BillController extends Controller
             });
         } else {
             DB::transaction(function () use ($request, $id) {
-                $bill = Bill::findOrFail($id);
+                $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+                    ->where('project_id', Auth::guard('web')->user()->project_id)
+                    ->where('package_id', Auth::guard('web')->user()->package_id)
+                    ->findOrFail($id);
                 $scheme = Scheme::findOrFail($request->schemes);
                 // dd($scheme);
                 $bill_detail = BillDetail::where('bill_id', $id)->where('scheme_id', $request->schemes)
@@ -997,7 +1030,10 @@ class BillController extends Controller
                 $measurement = Measurement::findOrFail($id);
                 $bill_detail_id = $measurement->bill_detail_id;
                 $measurement->delete();
-                $bill = Bill::findOrFail($bill_id);
+                $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+                    ->where('package_id', Auth::guard('web')->user()->package_id)
+                    ->findOrFail($bill_id);
                 $this->adjustBillDetails($bill_detail_id, $bill_id);
             });
             $data = new stdClass();
@@ -1055,7 +1091,10 @@ class BillController extends Controller
     }
     private function adjustBillDetails($bill_detail_id, $bill_id)
     {
-        $bill = Bill::findOrFail($bill_id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($bill_id);
         $bill_details = BillDetail::with('measurements')->find($bill_detail_id);
         if ($bill_details->measurements->count() == 0) {
             $bill_details->delete();
@@ -1106,8 +1145,17 @@ class BillController extends Controller
     {
 
 
-        $bill = Bill::with('schemes')->findOrFail($id);
-        $last_bill = Bill::where('id', '!=', $bill->id)->where('created_at', '<', $bill->created_at)->where('project_id', $bill->project_id)->orderBy('id', 'desc')->first();
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->with('schemes')
+            ->findOrFail($id);
+        $last_bill = Bill::where('id', '!=', $bill->id)
+            ->where('created_at', '<', $bill->created_at)
+            ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', $bill->project_id)
+            ->orderBy('id', 'desc')
+            ->first();
         $project = Project::findOrFail($bill->project_id);
         // dd($bill);
         $schemes = $bill->schemes->pluck('id')->toArray();
@@ -1250,9 +1298,14 @@ class BillController extends Controller
     {
 
         // return view('backend.bill.test');
-        $this_bill = Bill::with('schemes')->findOrFail($id);
+        $this_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->with('schemes')
+            ->findOrFail($id);
         $previous_bill_ids = Bill::where('id', '!=', $this_bill->id)
             ->where('created_at', '<', $this_bill->created_at)
+            ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
             ->where('project_id', $this_bill->project_id)
             ->wherehas('boq_version', function ($query) {
                 $query->where('project_id', Auth::guard('web')->user()->project_id)
@@ -1275,6 +1328,7 @@ class BillController extends Controller
         $shelter_bill = [];
         $next_bill = Bill::where('serial', '>', $this_bill->serial)
             ->where('project_id', $this_bill->project_id)
+            ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
             ->wherehas('boq_version', function ($query) {
                 $query->where('project_id', Auth::guard('web')->user()->project_id)
                     ->where('package_id', Auth::guard('web')->user()->package_id);
@@ -1412,7 +1466,11 @@ class BillController extends Controller
             array_push($shelter_bill, $info);
         }
         // return response()->json($shelter_bill);
-        $last_bill = Bill::where('id', '!=', $this_bill->id)->where('created_at', '<', $this_bill->created_at)->where('project_id', $this_bill->project_id)->orderBy('id', 'desc')->first();
+        $last_bill = Bill::where('id', '!=', $this_bill->id)->where('created_at', '<', $this_bill->created_at)
+        ->where('project_id', $this_bill->project_id)
+        ->where('package_id', $this_bill->package_id)
+        ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
+        ->orderBy('id', 'desc')->first();
         $project = Project::findOrFail($this_bill->project_id);
         return view('backend.bill.shelter_bill', compact('shelter_bill', 'project', 'this_bill', 'last_bill'));
     }
@@ -1427,6 +1485,7 @@ class BillController extends Controller
             $upazilas = [];
 
         $bills = Bill::where('package_id', $package->id)
+            ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
             ->get();
         if ($request->has('upazila_id') && isset($request->upazila_id)) {
             $schemes = Scheme::where('upazila_id', $request->upazila_id)->get();
@@ -1439,13 +1498,18 @@ class BillController extends Controller
     {
         // $bill = Bill::with('schemes')->findOrFail($request->bill_id);
 
-        $this_bill = Bill::findOrFail($request->bill_id);
+        $this_bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($request->bill_id);
         $project_id = $this_bill->project_id;
         $package_id = $this_bill->boq_version->package_id;
 
         $previous_bill_ids = Bill::where('id', '!=', $this_bill->id)
             ->where('serial', '<', $this_bill->serial)
             ->where('project_id', $this_bill->project_id)
+            ->where('package_id', $this_bill->package_id)
+            ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
             ->wherehas('boq_version', function ($query) use ($project_id, $package_id) {
                 $query->where('project_id', $project_id)
                     ->where('package_id', $package_id);

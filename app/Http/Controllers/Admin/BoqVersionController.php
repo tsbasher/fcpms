@@ -65,7 +65,6 @@ class BoqVersionController extends Controller
             'version_date' => 'required|date',
             'package_id' => 'required|exists:packages,id',
             'description' => 'nullable|string|max:1000',
-            'version_date' => 'nullable|date',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
