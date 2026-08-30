@@ -125,6 +125,37 @@ class ContractorUserController extends Controller
     }
 
     /**
+     * Unlock a locked user account and reset its failed-attempt counter.
+     */
+    public function unlock(string $id)
+    {
+        $user = User::where('id', $id)
+            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->firstOrFail();
+
+        $user->login_attempts = 0;
+        $user->locked_until = null;
+        $user->save();
+
+        return redirect()->back()->with('success', 'User unlocked successfully.');
+    }
+
+    /**
+     * Activate / deactivate a user account.
+     */
+    public function toggleActive(string $id)
+    {
+        $user = User::where('id', $id)
+            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->firstOrFail();
+
+        $user->is_active = $user->is_active == 1 ? 0 : 1;
+        $user->save();
+
+        return redirect()->back()->with('success', $user->is_active == 1 ? 'User activated successfully.' : 'User deactivated successfully.');
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)

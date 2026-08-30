@@ -27,6 +27,11 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
+        'project_id',
+        'project_code',
+        'is_active',
+        'login_attempts',
+        'locked_until',
     ];
 
     /**

@@ -32,6 +32,9 @@ class User extends Authenticatable
         'package_id',
         'phone',
         'is_active',
+        'is_locked',
+        'login_attempts',
+        'locked_until',
     ];
 
     /**

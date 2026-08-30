@@ -96,9 +96,29 @@
                                             @else
                                                 <span class="badge bg-danger" style="font-size: 100%">No</span>
                                             @endif
+                                            @if ($user->locked_until && now()->lessThan($user->locked_until))
+                                                <span class="badge bg-warning" style="font-size: 100%">Locked</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.contractor_users.edit', $user->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @if ($user->locked_until && now()->lessThan($user->locked_until))
+                                                <form method="POST" action="{{ route('admin.contractor_users.unlock', $user->id) }}" style="display:inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-info" title="Unlock account"><i class="fas fa-unlock"></i></button>
+                                                </form>
+                                            @endif
+                                            @if ($user->is_active == 1)
+                                                <form method="POST" action="{{ route('admin.contractor_users.toggle_active', $user->id) }}" style="display:inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-secondary" title="Deactivate user"><i class="fas fa-ban"></i></button>
+                                                </form>
+                                            @else
+                                                <form method="POST" action="{{ route('admin.contractor_users.toggle_active', $user->id) }}" style="display:inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Activate user"><i class="fas fa-check"></i></button>
+                                                </form>
+                                            @endif
                                             <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.contractor_users.destroy', $user->id) }}"><i class="fas fa-trash"></i></a>
 
                                         </td>

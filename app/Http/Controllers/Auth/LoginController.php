@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helper\LoginThrottle;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Package;
@@ -71,16 +72,37 @@ class LoginController extends Controller
         ]);
 
         $check = $request->all();
+
+        $user = User::where('email', $check['email'])->first();
+        if (!$user) {
+            return redirect()->back()->with('error', 'No account found with this email');
+        }
+
+        if (LoginThrottle::isLocked($user)) {
+            $minutes = LoginThrottle::lockMinutesRemaining($user);
+            return redirect()->back()->with('error', "Too many failed attempts. Your account is locked, please try again in {$minutes} minute(s).");
+        }
+
+        if (!$user->is_active) {
+            return redirect()->back()->with('error', 'Your account is deactivated. Please contact admin.');
+        }
+
         $data = [
             'email' => $check['email'],
             'password' => $check['password'],
-            'is_active' => 1,
         ];
         if (Auth::guard('web')->attempt($data, $check['remember'] ?? false)) {
+            LoginThrottle::reset($user);
             return redirect()->route('user.home');
-        } else {
-            return redirect()->back()->with('error', 'Invalid credentials');
         }
+
+        LoginThrottle::registerFailure($user);
+        if (LoginThrottle::isLocked($user)) {
+            $minutes = LoginThrottle::lockMinutesRemaining($user);
+            return redirect()->back()->with('error', "Too many failed attempts. Your account is locked, please try again in {$minutes} minute(s).");
+        }
+
+        return redirect()->back()->with('error', 'Incorrect password');
     }
 
 
@@ -105,28 +127,47 @@ class LoginController extends Controller
         ]);
 
         $check = $request->all();
+
+        $admin = Admin::with('projects')->where('email', $check['email'])->first();
+        if (!$admin) {
+            return redirect()->back()->with('error', 'Invalid credentials');
+        }
+
+        if (LoginThrottle::isLocked($admin)) {
+            $minutes = LoginThrottle::lockMinutesRemaining($admin);
+            return redirect()->back()->with('error', "Too many failed attempts. Your account is locked, please try again in {$minutes} minute(s).");
+        }
+
+        if (!$admin->is_active) {
+            return redirect()->back()->with('error', 'Your account is deactivated. Please contact admin.');
+        }
+
         $data = [
             'email' => $check['email'],
             'password' => $check['password'],
-            'is_active' => 1,
         ];
-
         if (Auth::guard('admin')->attempt($data, $check['remember'] ?? false)) {
-            $admin = Auth::guard('admin')->user();
             $project = $admin->projects->first(function ($project) use ($check) {
                 return strtoupper($project->code) === strtoupper($check['project_code']);
             });
 
             if ($project) {
+                LoginThrottle::reset($admin);
                 $this->finalize_admin_login($check['project_code']);
                 return redirect()->route('admin.home');
             }
 
             Auth::guard('admin')->logout();
-            return redirect()->back()->with('error', 'Invalid credentials');
-        } else {
-            return redirect()->back()->with('error', 'Invalid credentials');
+            return redirect()->back()->with('error', 'You have no permission to this project. Please select the correct project code.');
         }
+
+        LoginThrottle::registerFailure($admin);
+        if (LoginThrottle::isLocked($admin)) {
+            $minutes = LoginThrottle::lockMinutesRemaining($admin);
+            return redirect()->back()->with('error', "Too many failed attempts. Your account is locked, please try again in {$minutes} minute(s).");
+        }
+
+        return redirect()->back()->with('error', 'Invalid credentials');
     }
     private function finalize_admin_login($project_code)
     {

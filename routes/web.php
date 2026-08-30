@@ -67,6 +67,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('boq-versions', BoqVersionController::class)->names('admin.boq_versions');
         Route::resource('boq-version-details', BoqVersionDetailsController::class)->names('admin.boq_version_details');
         Route::resource('contractors', ContractorController::class)->names('admin.contractors');
+        Route::post('/contractor-users/{id}/unlock', [ContractorUserController::class, 'unlock'])->name('admin.contractor_users.unlock');
+        Route::post('/contractor-users/{id}/toggle-active', [ContractorUserController::class, 'toggleActive'])->name('admin.contractor_users.toggle_active');
         Route::resource('contractor-users', ContractorUserController::class)->names('admin.contractor_users');
         Route::resource('bills', AdminBillController::class)->names('admin.bills');
     });
