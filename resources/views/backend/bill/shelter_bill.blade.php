@@ -539,8 +539,8 @@
             $is_footer = false;
             $measurement_details_view = [];
             $scheme = $info->scheme;
-            $non_header=true;
-           
+            $non_header = true;
+
         @endphp
         {{-- @dd($shelter_bill) --}}
         @if ($info->has_bill_details)
@@ -1039,7 +1039,7 @@
                                                 count($measurement->measurement_details) > 0
                                             ) {
                                                 $measurement_details = $measurement->measurement_details;
-                                                
+
                                                 $boq_item = $item;
                                                 array_push(
                                                     $measurement_details_view,
@@ -1055,7 +1055,7 @@
                                                             'boq_item',
                                                             'is_header',
                                                             'is_footer',
-                                                            'non_header'
+                                                            'non_header',
                                                         ),
                                                     )->render(),
                                                 );
@@ -1063,11 +1063,12 @@
                                             }
                                         @endphp
                                         <tr>
-                                            <td class="text-center">{{ $loop->index+1 }}</td>
+                                            <td class="text-center">{{ $loop->index + 1 }}</td>
                                             <td class="text-center"></td>
                                             <td>{{ $measurement->description }}</td>
                                             <td class="text-center">{{ $item->item->unit->code }}</td>
-                                            <td class="text-right">{{ $measurement->nos==0?'-' : $measurement->nos }}</td>
+                                            <td class="text-right">{{ $measurement->nos == 0 ? '-' : $measurement->nos }}
+                                            </td>
                                             @if (in_array('length', json_decode($item->item->unit->fields)))
                                                 <td class="text-right">{{ $measurement->length }}</td>
                                             @endif
@@ -1231,7 +1232,7 @@
                                                     count($measurement->measurement_details) > 0
                                                 ) {
                                                     $measurement_details = $measurement->measurement_details;
-                                                    
+
                                                     $boq_item = $item;
                                                     array_push(
                                                         $measurement_details_view,
@@ -1247,12 +1248,12 @@
                                                                 'boq_item',
                                                                 'is_header',
                                                                 'is_footer',
-                                                                'non_header'
+                                                                'non_header',
                                                             ),
                                                         )->render(),
                                                     );
-                                                    
-                                                $is_header = false;
+
+                                                    $is_header = false;
                                                 }
                                             @endphp
                                             <tr>
@@ -1261,7 +1262,8 @@
                                                 <td>{{ $measurement->description }}</td>
                                                 <td class="text-center">{{ $sub_item->sub_item->unit->code }}
                                                 </td>
-                                                <td class="text-right">{{ $measurement->nos==0?'-' : $measurement->nos }}</td>
+                                                <td class="text-right">
+                                                    {{ $measurement->nos == 0 ? '-' : $measurement->nos }}</td>
                                                 @if (in_array('length', json_decode($sub_item->sub_item->unit->fields)))
                                                     <td class="text-right">{{ $measurement->length }}</td>
                                                 @endif
@@ -1363,13 +1365,16 @@
                 </table>
             </div>
             @php
+
+                $is_header = false;
                 $is_footer = true;
                 $non_header = false;
+
                 array_push(
                     $measurement_details_view,
                     View::make(
                         'backend.bill.partials.measurement_details',
-                        compact('is_header', 'is_footer','non_header'),
+                        compact('is_header', 'is_footer', 'non_header'),
                     )->render(),
                 );
             @endphp
