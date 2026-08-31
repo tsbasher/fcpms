@@ -79,7 +79,7 @@ class BoqItemController extends Controller
         $data = $request->only(['boq_part_id', 'name', 'code', 'pile_type', 'description', 'is_active', 'specification_no', 'has_sub_items', 'unit_id']);
         $data['project_id'] = Auth::guard('admin')->user()->project_id; // Assuming the user is authenticated
         BoqItem::create($data);
-        return redirect()->route('admin.boq_items.index')->with('success', 'BOQ Item created successfully.');
+        return redirect()->back()->with('success', 'BOQ Item created successfully.')->withInput();
     }
 
     /**
