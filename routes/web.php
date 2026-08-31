@@ -10,12 +10,14 @@ use App\Http\Controllers\Admin\BoqVersionDetailsController;
 use App\Http\Controllers\Admin\BoqVersionExportImportController;
 use App\Http\Controllers\Admin\ContractorController;
 use App\Http\Controllers\Admin\ContractorUserController;
+use App\Http\Controllers\Admin\DocumentTypeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SchemeController;
 use App\Http\Controllers\Admin\SchemeOptionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\BillDocumentController;
 use App\Http\Controllers\Common\DistrictController;
 use App\Http\Controllers\Common\RegionController;
 use App\Http\Controllers\Common\UnionController;
@@ -50,6 +52,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/boq-versions/export-data', [BoqVersionController::class, 'export_data'])->name('admin.boq_versions.export_data');
         Route::get('/bills-by-package/{package_id}', [AdminBillController::class, 'getBillsByPackage'])->name('admin.bills.get_bills_by_package');
         Route::get('bill/details/shelter-wise-details', [AdminBillController::class, 'bill_show'])->name('admin.bills.shelter_wise_view');
+        Route::get('/bills/{bill_id}/documents', [AdminBillController::class, 'documents'])->name('admin.bills.documents');
         Route::get('/get-scheme-by-upazila/{upazila_id}', [SchemeController::class, 'getSchemebyUpazila'])->name('admin.get_scheme_bu_upazila');
 
                         Route::get('bill/held-up-status/{id}', [AdminBillController::class, 'heldUpStatus'])->name('user.bills.held_up_status');
@@ -59,6 +62,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('projects', ProjectController::class)->names('admin.projects');
         Route::resource('packages', PackageController::class)->names('admin.packages');
         Route::resource('scheme-options', SchemeOptionController::class)->names('admin.scheme_options');
+        Route::resource('document-types', DocumentTypeController::class)->names('admin.document_types');
         Route::resource('schemes', SchemeController::class)->names('admin.schemes');
         Route::resource('units', UnitController::class)->names('admin.units');
         Route::resource('boq-parts', BoqPartController::class)->names('admin.boq_parts');
@@ -125,6 +129,7 @@ Route::group(['prefix' => ''], function () {
 
 
         Route::get('/bill/details/measurement/{id}', [BillController::class, 'show_measurement'])->name('user.bills.details.measurement');
+        Route::get('/bill/details/documents/{id}', [BillController::class, 'show_documents'])->name('user.bills.details.documents');
         Route::post('/bill/details/add-measurement/{bill_id}', [BillController::class, 'storeMeasurement'])->name('user.bills.store_measurement');
         Route::get('/bill/details/remove-measurement/{id}/{bill_id}', [BillController::class, 'removeMeasurement'])->name('user.bills.remove_measurement');
         Route::get('/bill/details/remove-measurement-details/{id}/{bill_id}', [BillController::class, 'removeMeasurementDetails'])->name('user.bills.remove_measurement_details');
@@ -143,5 +148,8 @@ Route::group(['prefix' => ''], function () {
         Route::get('bill/regenerate/{id}', [BillController::class, 'regenerate'])->name('user.bills.regenerate');
 
         Route::resource('bills', BillController::class)->names('user.bills');
+
+        Route::post('/bills/{bill_id}/documents', [BillDocumentController::class, 'store'])->name('user.bills.documents.store');
+        Route::delete('/documents/{document_id}', [BillDocumentController::class, 'destroy'])->name('user.bills.documents.destroy');
     });
 });

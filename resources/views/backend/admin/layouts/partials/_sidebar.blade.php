@@ -81,6 +81,15 @@ F C P M S 2.0</span>
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{route('admin.document_types.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.document_types.index' || Route::currentRouteName() == 'admin.document_types.create' || Route::currentRouteName() == 'admin.document_types.edit') active @endif">
+              <i class="nav-icon fas fa-tags"></i>
+              <p>
+                Document Types
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{route('admin.schemes.index')}}" class="nav-link
             @if(Route::currentRouteName() == 'admin.schemes.index' || Route::currentRouteName() == 'admin.schemes.create' || Route::currentRouteName() == 'admin.schemes.edit') active @endif">
               <i class="nav-icon fas fa-home"></i>

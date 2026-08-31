@@ -9,6 +9,22 @@
     <link rel="stylesheet" href="{{ asset('backend/plugins/jquery-ui/jquery-ui.theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/plugins/select2/css/select2.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <style>
+        #modal-admin-view-document .modal-content,
+        #modal-admin-view-document .modal-body {
+            background: rgba(0, 0, 0, 0);
+            box-shadow: none;
+            border: none;
+        }
+        #modal-admin-view-document .modal-body {
+            overflow: auto;
+            height: 87vh;
+        }
+        #modal-admin-view-document .modal-title {
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -131,8 +147,32 @@
             </div>
             <!-- /.card -->
         </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="documents-section"></div>
+            </div>
+        </div>
     </section>
 
+    <!-- View Document Modal -->
+    <div class="modal fade" id="modal-admin-view-document" style="background: rgba(0, 0, 0, 0.8);">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="admin-view-document-title">Document</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="admin-view-document-body" style="text-align: center;">
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
 @endsection
 
@@ -175,6 +215,7 @@
                 $('#bill_id').append('<option value="">Select Bill</option>');
                 $('#upazila_id').empty();
                 $('#upazila_id').append('<option value="">Select Upazila</option>');
+                $('#documents-section').html('');
                 // if (packageId) {
                 $.ajax({
                     url: ("{{ route('common.get_upazilas_by_district', '*') }}").replace('*',
@@ -221,6 +262,7 @@
                 var billId = $('#bill_id').val();
                 if (!billId) {
                     $('#heldup').html('');
+                    $('#documents-section').html('');
                     return; // Exit if no bill is selected
                 }
                 debugger;
@@ -235,6 +277,15 @@
                     );
 
                 }
+
+                $.ajax({
+                    url: ("{{ route('admin.bills.documents', '*') }}").replace('*', billId),
+                    type: 'GET',
+                    dataType: 'html',
+                    success: function(html) {
+                        $('#documents-section').html(html);
+                    }
+                });
             });
             $(document).on('click', '#change_status', function(e) {
                 // $("#change_status").on('click', function(e) {
@@ -300,6 +351,23 @@
             "info": true,
             "autoWidth": false,
             "responsive": true,
+        });
+
+        $(document).on('click', '.view_document', function() {
+            var type = $(this).data('type');
+            var url = $(this).data('url');
+            var title = $(this).data('title');
+            $('#admin-view-document-title').text(title);
+            var body = $('#admin-view-document-body');
+            body.html('');
+            if (type === 'application/pdf') {
+                body.html('<iframe src="' + url + '" style="width:100%;height:100%;min-height:75vh;border:none;"></iframe>');
+            } else if (type.startsWith('image/')) {
+                body.html('<img src="' + url + '" class="img-fluid" style="max-height:85vh;">');
+            } else {
+                body.html('<a href="' + url + '" target="_blank" class="btn btn-primary">Download ' + title + '</a>');
+            }
+            $('#modal-admin-view-document').modal('show');
         });
     </script>
 @endsection

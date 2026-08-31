@@ -84,6 +84,12 @@ class AdminBillController extends Controller
         $bills = Bill::where('package_id', $package_id)->get();
         return response()->json($bills);
     }
+    public function documents($bill_id)
+    {
+        $bill = Bill::with('documents.document_type', 'project', 'package')->findOrFail($bill_id);
+        $documents = $bill->documents->sortByDesc('created_at');
+        return view('backend.admin.bill.partials.documents', compact('documents'))->render();
+    }
     public function heldUpStatus($bill_id)
     {
         $status = false;

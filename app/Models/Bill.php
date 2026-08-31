@@ -35,6 +35,10 @@ class Bill extends ExtendedModelUser
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
+    public function package()
+    {
+        return $this->belongsTo(Package::class, 'package_id', 'id');
+    }
     public function boq_version()
     {
         return $this->belongsTo(BoqVersion::class, 'boq_version_id', 'id');
@@ -63,5 +67,9 @@ class Bill extends ExtendedModelUser
     public function bill_details()
     {
         return $this->hasMany(BillDetail::class,'bill_id','id')->with('scheme','scheme_option','boq_part','boq_item','boq_subitem', 'measurements');
+    }
+    public function documents()
+    {
+        return $this->hasMany(BillDocument::class, 'bill_id', 'id');
     }
 }

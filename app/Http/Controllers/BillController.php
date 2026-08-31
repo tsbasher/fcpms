@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helper\BillGenerator;
 use App\Models\Bill;
 use App\Models\BillDetail;
+use App\Models\BillDocument;
 use App\Models\BillItem;
 use App\Models\BillPart;
 use App\Models\BillScheme;
@@ -14,6 +15,7 @@ use App\Models\BoqPart;
 use App\Models\BoqSubItem;
 use App\Models\BoqVersion;
 use App\Models\BoqVersionDetails;
+use App\Models\DocumentType;
 use App\Models\Measurement;
 use App\Models\MeasurementDetails;
 use App\Models\Package;
@@ -726,6 +728,25 @@ class BillController extends Controller
         // dd($old_bill_details->sum('this_bill_quantity'));
 
         return view('backend.user.bill.show_measurement', compact('bill', 'schemes', 'bill_parts', 'boq_items', 'boq_subitems', 'measurement_view', 'measurements', 'boq_version_item', 'old_bill_details', 'this_bill_details'));
+    }
+    public function show_documents($id, Request $request)
+    {
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($id);
+
+        $document_types = DocumentType::where('project_id', $bill->project_id)
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->get();
+
+        $documents = BillDocument::with('document_type')
+            ->where('bill_id', $bill->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('backend.user.bill.show_documents', compact('bill', 'document_types', 'documents'));
     }
     public function storeMeasurement($id, Request $request)
     {

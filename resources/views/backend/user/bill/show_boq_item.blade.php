@@ -81,10 +81,9 @@
                         <ul class="nav nav-pills">
                             <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.scheme', [$bill->id]) }}" data-toggle="tab">Scheme</a></li>
                             <li class="nav-item"><a class="nav-link  click_tab" href="{{ route('user.bills.details.boq_part', [$bill->id]) }}" data-toggle="tab">BOQ Parts</a></li>
-                            <li class="nav-item"><a class="nav-link active click_tab" href="{{ route('user.bills.details.boq_item', [$bill->id]) }}" data-toggle="tab">BOQ Items</a></li>
-                            <li class="nav-item"><a class="nav-link click_tab" href="{{ route('user.bills.details.boq_subitem', [$bill->id]) }}" data-toggle="tab">BOQ Sub
-                                    Items</a></li>
                             <li class="nav-item"><a class="nav-link click_tab" href="{{ route('user.bills.details.measurement', [$bill->id]) }}" data-toggle="tab">Measurements</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link click_tab" href="{{ route('user.bills.details.documents', [$bill->id]) }}" data-toggle="tab">Documents</a>
                             </li>
                         </ul>
                     </div><!-- /.card-header -->
