@@ -72,6 +72,7 @@ class PackageController extends Controller
         }
         $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'contract_title' => 'nullable|string|max:255',
             'code' => 'required|string|max:50|unique:packages,code',
             'alias' => 'nullable|string|max:50',
             'division_id' => 'nullable|uuid|exists:divisions,id',
@@ -94,6 +95,7 @@ class PackageController extends Controller
         $package = Package::create([
             'project_id' => Auth::guard('admin')->user()->project_id,
             'name' => $request->name,
+            'contract_title' => $request->contract_title,
             'code' => $request->code,
             'alias' => $request->alias,
             'district_id' => $request->district_id,
@@ -146,6 +148,7 @@ class PackageController extends Controller
         }
         $v = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'contract_title' => 'nullable|string|max:255',
             'code' => 'required|string|max:50|unique:packages,code,' . $package->id,
             'alias' => 'nullable|string|max:50',
             'division_id' => 'nullable|uuid|exists:divisions,id',
@@ -168,6 +171,7 @@ class PackageController extends Controller
         $package = Package::permitted()->findOrFail($package->id);
         $package->update([
             'name' => $request->name,
+            'contract_title' => $request->contract_title,
             'code' => $request->code,
             'alias' => $request->alias,
             'division_id' => $request->division_id,

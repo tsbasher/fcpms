@@ -64,6 +64,11 @@ class ContractorController extends Controller
             'contact_person_name' => 'nullable|string|max:255',
             'contact_person_email' => 'nullable|email|max:255',
             'contact_person_phone' => 'nullable|string|max:20',
+            'bank_account_no' => 'nullable|string|max:100',
+            'bank_name' => 'nullable|string|max:255',
+            'branch_name' => 'nullable|string|max:255',
+            'routing_number' => 'nullable|string|max:50',
+            'bank_address' => 'nullable|string',
             'company_address' => 'nullable|string',
         ]);
 
@@ -79,6 +84,11 @@ class ContractorController extends Controller
             'contact_person_name',
             'contact_person_email',
             'contact_person_phone',
+            'bank_account_no',
+            'bank_name',
+            'branch_name',
+            'routing_number',
+            'bank_address',
             'company_address',
             'is_active',
         ]);
@@ -120,6 +130,11 @@ class ContractorController extends Controller
             'contact_person_name' => 'nullable|string|max:255',
             'contact_person_email' => 'nullable|email|max:255',
             'contact_person_phone' => 'nullable|string|max:20',
+            'bank_account_no' => 'nullable|string|max:100',
+            'bank_name' => 'nullable|string|max:255',
+            'branch_name' => 'nullable|string|max:255',
+            'routing_number' => 'nullable|string|max:50',
+            'bank_address' => 'nullable|string',
             'company_address' => 'nullable|string',
         ]);
 
@@ -136,6 +151,11 @@ class ContractorController extends Controller
             'contact_person_name',
             'contact_person_email',
             'contact_person_phone',
+            'bank_account_no',
+            'bank_name',
+            'branch_name',
+            'routing_number',
+            'bank_address',
             'company_address',
             'is_active',
         ]);

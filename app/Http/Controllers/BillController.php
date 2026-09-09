@@ -37,7 +37,8 @@ class BillController extends Controller
      */
     public function index(Request $request)
     {
-        $bills = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+        $bills = Bill::withSum('bill_details as total_amount', 'this_bill_amount')
+            ->where('contractor_id', Auth::guard('web')->user()->contractor_id)
             ->where('project_id', Auth::guard('web')->user()->project_id)
             ->where('package_id', Auth::guard('web')->user()->package_id);
 
@@ -78,6 +79,8 @@ class BillController extends Controller
             'remarks' => 'nullable|string',
             'measurement_from_date' => 'nullable|date',
             'measurement_to_date' => 'nullable|date',
+            'physical_target_progress' => 'nullable|numeric|between:0,100',
+            'physical_actual_progress' => 'nullable|numeric|between:0,100',
             'boq_version_id' => 'required|exists:boq_versions,id',
             'schemes' => 'required|array',
             'schemes.*' => 'exists:schemes,id',
@@ -94,6 +97,8 @@ class BillController extends Controller
             $bill->name = $request->name;
             $bill->measurement_from_date = $request->measurement_from_date;
             $bill->measurement_to_date = $request->measurement_to_date;
+            $bill->physical_target_progress = $request->physical_target_progress;
+            $bill->physical_actual_progress = $request->physical_actual_progress;
             $bill->remarks = $request->remarks;
             $bill->boq_version_id = $request->boq_version_id;
             $bill->contractor_id = Auth::guard('web')->user()->contractor_id;
@@ -198,6 +203,8 @@ class BillController extends Controller
             'boq_version_id' => 'required|exists:boq_versions,id',
             'measurement_from_date' => 'nullable|date',
             'measurement_to_date' => 'nullable|date',
+            'physical_target_progress' => 'nullable|numeric|between:0,100',
+            'physical_actual_progress' => 'nullable|numeric|between:0,100',
             'schemes' => 'required|array',
             'schemes.*' => 'exists:schemes,id',
         ]);
@@ -210,6 +217,8 @@ class BillController extends Controller
             $bill->reference_code = $request->reference_code;
             $bill->measurement_from_date = $request->measurement_from_date;
             $bill->measurement_to_date = $request->measurement_to_date;
+            $bill->physical_target_progress = $request->physical_target_progress;
+            $bill->physical_actual_progress = $request->physical_actual_progress;
             $bill->name = $request->name;
             $bill->remarks = $request->remarks;
             $bill->boq_version_id = $request->boq_version_id;

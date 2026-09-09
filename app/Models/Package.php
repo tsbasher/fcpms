@@ -17,6 +17,7 @@ class Package extends ExtendedModel
         'id',
         'project_id',
         'name',
+        'contract_title',
         'code',
         'boq_type',
         'alias',

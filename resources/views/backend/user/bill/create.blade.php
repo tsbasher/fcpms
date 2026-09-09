@@ -101,6 +101,25 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="physical_target_progress">Physical Target Progress (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" name="physical_target_progress"
+                                        id="physical_target_progress" placeholder="Enter Physical Target Progress"
+                                        value="{{ old('physical_target_progress') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="physical_actual_progress">Physical Actual Progress (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" name="physical_actual_progress"
+                                        id="physical_actual_progress" placeholder="Enter Physical Actual Progress"
+                                        value="{{ old('physical_actual_progress') }}">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="schemes">Schemes</label>
                             <select class="form-control select2" multiple name="schemes[]" id="schemes"

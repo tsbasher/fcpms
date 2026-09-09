@@ -46,6 +46,13 @@
 
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label for="contract_title">Contract Title</label>
+                                <input type="text" class="form-control" name="contract_title" id="contract_title" placeholder="Enter Contract Title" value="{{ old('contract_title', $package->contract_title) }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label for="alias">Package Alias</label>
                                 <input type="text" required class="form-control" name="alias" id="alias" placeholder="Enter Package Alias" value="{{ old('alias', $package->alias) }}">
                             </div>

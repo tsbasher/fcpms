@@ -22,6 +22,11 @@ class Contractor extends ExtendedModel
         'contact_person_name',
         'contact_person_email',
         'contact_person_phone',
+        'bank_account_no',
+        'bank_name',
+        'branch_name',
+        'routing_number',
+        'bank_address',
         'is_active',
         'created_by',
         'updated_by'

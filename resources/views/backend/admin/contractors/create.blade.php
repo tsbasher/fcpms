@@ -105,6 +105,46 @@
                                     <textarea class="form-control" name="company_address" id="company_address" placeholder="Enter Company Address">{{ old('company_address') }}</textarea>
                                 </div>
 
+                                <h5 style="margin-top: 20px;">Bank Information</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="bank_account_no">Bank Account No</label>
+                                            <input type="text" class="form-control" name="bank_account_no" id="bank_account_no" placeholder="Enter Bank Account No" value="{{ old('bank_account_no') }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="bank_name">Bank Name</label>
+                                            <input type="text" class="form-control" name="bank_name" id="bank_name" placeholder="Enter Bank Name" value="{{ old('bank_name') }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="branch_name">Branch Name</label>
+                                            <input type="text" class="form-control" name="branch_name" id="branch_name" placeholder="Enter Branch Name" value="{{ old('branch_name') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="routing_number">Routing Number</label>
+                                            <input type="text" class="form-control" name="routing_number" id="routing_number" placeholder="Enter Routing Number" value="{{ old('routing_number') }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="bank_address">Bank Address</label>
+                                            <input type="text" class="form-control" name="bank_address" id="bank_address" placeholder="Enter Bank Address" value="{{ old('bank_address') }}">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" @if (old('is_active', 1) == 1) checked @endif>
                                     <label class="form-check-label" for="is_active">Is Active</label>

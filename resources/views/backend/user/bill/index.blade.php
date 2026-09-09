@@ -64,6 +64,9 @@
                                 <th>BOQ Version</th>
                                 <th>Bill Date</th>
                                 <th>Status</th>
+                                <th>Target Progress</th>
+                                <th>Actual Progress</th>
+                                <th class="text-right">Total This Bill Amount</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -76,6 +79,9 @@
                                 <td>{{ $bill->bill_date }}</td>
 
                                 <td><span class="badge bg-secondary" style="font-size: 100%">{{$bill->status}}</span></td>
+                                <td>{{ $bill->physical_target_progress ? number_format($bill->physical_target_progress, 2) . ' %' : '-' }}</td>
+                                <td>{{ $bill->physical_actual_progress ? number_format($bill->physical_actual_progress, 2) . ' %' : '-' }}</td>
+                                <td class="text-right">{{ number_format($bill->total_amount ?? 0, 2) }}</td>
                                 <td>
                                     <a href="{{ route('user.bills.edit', $bill->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
                                     <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('user.bills.destroy', $bill->id) }}"><i class="fas fa-trash"></i></a>

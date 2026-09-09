@@ -101,6 +101,7 @@
                             <tr>
                                 <th style="width: 10px">#</th>
                                 <th>Name</th>
+                                <th>Contract Title</th>
                                 <th>Code</th>
                                 <th>Alias</th>
                                 <th>District</th>
@@ -113,6 +114,7 @@
                             <tr>
                                 <td>{{ $loop->index + 1 }}</td>
                                 <td>{{ $package->name }}</td>
+                                <td>{{ $package->contract_title }}</td>
                                 <td>{{ $package->code }}</td>
                                 <td>{{ $package->alias }}</td>
                                 <td>{{ $package->district->name ?? 'N/A' }}</td>

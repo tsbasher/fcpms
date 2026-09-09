@@ -152,7 +152,7 @@
                                                             <th>Document Type</th>
                                                             <th>Title / File</th>
                                                             <th>Uploaded At</th>
-                                                            <th>View</th>
+                                                            <th>Action</th>
                                                             <th>Delete</th>
                                                         </tr>
                                                     </thead>
@@ -166,7 +166,14 @@
                                                                 </td>
                                                                 <td>{{ $document->created_at ? $document->created_at->format('d M Y h:i A') : '-' }}</td>
                                                                 <td>
-                                                                    <button type="button" class="btn btn-sm btn-primary view_document" data-type="{{ $document->mime_type }}" data-url="{{ Storage::url($document->file_path) }}" data-title="{{ $document->title ?: $document->original_name }}"><i class="fa fa-eye"></i> View</button>
+                                                                    @php
+                                                                        $document_url = Storage::url($document->file_path);
+                                                                        $previewable = str_starts_with($document->mime_type, 'image/') || in_array($document->mime_type, ['application/pdf', 'application/x-pdf']);
+                                                                    @endphp
+                                                                    @if ($previewable)
+                                                                        <button type="button" class="btn btn-sm btn-primary view_document" data-type="{{ $document->mime_type }}" data-url="{{ $document_url }}" data-title="{{ $document->title ?: $document->original_name }}"><i class="fa fa-eye"></i> View</button>
+                                                                    @endif
+                                                                    <a href="{{ $document_url }}" download="{{ $document->original_name }}" class="btn btn-sm btn-success"><i class="fa fa-download"></i> Download</a>
                                                                 </td>
                                                                 <td>
                                                                     <form action="{{ route('user.bills.documents.destroy', $document->id) }}" method="POST" class="delete-document-form" style="display:inline;">

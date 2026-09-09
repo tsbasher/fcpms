@@ -19,6 +19,8 @@ class Bill extends ExtendedModelUser
         'reference_code',
         'measurement_from_date',
         'measurement_to_date',
+        'physical_target_progress',
+        'physical_actual_progress',
         'name',
         'status',
         'calculate_with_heldup',
