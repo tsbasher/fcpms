@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminBillController;
 use App\Http\Controllers\Admin\AdminHomeController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BoqPartController;
 use App\Http\Controllers\Admin\BoqItemController;
 use App\Http\Controllers\Admin\BoqSubItemController;
@@ -55,7 +56,11 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/bills/{bill_id}/documents', [AdminBillController::class, 'documents'])->name('admin.bills.documents');
         Route::get('/get-scheme-by-upazila/{upazila_id}', [SchemeController::class, 'getSchemebyUpazila'])->name('admin.get_scheme_bu_upazila');
 
-                        Route::get('bill/held-up-status/{id}', [AdminBillController::class, 'heldUpStatus'])->name('user.bills.held_up_status');
+        Route::get('bill/held-up-status/{id}', [AdminBillController::class, 'heldUpStatus'])->name('user.bills.held_up_status');
+
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+        Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('admin.audit_logs.export');
+        Route::get('/audit-logs/show/{id}', [AuditLogController::class, 'show'])->name('admin.audit_logs.show');
 
 
         Route::resource('regions', RegionController::class)->names('admin.regions');

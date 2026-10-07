@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\AuditLogMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin'=>AdminMiddleware::class,
             'auth'=>UserMiddleware::class,
+        ]);
+        $middleware->web(append: [
+            AuditLogMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

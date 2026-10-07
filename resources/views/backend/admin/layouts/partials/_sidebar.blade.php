@@ -184,6 +184,16 @@ F C P M S 2.0</span>
               </p>
             </a>
           </li>
+
+          <li class="nav-item">
+            <a href="{{route('admin.audit_logs.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.audit_logs.index') active @endif">
+              <i class="nav-icon fas fa-history"></i>
+              <p>
+                Audit Logs
+              </p>
+            </a>
+          </li>
 {{--           
           <li class="nav-item">
             <a href="#" class="nav-link">
