@@ -364,7 +364,7 @@
                                                 <tr>
                                                     <td>{{ $loop->index + 1 }}</td>
                                                     <td>{{ $item->description }}</td>
-                                                    <td>{{ $item->nos==0?'-' : $item->nos }}</td>
+                                                    <td>{{ $item->nos == 0 ? '-' : $item->nos }}</td>
                                                     <td> {{ $item->length ?? '-' }}</td>
                                                     <td>{{ $item->width ?? '-' }}</td>
                                                     <td> {{ $item->height ?? '-' }}</td>
@@ -384,55 +384,58 @@
                                             </tr>
                                         </tfoot>
                                     </table>
-                                </hr>
-                                    @if($measurements&& $measurements->count()>0 && $measurements->first()->measurement_details && $measurements->first()->measurement_details->count()>0)
-                                <h2>Measurement Details</h2>
-                                    <table class="table table-bordered table-hover table-head-fixed" id="boq_part-table">
-                                        <thead>
-                                            <tr>
-                                                <th>SL</th>
-                                                <th>Group</th>
-                                                <th>Description</th>
-                                                <th>Dia</th>
-                                                <th>Spacing</th>
-                                                <th>Rebar Nos</th>
-                                                <th>Rebar Length</th>
-                                                <th>Unit Weight</th>
-                                                <th>Quantity</th>
-                                                <th style="width: 10px">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($measurements as $measurement)
-                                                
-                                            @foreach ($measurement->measurement_details as $item)
+                                    </hr>
+                                    @if (
+                                        $measurements &&
+                                            $measurements->count() > 0 &&
+                                            $measurements->first()->measurement_details &&
+                                            $measurements->first()->measurement_details->count() > 0)
+                                        <h2>Measurement Details</h2>
+                                        <table class="table table-bordered table-hover table-head-fixed"
+                                            id="boq_part-table">
+                                            <thead>
                                                 <tr>
-                                                    <td>{{ $loop->index + 1 }}</td>
-                                                    <td>{{ $measurement->description }}</td>
-                                                    <td>{{ $item->description }}</td>
-                                                    <td>{{ $item->dia }} </td>
-                                                    <td> {{ $item->spacing ?? '-' }}</td>
-                                                    <td>{{ $item->rebar_nos ?? '-' }}</td>
-                                                    <td> {{ $item->rebar_length ?? '-' }}</td>
-                                                    <td>{{ $item->unit_weight ?? '-' }} </td>
-                                                    <td> {{ $item->quantity_per_pile ?? '' }}</td>
-                                                    <td>
-                                                        <a class="btn btn-sm btn-danger remove"
-                                                            data-url="{{ route('user.bills.remove_measurement_details', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
-                                                    </td>
+                                                    <th>SL</th>
+                                                    <th>Group</th>
+                                                    <th>Description</th>
+                                                    <th>Dia</th>
+                                                    <th>Spacing</th>
+                                                    <th>Rebar Nos</th>
+                                                    <th>Rebar Length</th>
+                                                    <th>Unit Weight</th>
+                                                    <th>Quantity</th>
+                                                    <th style="width: 10px">Action</th>
                                                 </tr>
-                                            @endforeach
-                                            
-                                            @endforeach
-                                        </tbody>
-                                        {{-- <tfoot>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($measurements as $measurement)
+                                                    @foreach ($measurement->measurement_details as $item)
+                                                        <tr>
+                                                            <td>{{ $loop->index + 1 }}</td>
+                                                            <td>{{ $measurement->description }}</td>
+                                                            <td>{{ $item->description }}</td>
+                                                            <td>{{ $item->dia }} </td>
+                                                            <td> {{ $item->spacing ?? '-' }}</td>
+                                                            <td>{{ $item->rebar_nos ?? '-' }}</td>
+                                                            <td> {{ $item->rebar_length ?? '-' }}</td>
+                                                            <td>{{ $item->unit_weight ?? '-' }} </td>
+                                                            <td> {{ $item->quantity_per_pile ?? '' }}</td>
+                                                            <td>
+                                                                <a class="btn btn-sm btn-danger remove"
+                                                                    data-url="{{ route('user.bills.remove_measurement_details', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endforeach
+                                            </tbody>
+                                            {{-- <tfoot>
                                             <tr>
                                                 <td colspan="7" class="text-right">Total</td>
                                                 <td colspan="2">{{ $measurements->first()->measurement_details->sum('quantity_per_pile') }}
                                             </tr>
                                         </tfoot> --}}
-                                    </table>
-                                    
+                                        </table>
+
                                     @endif
                                 </div>
 
@@ -502,8 +505,16 @@
 
 
             $('#measurement_item').on('input', function() {
-                let query = $(this).val().trim();
-                let $dropdown = $('#suggestions_dropdown');
+                suggestions_dropdown(this, $('#suggestions_dropdown'));
+            });
+
+            $('#measurement_detail_item').on('input', function() {
+                suggestions_dropdown(this, $('#suggestions_details_dropdown'));
+            });
+
+            function suggestions_dropdown(ic, oc) {
+                let query = $(ic).val().trim();
+                let $dropdown = oc;
                 let part_id = $('#boq_part_id').val();
                 let item_id = $('#boq_item_id').val();
                 let subitem_id = $('#boq_subitem_id').val();
@@ -547,18 +558,24 @@
                     .fail(function(jqXHR, textStatus, errorThrown) {
                         console.error("AJAX Error: " + textStatus, errorThrown);
                     });
-            });
+
+            }
 
             // Handle Item Selection Click
             // Using delegation $(document).on() because items are dynamically created
             $(document).on('click', '.custom-dropdown-item', function() {
                 let selectedValue = $(this).text();
-
+                if ($(this).parent().attr('id') == 'suggestions_dropdown') {
+                    $('#measurement_item').val(selectedValue);
+                    $('#suggestions_dropdown').hide().empty();
+                } else if ($(this).parent().attr('id') == 'suggestions_details_dropdown') {
+                    $('#measurement_detail_item').val(selectedValue);
+                    $('#suggestions_details_dropdown').hide().empty();
+                }
                 // Put the text value into the input field
-                $('#measurement_item').val(selectedValue);
+                // $('#measurement_item').val(selectedValue);
 
                 // Hide the dropdown menu completely
-                $('#suggestions_dropdown').hide().empty();
             });
 
             // Close the dropdown if the user clicks anywhere else outside the search container
@@ -598,12 +615,12 @@
             $('.calculate').on('input', function() {
                 debugger;
                 var unitFields = JSON.parse($("#unit_fields").val());
-                if ( $.inArray("weight", unitFields) != -1) {
+                if ($.inArray("weight", unitFields) != -1) {
                     var nos = parseFloat($('#nos').val()) || 1;
                     var rebar_nos = parseFloat($('#rebar_nos').val()) || 0;
                     var rebar_length = parseFloat($('#rebar_length').val()) || 0;
                     var unit_weight = parseFloat($('#unit_weight').val()) || 0;
-                    var quantity_per_pile= rebar_nos * rebar_length * unit_weight;
+                    var quantity_per_pile = rebar_nos * rebar_length * unit_weight;
                     var quantity = nos * rebar_nos * rebar_length * unit_weight;
                     $('#quantity_per_pile').val(quantity_per_pile.toFixed(4));
                 } else {

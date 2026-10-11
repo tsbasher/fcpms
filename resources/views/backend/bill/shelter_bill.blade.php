@@ -535,11 +535,11 @@
     @foreach ($shelter_bill as $info)
         @php
 
-            $is_header = true;
-            $is_footer = false;
+            // $is_header = true;
+            // $is_footer = false;
             $measurement_details_view = [];
             $scheme = $info->scheme;
-            $non_header = true;
+            // $non_header = true;
 
         @endphp
         {{-- @dd($shelter_bill) --}}
@@ -1053,13 +1053,9 @@
                                                             'scheme',
                                                             'this_bill',
                                                             'boq_item',
-                                                            'is_header',
-                                                            'is_footer',
-                                                            'non_header',
                                                         ),
                                                     )->render(),
                                                 );
-                                                $is_header = false;
                                             }
                                         @endphp
                                         <tr>
@@ -1246,14 +1242,10 @@
                                                                 'scheme',
                                                                 'this_bill',
                                                                 'boq_item',
-                                                                'is_header',
-                                                                'is_footer',
-                                                                'non_header',
                                                             ),
                                                         )->render(),
                                                     );
 
-                                                    $is_header = false;
                                                 }
                                             @endphp
                                             <tr>
@@ -1364,20 +1356,17 @@
                     </tfoot>
                 </table>
             </div>
-            @php
+            {{-- @php
 
-                $is_header = false;
-                $is_footer = true;
-                $non_header = false;
 
                 array_push(
                     $measurement_details_view,
                     View::make(
                         'backend.bill.partials.measurement_details',
-                        compact('is_header', 'is_footer', 'non_header'),
+                        compact(),
                     )->render(),
                 );
-            @endphp
+            @endphp --}}
             @if ($measurement_details_view && count($measurement_details_view) > 0)
                 @foreach ($measurement_details_view as $view)
                     {!! $view !!}

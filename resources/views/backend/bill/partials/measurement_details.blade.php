@@ -1,4 +1,4 @@
-@if ($is_header)
+
     <div class="page portrait-page">
 
 
@@ -61,8 +61,7 @@
                     </td>
                     <td colspan="5" class="text-bold">{{ $boq_item->item->name }}
                 </tr>
-@endif
-@if ($non_header)
+
     <tr>
         <td colspan="9" class="no-border">&nbsp;</td>
     </tr>
@@ -101,9 +100,6 @@
         </td>
         <td></td>
     </tr>
-@endif
-@if ($is_footer)
     </tbody>
     </table>
     </div>
-@endif

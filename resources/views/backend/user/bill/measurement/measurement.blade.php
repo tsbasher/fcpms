@@ -71,7 +71,7 @@
             <input class="form-control" name="measurement_detail_item" id="measurement_detail_item" autocomplete="off"
                 value="{{ old('measurement_detail_item') }}" placeholder="Enter Measurement Details description" required>
             {{-- <datalist id="suggestions"></datalist> --}}
-            <div id="suggestions_dropdown" class="custom-dropdown-menu"></div>
+            <div id="suggestions_details_dropdown" class="custom-dropdown-menu"></div>
         </div>
     </div>
         <div class="col-md-3">
