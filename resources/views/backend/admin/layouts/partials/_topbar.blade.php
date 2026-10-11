@@ -60,6 +60,8 @@
             <!-- Message End -->
           </a>
           <div class="dropdown-divider"></div>
+          <a href="{{route('admin.profile.index')}}" class="dropdown-item"><i class="fas fa-user mr-2"></i> Profile</a>
+          <div class="dropdown-divider"></div>
           <a href="{{route('admin.logout')}}" class="dropdown-item dropdown-footer text-danger text-bold"><i class="nav-icon fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </li>

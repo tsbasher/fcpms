@@ -26,6 +26,7 @@ class Admin extends Authenticatable
         'id',
         'name',
         'email',
+        'phone',
         'password',
         'project_id',
         'project_code',

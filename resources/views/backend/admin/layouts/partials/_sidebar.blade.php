@@ -790,6 +790,15 @@ F C P M S 2.0</span>
           </li> --}}
 
           <li class="nav-item ">
+            <a href="{{route('admin.profile.index')}}" class="nav-link
+            @if(Route::currentRouteName() == 'admin.profile.index') active @endif">
+              <i class="nav-icon fas fa-user"></i>
+              <p>
+                Profile
+              </p>
+            </a>
+          </li>
+          <li class="nav-item ">
             <a href="{{route('admin.logout')}}" class="nav-link text-danger text-bold">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminBillController;
 use App\Http\Controllers\Admin\AdminHomeController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BoqPartController;
 use App\Http\Controllers\Admin\BoqItemController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Common\UnionController;
 use App\Http\Controllers\Common\UpazilaController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\User\UserHomeController;
+use App\Http\Controllers\User\UserProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +45,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/logout', [LoginController::class, 'admin_logout'])->name('admin.logout');
 
         Route::get('/', [AdminHomeController::class, 'index'])->name('admin.home');
+
+        Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile.index');
+        Route::post('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
         Route::get('/check-existing-boq-version-details', [BoqVersionDetailsController::class, 'existingBoqVersionDetails'])->name('admin.check_existing_boq_version_details');
         Route::get('/boq-version-details/copy/{id}', [BoqVersionDetailsController::class, 'copy'])->name('admin.boq_version_details.copy');
         Route::get('/boq-version-export-import', [BoqVersionExportImportController::class, 'index'])->name('admin.boq_version_export_import.index');
@@ -107,6 +112,9 @@ Route::group(['prefix' => ''], function () {
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/logout', [LoginController::class, 'user_logout'])->name('user.logout');
         Route::get('/', [UserHomeController::class, 'index'])->name('user.home');
+
+        Route::get('/profile', [UserProfileController::class, 'index'])->name('user.profile.index');
+        Route::post('/profile', [UserProfileController::class, 'update'])->name('user.profile.update');
 
         Route::get('/bill/details/scheme/{id}', [BillController::class, 'show_scheme'])->name('user.bills.details.scheme');
         // Route::get('/bills/add-scheme/{bill_id}', [BillController::class, 'addScheme'])->name('user.bills.add_scheme');
