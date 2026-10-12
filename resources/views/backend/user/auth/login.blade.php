@@ -78,7 +78,7 @@
 
 
                 <p class="mb-1">
-                    <a href="forgot-password.html">I forgot my password</a>
+                    <a href="{{ route('user.password.request') }}">I forgot my password</a>
                 </p>
             </div>
             <!-- /.card-body -->

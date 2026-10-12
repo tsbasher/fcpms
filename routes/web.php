@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SchemeController;
 use App\Http\Controllers\Admin\SchemeOptionController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\BillDocumentController;
 use App\Http\Controllers\Common\DistrictController;
@@ -40,6 +42,11 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::get('/login', [LoginController::class, 'admin_login'])->name('admin.login');
     Route::post('/login', [LoginController::class, 'admin_login_post'])->middleware('throttle:login')->name('admin.login_post');
+
+    Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->defaults('portal', 'admin')->name('admin.password.request');
+    Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->defaults('portal', 'admin')->middleware('throttle:password')->name('admin.password.email');
+    Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->defaults('portal', 'admin')->name('admin.password.reset');
+    Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->defaults('portal', 'admin')->name('admin.password.update');
 
     Route::group(['middleware' => ['admin']], function () {
         Route::get('/logout', [LoginController::class, 'admin_logout'])->name('admin.logout');
@@ -109,6 +116,11 @@ Route::group(['prefix' => 'common'], function () {
 Route::group(['prefix' => ''], function () {
     Route::get('/login', [LoginController::class, 'user_login'])->name('user.login');
     Route::post('/login', [LoginController::class, 'user_login_post'])->middleware('throttle:login')->name('user.login_post');
+
+    Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->defaults('portal', 'user')->name('user.password.request');
+    Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->defaults('portal', 'user')->middleware('throttle:password')->name('user.password.email');
+    Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->defaults('portal', 'user')->name('user.password.reset');
+    Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->defaults('portal', 'user')->name('user.password.update');
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/logout', [LoginController::class, 'user_logout'])->name('user.logout');
         Route::get('/', [UserHomeController::class, 'index'])->name('user.home');

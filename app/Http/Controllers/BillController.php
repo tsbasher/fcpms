@@ -969,7 +969,9 @@ class BillController extends Controller
                 ->where('description', $request->measurement_item)
                 ->first();
             if ($m) {
-
+                $m->nos = $request->nos;
+                $m->description = $request->measurement_item;
+                $m->save();
 
                 MeasurementDetails::create([
                     'project_id' => Auth::guard('web')->user()->project_id,

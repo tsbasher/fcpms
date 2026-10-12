@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Helper\ExtendedModel;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -68,5 +70,11 @@ class User extends Authenticatable
     }
     public function package(){
         return $this->belongsTo(Package::class,'package_id','id');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $url = url(route('user.password.reset', ['token' => $token, 'email' => $this->email], false));
+        Mail::to($this->email)->send(new ResetPasswordMail($url, false));
     }
 }
