@@ -71,7 +71,7 @@ class BoqItemController extends Controller
             'pile_type' => 'required|string|in:NA,PC,CIS',
             'description' => 'nullable|string|max:1000',
             'specification_no' => 'nullable|string|max:100',
-            'unit_id' => 'nullable|uuid|exists:units,id', // Assuming you have a Unit model for units
+            'unit_id' => $request->boolean('has_sub_items') ? 'nullable|uuid|exists:units,id' : 'required|uuid|exists:units,id',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
@@ -121,7 +121,7 @@ class BoqItemController extends Controller
             'pile_type' => 'required|string|in:NA,PC,CIS',
             'description' => 'nullable|string|max:1000',
             'specification_no' => 'nullable|string|max:100',
-            'unit_id' => 'nullable|uuid|exists:units,id', // Assuming you have a Unit model for units
+            'unit_id' => $request->boolean('has_sub_items') ? 'nullable|uuid|exists:units,id' : 'required|uuid|exists:units,id',
         ]);
         if ($v->fails()) {
             return redirect()->back()->withErrors($v)->withInput();
