@@ -1,6 +1,8 @@
 $(document).ready(function () {
     $('#boq_item_id').change(function () {
         var boq_item_id = $(this).val();
+        var spec=$(this).find(':selected').data('spec');
+        $('#specification_no').val(spec);
         debugger;
         url = get_unit_by_boq_item_url.replace('*', boq_item_id);
         if (boq_item_id) {
@@ -23,6 +25,8 @@ $(document).ready(function () {
 
     $('#boq_sub_item_id').change(function () {
         var boq_sub_item_id = $(this).val();
+        var spec=$(this).find(':selected').data('spec');
+        $('#specification_no').val(spec);
         debugger;
         url = get_unit_by_boq_sub_item_url.replace('*', boq_sub_item_id);
         if (boq_sub_item_id) {

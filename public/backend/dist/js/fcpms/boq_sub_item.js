@@ -12,7 +12,7 @@ $(document).ready(function () {
                     $('#boq_sub_item_id').empty();
                     $('#boq_sub_item_id').append('<option value="">Select BOQ Sub Item</option>');
                     $.each(data, function (key, value) {
-                        $('#boq_sub_item_id').append(`<option value="${value.id}" >${value.code}.${value.name}</option>`);
+                        $('#boq_sub_item_id').append(`<option value="${value.id}" data-spec="${value.specification_no}" >${value.code}.${value.name}</option>`);
                     });
                     $('#boq_sub_item_id').select2();
                 }

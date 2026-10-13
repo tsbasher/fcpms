@@ -144,7 +144,7 @@
                         </div>
                         <div class="row">
 
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="unit_id">Unit</label>
                                     <input type="hidden" name="unit_id" id="unit_id" value="{{ old('unit_id') }}">
@@ -153,7 +153,18 @@
 
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="specification_no">Specification No</label>
+                                    <input type="text" readonly class="form-control" name="specification_no" id="specification_no"
+                                        placeholder="Enter Specification No" value="{{ old('specification_no',$boq_version_detail->boq_sub_item?$boq_version_detail->boq_sub_item->specification_no:
+                                        ($boq_version_detail->boq_item?$boq_version_detail->boq_item->specification_no:'')) }}">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
 
                                 <div class="form-group">
                                     <label for="nos">Nos</label>
@@ -161,7 +172,7 @@
                                         placeholder="Enter Number of Items" value="{{ old('nos') }}">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
 
                                 <div class="form-group">
                                     <label for="quantity">Quantity per Item</label>
@@ -169,7 +180,7 @@
                                         id="quantity" placeholder="Enter Quantity" value="{{ old('quantity') }}">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
 
                                 <div class="form-group">
                                     <label for="total_quantity">Total Quantity</label>
@@ -180,7 +191,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
 
                                 <div class="form-group">
                                     <label for="rate">Rate</label>
@@ -188,7 +199,7 @@
                                         placeholder="Enter Rate" value="{{ old('rate') }}">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
 
                                 <div class="form-group">
                                     <label for="total_amount">Total Amount</label>
