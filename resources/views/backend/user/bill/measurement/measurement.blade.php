@@ -124,7 +124,27 @@
             <input class="form-control" disabled name="quantity" id="quantity" placeholder="Enter Total Quantity">
         </div>
     </div>
+    
 </div>
 
+    @if (in_array('weight', $fields))
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="remarks">Remarks</label>
+                    <textarea class="form-control" name="remarks" id="m_remarks" placeholder="Enter Remarks">{{ old('remarks') }}</textarea>
+                </div>
+            </div>
+        </div>
+        @else
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="remarks">Remarks</label>
+                    <textarea class="form-control" name="remarks" id="m_remarks" placeholder="Enter Remarks">{{ old('remarks') }}</textarea>
+                </div>
+            </div>
+        </div>
+        @endif
 
 <script></script>

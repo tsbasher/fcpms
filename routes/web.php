@@ -69,6 +69,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/get-scheme-by-upazila/{upazila_id}', [SchemeController::class, 'getSchemebyUpazila'])->name('admin.get_scheme_bu_upazila');
 
         Route::get('bill/held-up-status/{id}', [AdminBillController::class, 'heldUpStatus'])->name('user.bills.held_up_status');
+        
 
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
         Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('admin.audit_logs.export');
@@ -128,6 +129,8 @@ Route::group(['prefix' => ''], function () {
         Route::get('/profile', [UserProfileController::class, 'index'])->name('user.profile.index');
         Route::post('/profile', [UserProfileController::class, 'update'])->name('user.profile.update');
 
+        Route::post('/bill/submit/{id}', [BillController::class, 'submitBill'])->name('user.bills.submit');
+
         Route::get('/bill/details/scheme/{id}', [BillController::class, 'show_scheme'])->name('user.bills.details.scheme');
         // Route::get('/bills/add-scheme/{bill_id}', [BillController::class, 'addScheme'])->name('user.bills.add_scheme');
         Route::post('/bills/add-scheme/{bill_id}', [BillController::class, 'storeScheme'])->name('user.bills.store_scheme');
@@ -156,6 +159,13 @@ Route::group(['prefix' => ''], function () {
         Route::get('/bill/details/measurement/{id}', [BillController::class, 'show_measurement'])->name('user.bills.details.measurement');
         Route::get('/bill/details/documents/{id}', [BillController::class, 'show_documents'])->name('user.bills.details.documents');
         Route::post('/bill/details/add-measurement/{bill_id}', [BillController::class, 'storeMeasurement'])->name('user.bills.store_measurement');
+
+        Route::get('/bill/details/edit-measurement/{bill_id}/{measurement_id}', [BillController::class, 'editMeasurement'])->name('user.bills.edit_measurement');
+        Route::put('/bill/details/edit-measurement/{bill_id}/{measurement_id}', [BillController::class, 'updateMeasurement'])->name('user.bills.update_measurement');
+        
+        Route::get('/bill/details/edit-measurement-details/{bill_id}/{measurement_detail_id}', [BillController::class, 'editMeasurementDetails'])->name('user.bills.edit_measurement_details');
+        Route::put('/bill/details/edit-measurement-details/{bill_id}/{measurement_detail_id}', [BillController::class, 'updateMeasurementDetails'])->name('user.bills.update_measurement_details');
+
         Route::get('/bill/details/remove-measurement/{id}/{bill_id}', [BillController::class, 'removeMeasurement'])->name('user.bills.remove_measurement');
         Route::get('/bill/details/remove-measurement-details/{id}/{bill_id}', [BillController::class, 'removeMeasurementDetails'])->name('user.bills.remove_measurement_details');
         Route::get('/bill/details/unit-wise-view/{id}', [BillController::class, 'unitWiseView'])->name('user.bills.unit_wise_view');

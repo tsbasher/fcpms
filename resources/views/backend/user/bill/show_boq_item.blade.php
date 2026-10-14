@@ -181,7 +181,8 @@
                                                     <td>{{ $item->boq_item->code ?? 'N/A' }} -
                                                         {{ $item->boq_item->name ?? '' }}</td>
                                                     <td>
-                                                        <a class="btn btn-sm btn-danger remove" data-url="{{ route('user.bills.remove_boq_item', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                        <a class="btn btn-sm btn-danger remove" data-url="{{ route('user.bills.remove_boq_item', ['id' => $item->id, 'bill_id' => $bill->id]) }}"><i
+                                                             class="fas fa-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach

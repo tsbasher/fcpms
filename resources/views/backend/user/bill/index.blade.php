@@ -2,213 +2,298 @@
 @section('title', 'Bill')
 @section('style')
 
-<!-- DataTables -->
-<link rel="stylesheet" href="{{ asset('backend/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ asset('backend/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ asset('backend/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 @endsection
 
 @section('content')
 
-<section class="content">
-    <div class="row">
-        <!-- left column -->
-        <!-- general form elements -->
-        <div class="card card-body bg-gray-light">
-            <div class="card-header">
-                <h2 class="card-title ">Bill</h2>
-                <div class="card-tools">
-                    <a href="{{ route('user.bills.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <!-- general form elements -->
+            <div class="card card-body bg-gray-light">
+                <div class="card-header">
+                    <h2 class="card-title ">Bill</h2>
+                    <div class="card-tools">
+                        <a href="{{ route('user.bills.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i>
+                            Add</a>
+                    </div>
                 </div>
-            </div>
-            <div class="card-body ">
+                <div class="card-body ">
 
-                <form method="get">
-                    <div class="row">
+                    <form method="get">
+                        <div class="row">
 
-                        <div class="col-md-8 offset-md-2">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="search" class="form-control" name="search_text" id="search_text" placeholder="Type your keywords here" value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-default">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                        <a href="{{ route('user.bills.index') }}" class="btn btn-default">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </a>
+                            <div class="col-md-8 offset-md-2">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="search" class="form-control" name="search_text" id="search_text"
+                                            placeholder="Type your keywords here"
+                                            value="{{ Request::has('search_text') ? Request::get('search_text') : '' }}">
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-default">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                            <a href="{{ route('user.bills.index') }}" class="btn btn-default">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                    </form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if ($message = Session::get('error'))
+                                <div class="alert alert-danger alert-dismissible">{{ $message }}</div>
+                            @endif
+                            @if ($message = Session::get('success'))
+                                <div class="alert alert-success alert-dismissible">{{ $message }}</div>
+                            @endif
+
+                        </div>
                     </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-head-fixed" id="boq-version-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>Name</th>
+                                    <th>BOQ Version</th>
+                                    <th>Bill Date</th>
+                                    <th>Status</th>
+                                    <th>Target Progress</th>
+                                    <th>Actual Progress</th>
+                                    <th class="text-right">Total This Bill Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($bills as $bill)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $bill->name }}</td>
+                                        <td>{{ $bill->boq_version ? $bill->boq_version->name : '' }}</td>
+                                        <td>{{ $bill->bill_date }}</td>
 
-                </form>
-                <div class="row">
-                    <div class="col-md-12">
-                        @if ($message = Session::get('error'))
-                        <div class="alert alert-danger alert-dismissible">{{ $message }}</div>
-                        @endif
-                        @if ($message = Session::get('success'))
-                        <div class="alert alert-success alert-dismissible">{{ $message }}</div>
-                        @endif
+                                        <td>
+                                            @if ($bill->status == \App\Helper\Constants::BILL_STATUS_DRAFT)
+                                                <span class="badge bg-gray" style="font-size: 100%">{{ $bill->status }}</span>
+                                            @elseif ($bill->status == \App\Helper\Constants::BILL_STATUS_REVIEWING)
+                                                <span class="badge bg-warning" style="font-size: 100%">{{ $bill->status }}</span>
+                                            @elseif ($bill->status == \App\Helper\Constants::BILL_STATUS_REVIEWED)
+                                                <span class="badge bg-info" style="font-size: 100%">{{ $bill->status }}</span>
+                                            @elseif ($bill->status == \App\Helper\Constants::BILL_STATUS_REJECTED)
+                                                <span class="badge bg-danger"
+                                                    style="font-size: 100%">{{ $bill->status }}</span>
+                                            @elseif ($bill->status == \App\Helper\Constants::BILL_STATUS_APPROVED)
+                                                <span class="badge bg-success"
+                                                    style="font-size: 100%">{{ $bill->status }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $bill->physical_target_progress ? number_format($bill->physical_target_progress, 2) . ' %' : '-' }}
+                                        </td>
+                                        <td>{{ $bill->physical_actual_progress ? number_format($bill->physical_actual_progress, 2) . ' %' : '-' }}
+                                        </td>
+                                        <td class="text-right">{{ number_format($bill->total_amount ?? 0, 2) }}</td>
+                                        <td>
+                                            @if ($bill->status == \App\Helper\Constants::BILL_STATUS_DRAFT || $bill->status == \App\Helper\Constants::BILL_STATUS_REJECTED)
+                                                <a href="{{ route('user.bills.edit', $bill->id) }}"
+                                                    class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                                <a class="btn btn-sm btn-danger delete_record"
+                                                    data-url="{{ route('user.bills.destroy', $bill->id) }}"><i
+                                                        class="fas fa-trash"></i></a>
+                                                <a href="{{ route('user.bills.show', $bill->id) }}"
+                                                    class="btn btn-sm btn-info"><i class="fa fa-plus"></i></a>
+                                                
+                                                <a data-url="{{ route('user.bills.submit', $bill->id) }}"
+                                                    class="btn btn-sm btn-primary submit_bill"><i
+                                                        class="fa fa-paper-plane"></i></a>
+                                            @endif
+                                            {{-- <a href="{{ route('user.bills.shelter_wise_view', $bill->id) }}" class="btn btn-sm btn-success" target="_blank"><i class="fa fa-file-invoice"></i></a> --}}
 
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-head-fixed" id="boq-version-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 10px">#</th>
-                                <th>Name</th>
-                                <th>BOQ Version</th>
-                                <th>Bill Date</th>
-                                <th>Status</th>
-                                <th>Target Progress</th>
-                                <th>Actual Progress</th>
-                                <th class="text-right">Total This Bill Amount</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($bills as $bill)
-                            <tr>
-                                <td>{{ $loop->index + 1 }}</td>
-                                <td>{{ $bill->name }}</td>
-                                <td>{{$bill->boq_version?$bill->boq_version->name : ''}}</td>
-                                <td>{{ $bill->bill_date }}</td>
+                <!-- /.card-body -->
 
-                                <td><span class="badge bg-secondary" style="font-size: 100%">{{$bill->status}}</span></td>
-                                <td>{{ $bill->physical_target_progress ? number_format($bill->physical_target_progress, 2) . ' %' : '-' }}</td>
-                                <td>{{ $bill->physical_actual_progress ? number_format($bill->physical_actual_progress, 2) . ' %' : '-' }}</td>
-                                <td class="text-right">{{ number_format($bill->total_amount ?? 0, 2) }}</td>
-                                <td>
-                                    <a href="{{ route('user.bills.edit', $bill->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
-                                    <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('user.bills.destroy', $bill->id) }}"><i class="fas fa-trash"></i></a>
-                                    <a href="{{ route('user.bills.show', $bill->id) }}" class="btn btn-sm btn-info"><i class="fa fa-plus"></i></a>
-                                    {{-- <a href="{{ route('user.bills.shelter_wise_view', $bill->id) }}" class="btn btn-sm btn-success" target="_blank"><i class="fa fa-file-invoice"></i></a> --}}
-
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="card-footer clearfix" style="background: #00000000">
+                    {{ $bills->links() }}
                 </div>
             </div>
-            <!-- /.card-body -->
-
-            <div class="card-footer clearfix" style="background: #00000000">
-                {{ $bills->links() }}
-            </div>
+            <!-- /.card -->
         </div>
-        <!-- /.card -->
-    </div>
-</section>
+    </section>
 
 
 @endsection
 
 @section('script')
-<script src="{{ asset('backend/plugins/summernote/summernote-bs4.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/summernote/summernote-bs4.min.js') }}"></script>
 
-{{-- <script src="{{ asset('backend/plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- <script src="{{ asset('backend/plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-<!-- DataTables  & Plugins -->
-<script src="{{ asset('backend/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/pdfmake/pdfmake.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/pdfmake/vfs_fonts.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
-<script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="{{ asset('backend/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('backend/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
 
-<script type="text/javascript">
-    $(".delete_record").click(function() {
-        var url = $(this).data('url');
+    <script type="text/javascript">
+        $(".delete_record").click(function() {
+            var url = $(this).data('url');
 
-        
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
 
-                var token = "{{ csrf_token() }}";
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
 
-                $.ajax({
-                    url: url,
-                    type: 'DELETE',
-                    data: {
-                        "_token": token,
-                    },
-                    success: function(data) {
-                        
-                        // var data = JSON.parse(response);
-                        if (data.status == 1) {
-                            Swal.fire({
-                                title: 'Success',
-                                text: data.message,
-                                icon: 'success'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
-                                }
-                            });
-                        } else {
+                    var token = "{{ csrf_token() }}";
+
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            "_token": token,
+                        },
+                        success: function(data) {
+
+                            // var data = JSON.parse(response);
+                            if (data.status == 1) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: data.message,
+                                    icon: 'success'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+
+                                Swal.fire({
+                                    timer: 1500,
+                                    title: 'ERROR',
+                                    text: data.message,
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(ex) {
+
 
                             Swal.fire({
                                 timer: 1500,
                                 title: 'ERROR',
-                                text: data.message,
+                                text: 'Something Went Wrong',
                                 icon: 'error'
                             });
                         }
-                    },
-                    error: function(ex) {
-
-                        
-                        Swal.fire({
-                            timer: 1500,
-                            title: 'ERROR',
-                            text: 'Something Went Wrong',
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
-            // else if (result.dismiss === Swal.DismissReason.cancel) {
-            //     Swal.fire({
-            //         timer: 1500,
-            //         title: 'Cancelled',
-            //         text: 'Your Record is safe',
-            //         icon: 'error'
-            //     });
-            // }
+                    });
+                }
+                // else if (result.dismiss === Swal.DismissReason.cancel) {
+                //     Swal.fire({
+                //         timer: 1500,
+                //         title: 'Cancelled',
+                //         text: 'Your Record is safe',
+                //         icon: 'error'
+                //     });
+                // }
+            });
         });
-    });
+
+        $(".submit_bill").click(function(e) {
+            e.preventDefault();
+            var url = $(this).data('url');
 
 
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to submit this bill!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, submit it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(data) {
 
-    $('#boq-version-table').DataTable({
-        "paging": false,
-        "lengthChange": false,
-        "searching": false,
-        "ordering": true,
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: data.message,
+                                    icon: 'success'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+
+                                Swal.fire({
+                                    timer: 1500,
+                                    title: 'ERROR',
+                                    text: data.message,
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(ex) {
+
+
+                            Swal.fire({
+                                timer: 1500,
+                                title: 'ERROR',
+                                text: 'Something Went Wrong',
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#boq-version-table').DataTable({
+            "paging": false,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
             "info": true,
-        "autoWidth": false,
-        "responsive": true,
-    });
-</script>
+            "autoWidth": false,
+            "responsive": true,
+        });
+    </script>
 @endsection

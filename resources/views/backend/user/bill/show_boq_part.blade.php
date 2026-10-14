@@ -187,7 +187,8 @@
                                                         {{ $part->boq_part->name ?? '' }}</td>
                                                     <td>
                                                         <a class="btn btn-sm btn-danger remove"
-                                                            data-url="{{ route('user.bills.remove_boq_part', ['id' => $part->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                            data-url="{{ route('user.bills.remove_boq_part', ['id' => $part->id, 'bill_id' => $bill->id]) }}"><i
+                                                             class="fas fa-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach

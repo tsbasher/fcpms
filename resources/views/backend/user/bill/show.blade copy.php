@@ -121,7 +121,8 @@
                                                     <td>{{ $scheme->union->name ?? 'N/A' }}</td>
                                                     <td>
                                                         <a class="btn btn-sm btn-danger remove"
-                                                            data-url="{{ route('user.bills.remove_scheme', ['scheme_id' => $scheme->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                            data-url="{{ route('user.bills.remove_scheme', ['scheme_id' => $scheme->id, 'bill_id' => $bill->id]) }}"><i
+                                                             class="fas fa-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -172,7 +173,8 @@
                                                         {{ $part->boq_part->name ?? '' }}</td>
                                                     <td>
                                                         <a class="btn btn-sm btn-danger remove"
-                                                            data-url="{{ route('user.bills.remove_boq_part', ['id' => $part->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                            data-url="{{ route('user.bills.remove_boq_part', ['id' => $part->id, 'bill_id' => $bill->id]) }}"><i
+                                                             class="fas fa-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -243,7 +245,8 @@
                                                         {{ $item->boq_item->name ?? '' }}</td>
                                                     <td>
                                                         <a class="btn btn-sm btn-danger remove"
-                                                            data-url="{{ route('user.bills.remove_boq_item', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                            data-url="{{ route('user.bills.remove_boq_item', ['id' => $item->id, 'bill_id' => $bill->id]) }}"><i
+                                                             class="fas fa-trash-alt"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach

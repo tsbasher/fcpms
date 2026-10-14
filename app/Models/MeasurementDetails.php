@@ -25,6 +25,7 @@ class MeasurementDetails extends Model
         'rebar_length',
         'unit_weight',
         'quantity_per_pile',
+        'remarks'
     ];
 
     public function measurement()

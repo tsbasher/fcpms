@@ -27,7 +27,7 @@ class AdminBillController extends Controller
         else
             $upazilas = [];
 
-        $bills = Bill::where('package_id', $request->package_id)
+        $bills = Bill::where('package_id', $request->package_id)->where('status', '!=', 'DRAFT')
             ->get();
 
         // dd($bills);
@@ -81,7 +81,7 @@ class AdminBillController extends Controller
 
     public function getBillsByPackage($package_id)
     {
-        $bills = Bill::where('package_id', $package_id)->get();
+        $bills = Bill::where('package_id', $package_id)->where('status', '!=', 'DRAFT')->get();
         return response()->json($bills);
     }
     public function documents($bill_id)

@@ -26,6 +26,7 @@ class Measurement extends ExtendedModelUser
         'height',
         'weight',
         'quantity',
+        'remarks'
     ];
 
     public function bill()

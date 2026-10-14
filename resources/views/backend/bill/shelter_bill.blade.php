@@ -386,24 +386,24 @@
                                         {{ number_format($item['boq_quantity'] * $item['rate'], 2) }}
                                     </td>
                                     <td class="text-right">
-                                        {{ $item['total_quantity'] > 0 ? number_format($item['total_quantity'], 3) : '-' }}
+                                        {{ $item['total_quantity'] != 0 ? number_format($item['total_quantity'], 3) : '-' }}
                                     </td>
                                     <td class="text-right">
-                                        {{ $item['total_quantity'] > 0 ? number_format($item['total_quantity'] * $item['rate'], 2) : '-' }}
+                                        {{ $item['total_quantity'] != 0 ? number_format($item['total_quantity'] * $item['rate'], 2) : '-' }}
                                     </td>
                                     @if ($last_bill)
                                         <td class="text-right">
-                                            {{ $item['previous_quantity'] > 0 ? number_format($item['previous_quantity'], 3) : '-' }}
+                                            {{ $item['previous_quantity'] != 0 ? number_format($item['previous_quantity'], 3) : '-' }}
                                         </td>
                                         <td class="text-right">
-                                            {{ $item['previous_quantity'] > 0 ? number_format($item['previous_quantity'] * $item['rate'], 2) : '-' }}
+                                            {{ $item['previous_quantity'] != 0 ? number_format($item['previous_quantity'] * $item['rate'], 2) : '-' }}
                                         </td>
                                     @endif
                                     <td class="text-right">
-                                        {{ $item['this_quantity'] > 0 ? number_format($item['this_quantity'], 3) : '-' }}
+                                        {{ $item['this_quantity'] != 0 ? number_format($item['this_quantity'], 3) : '-' }}
                                     </td>
                                     <td class="text-right">
-                                        {{ $item['this_quantity'] > 0 ? number_format($item['this_quantity'] * $item['rate'], 2) : '-' }}
+                                        {{ $item['this_quantity'] != 0 ? number_format($item['this_quantity'] * $item['rate'], 2) : '-' }}
                                     </td>
                                     <td></td>
 
@@ -439,24 +439,24 @@
                                             {{ number_format($sub_item['boq_quantity'] * $sub_item['rate'], 2) }}
                                         </td>
                                         <td class="text-right">
-                                            {{ $sub_item['total_quantity'] > 0 ? number_format($sub_item['total_quantity'], 3) : '-' }}
+                                            {{ $sub_item['total_quantity'] != 0 ? number_format($sub_item['total_quantity'], 3) : '-' }}
                                         </td>
                                         <td class="text-right">
-                                            {{ $sub_item['total_quantity'] > 0 ? number_format($sub_item['total_quantity'] * $sub_item['rate'], 2) : '-' }}
+                                            {{ $sub_item['total_quantity'] != 0 ? number_format($sub_item['total_quantity'] * $sub_item['rate'], 2) : '-' }}
                                         </td>
                                         @if ($last_bill)
                                             <td class="text-right">
-                                                {{ $sub_item['previous_quantity'] > 0 ? number_format($sub_item['previous_quantity'], 3) : '-' }}
+                                                {{ $sub_item['previous_quantity'] != 0 ? number_format($sub_item['previous_quantity'], 3) : '-' }}
                                             </td>
                                             <td class="text-right">
-                                                {{ $sub_item['previous_quantity'] > 0 ? number_format($sub_item['previous_quantity'] * $sub_item['rate'], 2) : '-' }}
+                                                {{ $sub_item['previous_quantity'] != 0 ? number_format($sub_item['previous_quantity'] * $sub_item['rate'], 2) : '-' }}
                                             </td>
                                         @endif
                                         <td class="text-right">
-                                            {{ $sub_item['this_quantity'] > 0 ? number_format($sub_item['this_quantity'], 3) : '-' }}
+                                            {{ $sub_item['this_quantity'] != 0 ? number_format($sub_item['this_quantity'], 3) : '-' }}
                                         </td>
                                         <td class="text-right">
-                                            {{ $sub_item['this_quantity'] > 0 ? number_format($sub_item['this_quantity'] * $sub_item['rate'], 2) : '-' }}
+                                            {{ $sub_item['this_quantity'] != 0 ? number_format($sub_item['this_quantity'] * $sub_item['rate'], 2) : '-' }}
                                         </td>
                                         <td></td>
                                     </tr>
@@ -474,40 +474,40 @@
                                 ({{ $sb['part']->code }})
                                 {{ $sb['part']->name }}=</td>
                             <td class="text-right text-bold">
-                                {{ $boq_total > 0 ? number_format($boq_total, 2) : '' }}
+                                {{ $boq_total != 0 ? number_format($boq_total, 2) : '' }}
                             </td>
                             <td></td>
-                            <td class="text-right text-bold">{{ $total > 0 ? number_format($total, 2) : '' }}
+                            <td class="text-right text-bold">{{ $total != 0 ? number_format($total, 2) : '' }}
                             </td>
                             @if ($last_bill)
                                 <td></td>
                                 <td class="text-right text-bold">
-                                    {{ $previous_bill_total > 0 ? number_format($previous_bill_total, 2) : '' }}
+                                    {{ $previous_bill_total != 0 ? number_format($previous_bill_total, 2) : '' }}
                                 </td>
                             @endif
                             <td></td>
                             <td class="text-right text-bold">
-                                {{ $this_bill_total > 0 ? number_format($this_bill_total, 2) : '' }}</td>
+                                {{ $this_bill_total != 0 ? number_format($this_bill_total, 2) : '' }}</td>
                             <td></td>
                         </tr>
                     @endforeach
                     <tr>
                         <td colspan="5" class="text-right text-bold">Total Bill =</td>
                         <td class="text-right text-bold">
-                            {{ $part_boq_total > 0 ? number_format($part_boq_total, 2) : '' }}</td>
+                            {{ $part_boq_total != 0 ? number_format($part_boq_total, 2) : '' }}</td>
                         <td></td>
                         <td class="text-right text-bold">
-                            {{ $part_total > 0 ? number_format($part_total, 2) : '' }}
+                            {{ $part_total != 0 ? number_format($part_total, 2) : '' }}
                         </td>
                         @if ($last_bill)
                             <td></td>
                             <td class="text-right text-bold">
-                                {{ $part_previous_bill_total > 0 ? number_format($part_previous_bill_total, 2) : '' }}
+                                {{ $part_previous_bill_total != 0 ? number_format($part_previous_bill_total, 2) : '' }}
                             </td>
                         @endif
                         <td></td>
                         <td class="text-right text-bold">
-                            {{ $part_this_bill_total > 0 ? number_format($part_this_bill_total, 2) : '' }}</td>
+                            {{ $part_this_bill_total != 0 ? number_format($part_this_bill_total, 2) : '' }}</td>
                         <td></td>
                     </tr>
 
@@ -688,9 +688,9 @@
 
                                                 <td class="text-right">
                                                     @if ($item->this_bill_detail)
-                                                        {{ $item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity > 0 ? number_format($item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity, 3) : '-' }}
+                                                        {{ $item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity != 0 ? number_format($item->this_bill_detail->quantity - $item->this_bill_detail->held_up_quantity, 3) : '-' }}
                                                     @elseif($item->old_bill_detail)
-                                                        {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
+                                                        {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity != 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
                                                     @else
                                                         {{ '-' }}
                                                     @endif
@@ -707,18 +707,18 @@
                                                 @if ($last_bill)
                                                     <td class="text-right">
                                                         @if ($item->this_bill_detail)
-                                                            {{ $item->this_bill_detail->previous_quantity > 0 ? number_format($item->this_bill_detail->previous_quantity, 3) : '-' }}
+                                                            {{ $item->this_bill_detail->previous_quantity != 0 ? number_format($item->this_bill_detail->previous_quantity, 3) : '-' }}
                                                         @elseif($item->old_bill_detail)
-                                                            {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
+                                                            {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity != 0 ? number_format($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity, 3) : '-' }}
                                                         @else
                                                             {{ '-' }}
                                                         @endif
                                                     </td>
                                                     <td class="text-right">
                                                         @if ($item->this_bill_detail)
-                                                            {{ $item->this_bill_detail->previous_quantity > 0 ? number_format($item->this_bill_detail->previous_quantity * $item->this_bill_detail->rate, 2) : '-' }}
+                                                            {{ $item->this_bill_detail->previous_quantity != 0 ? number_format($item->this_bill_detail->previous_quantity * $item->this_bill_detail->rate, 2) : '-' }}
                                                         @elseif($item->old_bill_detail)
-                                                            {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity > 0 ? number_format(($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity) * $item->old_bill_detail->rate, 2) : '-' }}
+                                                            {{ $item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity != 0 ? number_format(($item->old_bill_detail->quantity - $item->old_bill_detail->held_up_quantity) * $item->old_bill_detail->rate, 2) : '-' }}
                                                         @else
                                                             {{ '-' }}
                                                         @endif
@@ -783,9 +783,9 @@
 
                                                     <td class="text-right">
                                                         @if ($sub_item->this_bill_detail)
-                                                            {{ $sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity > 0 ? number_format($sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity, 3) : '-' }}
+                                                            {{ $sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity != 0 ? number_format($sub_item->this_bill_detail->quantity - $sub_item->this_bill_detail->held_up_quantity, 3) : '-' }}
                                                         @elseif($sub_item->old_bill_detail)
-                                                            {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
+                                                            {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity != 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
                                                         @else
                                                             {{ '-' }}
                                                         @endif
@@ -802,18 +802,18 @@
                                                     @if ($last_bill)
                                                         <td class="text-right">
                                                             @if ($sub_item->this_bill_detail)
-                                                                {{ $sub_item->this_bill_detail->previous_quantity > 0 ? number_format($sub_item->this_bill_detail->previous_quantity, 3) : '-' }}
+                                                                {{ $sub_item->this_bill_detail->previous_quantity != 0 ? number_format($sub_item->this_bill_detail->previous_quantity, 3) : '-' }}
                                                             @elseif($sub_item->old_bill_detail)
-                                                                {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
+                                                                {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity != 0 ? number_format($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity, 3) : '-' }}
                                                             @else
                                                                 {{ '-' }}
                                                             @endif
                                                         </td>
                                                         <td class="text-right">
                                                             @if ($sub_item->this_bill_detail)
-                                                                {{ $sub_item->this_bill_detail->previous_quantity > 0 ? number_format($sub_item->this_bill_detail->previous_quantity * $sub_item->this_bill_detail->rate, 2) : '-' }}
+                                                                {{ $sub_item->this_bill_detail->previous_quantity != 0 ? number_format($sub_item->this_bill_detail->previous_quantity * $sub_item->this_bill_detail->rate, 2) : '-' }}
                                                             @elseif($sub_item->old_bill_detail)
-                                                                {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity > 0 ? number_format(($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity) * $sub_item->old_bill_detail->rate, 2) : '-' }}
+                                                                {{ $sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity != 0 ? number_format(($sub_item->old_bill_detail->quantity - $sub_item->old_bill_detail->held_up_quantity) * $sub_item->old_bill_detail->rate, 2) : '-' }}
                                                             @else
                                                                 {{ '-' }}
                                                             @endif
@@ -843,15 +843,15 @@
                                     ({{ $part->part->code }})
                                     {{ $part->part->name }}=</td>
                                 <td class="text-right text-bold">
-                                    {{ $boq_total > 0 ? number_format($boq_total, 2) : '' }}
+                                    {{ $boq_total != 0 ? number_format($boq_total, 2) : '' }}
                                 </td>
                                 <td></td>
-                                <td class="text-right text-bold">{{ $total > 0 ? number_format($total, 2) : '' }}
+                                <td class="text-right text-bold">{{ $total != 0 ? number_format($total, 2) : '' }}
                                 </td>
                                 @if ($last_bill)
                                     <td></td>
                                     <td class="text-right text-bold">
-                                        {{ $previous_bill_total > 0 ? number_format($previous_bill_total, 2) : '' }}
+                                        {{ $previous_bill_total != 0 ? number_format($previous_bill_total, 2) : '' }}
                                     </td>
                                 @endif
                                 <td></td>
@@ -863,15 +863,15 @@
                         <tr>
                             <td colspan="5" class="text-right text-bold">Total Bill =</td>
                             <td class="text-right text-bold">
-                                {{ $part_boq_total > 0 ? number_format($part_boq_total, 2) : '' }}</td>
+                                {{ $part_boq_total != 0 ? number_format($part_boq_total, 2) : '' }}</td>
                             <td></td>
                             <td class="text-right text-bold">
-                                {{ $part_total > 0 ? number_format($part_total, 2) : '' }}
+                                {{ $part_total != 0 ? number_format($part_total, 2) : '' }}
                             </td>
                             @if ($last_bill)
                                 <td></td>
                                 <td class="text-right text-bold">
-                                    {{ $part_previous_bill_total > 0 ? number_format($part_previous_bill_total, 2) : '' }}
+                                    {{ $part_previous_bill_total != 0 ? number_format($part_previous_bill_total, 2) : '' }}
                                 </td>
                             @endif
                             <td></td>
@@ -1036,7 +1036,7 @@
                                                 : 0;
                                             if (
                                                 $measurement->measurement_details &&
-                                                count($measurement->measurement_details) > 0
+                                                count($measurement->measurement_details) != 0
                                             ) {
                                                 $measurement_details = $measurement->measurement_details;
 
@@ -1225,7 +1225,7 @@
 
                                                 if (
                                                     $measurement->measurement_details &&
-                                                    count($measurement->measurement_details) > 0
+                                                    count($measurement->measurement_details) != 0
                                                 ) {
                                                     $measurement_details = $measurement->measurement_details;
 
@@ -1367,7 +1367,7 @@
                     )->render(),
                 );
             @endphp --}}
-            @if ($measurement_details_view && count($measurement_details_view) > 0)
+            @if ($measurement_details_view && count($measurement_details_view) != 0)
                 @foreach ($measurement_details_view as $view)
                     {!! $view !!}
                 @endforeach

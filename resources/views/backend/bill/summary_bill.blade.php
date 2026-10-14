@@ -349,24 +349,24 @@
                                     {{ number_format($item['boq_quantity'] * $item['rate'], 2) }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $item['total_quantity'] > 0 ? number_format($item['total_quantity'], 3) : '-' }}
+                                    {{ $item['total_quantity'] != 0 ? number_format($item['total_quantity'], 3) : '-' }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $item['total_quantity'] > 0 ? number_format($item['total_quantity'] * $item['rate'], 2) : '-' }}
+                                    {{ $item['total_quantity'] != 0 ? number_format($item['total_quantity'] * $item['rate'], 2) : '-' }}
                                 </td>
                                 @if ($last_bill)
                                     <td class="text-right">
-                                        {{ $item['previous_quantity'] > 0 ? number_format($item['previous_quantity'], 3) : '-' }}
+                                        {{ $item['previous_quantity'] != 0 ? number_format($item['previous_quantity'], 3) : '-' }}
                                     </td>
                                     <td class="text-right">
-                                        {{ $item['previous_quantity'] > 0 ? number_format($item['previous_quantity'] * $item['rate'], 2) : '-' }}
+                                        {{ $item['previous_quantity'] != 0 ? number_format($item['previous_quantity'] * $item['rate'], 2) : '-' }}
                                     </td>
                                 @endif
                                 <td class="text-right">
-                                    {{ $item['this_quantity'] > 0 ? number_format($item['this_quantity'], 3) : '-' }}
+                                    {{ $item['this_quantity'] != 0 ? number_format($item['this_quantity'], 3) : '-' }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $item['this_quantity'] > 0 ? number_format($item['this_quantity'] * $item['rate'], 2) : '-' }}
+                                    {{ $item['this_quantity'] != 0 ? number_format($item['this_quantity'] * $item['rate'], 2) : '-' }}
                                 </td>
                                 <td></td>
 

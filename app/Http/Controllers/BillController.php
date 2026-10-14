@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\BillGenerator;
+use App\Helper\Constants;
 use App\Models\Bill;
 use App\Models\BillDetail;
 use App\Models\BillDocument;
@@ -23,7 +24,6 @@ use App\Models\Project;
 use App\Models\Scheme;
 use App\Models\Unit;
 use App\Models\Upazila;
-use Dotenv\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -100,6 +100,7 @@ class BillController extends Controller
             $bill->physical_target_progress = $request->physical_target_progress;
             $bill->physical_actual_progress = $request->physical_actual_progress;
             $bill->remarks = $request->remarks;
+            $bill->status = Constants::BILL_STATUS_DRAFT;
             $bill->boq_version_id = $request->boq_version_id;
             $bill->contractor_id = Auth::guard('web')->user()->contractor_id;
             $bill->project_id = Auth::guard('web')->user()->project_id;
@@ -1652,5 +1653,98 @@ class BillController extends Controller
             return redirect()->back()->with('success', 'Bill regenerated successfully.');
         else
             return redirect()->back()->with('error', 'Bill regeneration failed.');
+    }
+
+    public function editMeasurement($bill_id, $measurement_id)
+    {
+        $measurement = Measurement::with('scheme', 'boq_part', 'boq_item', 'boq_subitem', 'unit')->findOrFail($measurement_id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($bill_id);
+        $is_detail = false;
+        $fields = json_decode($measurement->unit->fields, true);
+        // dd($measurement);
+        return view('backend.user.bill.measurement.measurement_edit', compact('measurement', 'bill', 'is_detail', 'fields'));
+    }
+    public function updateMeasurement(Request $request, $bill_id, $measurement_id)
+    {
+        $nos = $request->nos == 0 ? 1 : $request->nos;
+        $unit_fields = json_decode($request->unit_fields, true);
+
+
+        Measurement::where('id', $measurement_id)->update([
+            'description' => $request->measurement_item,
+            'nos' => $request->nos,
+            'length' => $request->length,
+            'width' => $request->width,
+            'height' => $request->height,
+            'weight' => $request->weight,
+            'quantity' => ($nos) * ($request->length ?? 1) * ($request->width ?? 1) * ($request->height ?? 1) * ($request->weight ?? 1),
+            'remarks' => $request->remarks,
+        ]);
+
+        $measurement = Measurement::findOrFail($measurement_id);
+
+        // Adjust the bill details after updating the measurement
+        $bill_detail_id = $measurement->bill_detail_id;
+        $this->adjustBillDetails($bill_detail_id, $bill_id);
+        return response()->json(['success' => true, 'message' => 'Measurement updated successfully.']);
+    }
+    public function editMeasurementDetails($bill_id, $measurement_detail_id)
+    {
+
+        $measurement_detail = MeasurementDetails::findOrFail($measurement_detail_id);
+        $measurement = Measurement::with('scheme', 'boq_part', 'boq_item', 'boq_subitem', 'unit')->with(['measurement_details' => function ($query) use ($measurement_detail_id) {
+            $query->where('id', $measurement_detail_id);
+        }])->findOrFail($measurement_detail->measurement_id);
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($bill_id);
+        $is_detail = true;
+
+        $fields = json_decode($measurement->unit->fields, true);
+        return view('backend.user.bill.measurement.measurement_edit', compact('measurement', 'bill', 'is_detail', 'fields'));
+    }
+    public function updateMeasurementDetails(Request $request, $bill_id, $measurement_detail_id)
+    {
+        $nos = $request->nos == 0 ? 1 : $request->nos;
+        $unit_fields = json_decode($request->unit_fields, true);
+
+
+        MeasurementDetails::where('id', $measurement_detail_id)->update([
+            'description' => $request->measurement_detail_item,
+            'dia' => $request->dia,
+            'spacing' => $request->spacing,
+            'rebar_nos' => $request->rebar_nos,
+            'rebar_length' => $request->rebar_length,
+            'unit_weight' => $request->unit_weight,
+            'quantity_per_pile' => $request->rebar_nos * $request->rebar_length * $request->unit_weight,
+            'remarks' => $request->remarks,
+        ]);
+        $measurement_detail = MeasurementDetails::findOrFail($measurement_detail_id);
+        $measurement = Measurement::findOrFail($measurement_detail->measurement_id);
+        $md = MeasurementDetails::where('measurement_id', $measurement->id)->get();
+        $measurement->weight = $md->sum('quantity_per_pile');
+        $measurement->quantity = $nos * $measurement->weight;
+        $measurement->nos = $nos;
+        $measurement->description = $request->measurement_item;
+        $measurement->save();
+
+        // Adjust the bill details after updating the measurement
+        $bill_detail_id = $measurement->bill_detail_id;
+        $this->adjustBillDetails($bill_detail_id, $bill_id);
+        return response()->json(['success' => true, 'message' => 'Measurement updated successfully.']);
+    }
+    public function submitBill($id)
+    {
+        $bill = Bill::where('contractor_id', Auth::guard('web')->user()->contractor_id)
+            ->where('project_id', Auth::guard('web')->user()->project_id)
+            ->where('package_id', Auth::guard('web')->user()->package_id)
+            ->findOrFail($id);
+        $bill->status = Constants::BILL_STATUS_REVIEWING;
+        $bill->save();
+        return response()->json(['success' => true, 'message' => 'Bill submitted successfully.']);
     }
 }

@@ -356,7 +356,7 @@
                                                 <th>Height</th>
                                                 <th>Weight</th>
                                                 <th>Quantity</th>
-                                                <th style="width: 10px">Action</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -364,15 +364,23 @@
                                                 <tr>
                                                     <td>{{ $loop->index + 1 }}</td>
                                                     <td>{{ $item->description }}</td>
-                                                    <td>{{ $item->nos == 0 ? '-' : $item->nos }}</td>
-                                                    <td> {{ $item->length ?? '-' }}</td>
-                                                    <td>{{ $item->width ?? '-' }}</td>
-                                                    <td> {{ $item->height ?? '-' }}</td>
-                                                    <td>{{ $item->weight ?? '-' }} </td>
-                                                    <td> {{ $item->quantity ?? '' }}</td>
+                                                    <td class="text-right">{{ $item->nos == 0 ? '-' : $item->nos }}</td>
+                                                    <td class="text-right"> {{ $item->length ?? '-' }}</td>
+                                                    <td class="text-right">{{ $item->width ?? '-' }}</td>
+                                                    <td class="text-right"> {{ $item->height ?? '-' }}</td>
+                                                    <td class="text-right">{{ $item->weight ?? '-' }} </td>
+                                                    <td class="text-right"> {{ number_format($item->quantity, 4) ?? '' }}
+                                                    </td>
                                                     <td>
                                                         <a class="btn btn-sm btn-danger remove"
-                                                            data-url="{{ route('user.bills.remove_measurement', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                            data-url="{{ route('user.bills.remove_measurement', ['id' => $item->id, 'bill_id' => $bill->id]) }}"><i
+                                                                class="fas fa-trash-alt"></i></a>
+                                                        @if (!in_array('weight', json_decode($item->unit->fields, true)))
+                                                            <a class="btn btn-sm btn-warning edit-measurement"
+                                                                data-url="{{ route('user.bills.edit_measurement', ['bill_id' => $bill->id, 'measurement_id' => $item->id]) }}"><i
+                                                                    class="fas fa-edit"></i></a>
+                                                        @endif
+                                                       
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -380,7 +388,9 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="7" class="text-right">Total</td>
-                                                <td colspan="2">{{ $measurements->sum('quantity') }}
+                                                <td class="text-right">
+                                                    {{ number_format($measurements->sum('quantity'), 4) }} </td>
+                                                <td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -396,7 +406,6 @@
                                             <thead>
                                                 <tr>
                                                     <th>SL</th>
-                                                    <th>Group</th>
                                                     <th>Description</th>
                                                     <th>Dia</th>
                                                     <th>Spacing</th>
@@ -404,28 +413,45 @@
                                                     <th>Rebar Length</th>
                                                     <th>Unit Weight</th>
                                                     <th>Quantity</th>
-                                                    <th style="width: 10px">Action</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($measurements as $measurement)
+                                                <tr>
+                                                    <td colspan="9" class="text-left font-weight-bold bg-light">
+                                                        {{ $measurement->description }}
+                                                    </td>
+                                                </tr>
                                                     @foreach ($measurement->measurement_details as $item)
                                                         <tr>
                                                             <td>{{ $loop->index + 1 }}</td>
-                                                            <td>{{ $measurement->description }}</td>
                                                             <td>{{ $item->description }}</td>
-                                                            <td>{{ $item->dia }} </td>
-                                                            <td> {{ $item->spacing ?? '-' }}</td>
-                                                            <td>{{ $item->rebar_nos ?? '-' }}</td>
-                                                            <td> {{ $item->rebar_length ?? '-' }}</td>
-                                                            <td>{{ $item->unit_weight ?? '-' }} </td>
-                                                            <td> {{ $item->quantity_per_pile ?? '' }}</td>
+                                                            <td class="text-right">{{ $item->dia }} </td>
+                                                            <td class="text-right"> {{ $item->spacing ?? '-' }}</td>
+                                                            <td class="text-right">{{ $item->rebar_nos ?? '-' }}</td>
+                                                            <td class="text-right"> {{ $item->rebar_length ?? '-' }}</td>
+                                                            <td class="text-right">{{ $item->unit_weight ?? '-' }} </td>
+                                                            <td class="text-right"> {{ $item->quantity_per_pile ?? '' }}</td>
                                                             <td>
                                                                 <a class="btn btn-sm btn-danger remove"
-                                                                    data-url="{{ route('user.bills.remove_measurement_details', ['id' => $item->id, 'bill_id' => $bill->id]) }}">X</a>
+                                                                    data-url="{{ route('user.bills.remove_measurement_details', ['id' => $item->id, 'bill_id' => $bill->id]) }}"><i
+                                                                class="fas fa-trash-alt"></i></a>
+                                                                <a class="btn btn-sm btn-warning edit-measurement-details"
+                                                                    data-url="{{ route('user.bills.edit_measurement_details', ['bill_id' => $bill->id, 'measurement_detail_id' => $item->id]) }}"><i
+                                                                        class="fas fa-edit"></i></a>
+                                                                         @if($item->remarks)
+                                                        <span class="btn btn-sm btn-info remarks" data-remarks="{{ $item->remarks }}"><i class="fas fa-info-circle"></i></span>
+                                                        @endif
+
                                                             </td>
                                                         </tr>
                                                     @endforeach
+                                                    <tr>
+                                                <td colspan="7" class="text-right">Total <span class="font-weight-bold">{{ $measurement->description }}</span></td>
+                                                <td class="text-right">{{ number_format($measurement->measurement_details->sum('quantity_per_pile'), 4) }}</td>
+                                                <td></td>
+                                            </tr>
                                                 @endforeach
                                             </tbody>
                                             {{-- <tfoot>
@@ -459,7 +485,6 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Add</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -503,6 +528,14 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            $('.remarks').on('click', function() {
+                var remarks = $(this).data('remarks');
+                Swal.fire({
+                    title: 'Remarks',
+                    text: remarks,
+                    confirmButtonText: 'Close'
+                });
+            });
 
             $('#measurement_item').on('input', function() {
                 suggestions_dropdown(this, $('#suggestions_dropdown'));
@@ -633,6 +666,29 @@
                     var quantity = nos * length * width * height * weight;
                 }
                 $('#quantity').val(quantity.toFixed(4));
+
+            });
+            $('.m_calculate').on('input', function() {
+                debugger;
+                var unitFields = JSON.parse($("#m_unit_fields").val());
+                if ($.inArray("weight", unitFields) != -1) {
+                    var nos = parseFloat($('#m_nos').val()) || 1;
+                    var rebar_nos = parseFloat($('#m_rebar_nos').val()) || 0;
+                    var rebar_length = parseFloat($('#m_rebar_length').val()) || 0;
+                    var unit_weight = parseFloat($('#m_unit_weight').val()) || 0;
+                    var quantity_per_pile = rebar_nos * rebar_length * unit_weight;
+                    var quantity = nos * rebar_nos * rebar_length * unit_weight;
+                    $('#m_quantity_per_pile').val(quantity_per_pile.toFixed(4));
+                } else {
+                    var nos = parseFloat($('#m_nos').val()) || 1;
+                    var length = parseFloat($('#m_length').val()) || 1;
+                    var width = parseFloat($('#m_width').val()) || 1;
+                    var height = parseFloat($('#m_height').val()) || 1;
+                    var weight = parseFloat($('#m_weight').val()) || 1;
+
+                    var quantity = nos * length * width * height * weight;
+                }
+                $('#m_quantity').val(quantity.toFixed(4));
 
             });
         });
@@ -770,8 +826,116 @@
         });
 
 
+        $(".edit-measurement").click(function() {
+            var url = $(this).data('url');
 
 
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Edit it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    var token = "{{ csrf_token() }}";
+
+                    $.ajax({
+                        url: url,
+                        type: 'Get',
+                        data: {
+                            "_token": token,
+                        },
+                        success: function(data) {
+
+                            $('#add-body').html(data);
+
+                            $('#modal-add').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            });
+                        },
+                        error: function(ex) {
+
+
+                            Swal.fire({
+
+                                title: 'ERROR',
+                                text: 'Something Went Wrong',
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+                // else if (result.dismiss === Swal.DismissReason.cancel) {
+                //     Swal.fire({
+                //        
+                //         title: 'Cancelled',
+                //         text: 'Your Record is safe',
+                //         icon: 'error'
+                //     });
+                // }
+            });
+        });
+
+
+        $(".edit-measurement-details").click(function() {
+            var url = $(this).data('url');
+
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Edit it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    var token = "{{ csrf_token() }}";
+
+                    $.ajax({
+                        url: url,
+                        type: 'Get',
+                        data: {
+                            "_token": token,
+                        },
+                        success: function(data) {
+
+                            $('#add-body').html(data);
+
+                            $('#modal-add').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            });
+                        },
+                        error: function(ex) {
+
+
+                            Swal.fire({
+
+                                title: 'ERROR',
+                                text: 'Something Went Wrong',
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+                // else if (result.dismiss === Swal.DismissReason.cancel) {
+                //     Swal.fire({
+                //        
+                //         title: 'Cancelled',
+                //         text: 'Your Record is safe',
+                //         icon: 'error'
+                //     });
+                // }
+            });
+        });
 
         function generateurl(params) {
             url = "{{ route('user.bills.details.measurement', $bill->id) }}";
