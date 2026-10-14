@@ -18,7 +18,9 @@
             <div class="card-header">
                 <h2 class="card-title ">BOQ Versions</h2>
                 <div class="card-tools">
-                    <a href="{{ route('admin.boq_versions.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>                    
+                    @if ($permAdmin && $permAdmin->hasPermission('boq_versions.create'))
+                    <a href="{{ route('admin.boq_versions.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                    @endif                    
                     {{-- <a href="{{ route('admin.boq_versions.export') }}" class="btn btn btn-success"><i class="fa fa-file-export"></i> Export</a> --}}
                 </div>
             </div>
@@ -98,9 +100,15 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if ($permAdmin && $permAdmin->hasPermission('boq_versions.edit'))
                                     <a href="{{ route('admin.boq_versions.edit', $boq_version->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                    @endif
+                                    @if ($permAdmin && $permAdmin->hasPermission('boq_versions.delete'))
                                     <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.boq_versions.destroy', $boq_version->id) }}"><i class="fas fa-trash"></i></a>
+                                    @endif
+                                    @if ($permAdmin && $permAdmin->hasPermission('boq_versions.view'))
                                     <a class="btn btn-sm btn-info" target="_blank" href="{{ route('admin.boq_versions.export_data', ['package_id' =>$boq_version->package_id, 'boq_version_id' => $boq_version->id]) }}"><i class="fas fa-download"></i></a>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

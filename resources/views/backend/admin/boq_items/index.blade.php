@@ -20,8 +20,10 @@
                 <div class="card-header">
                     <h2 class="card-title ">BOQ Items</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('boq_items.create'))
                         <a href="{{ route('admin.boq_items.create') }}" class="btn btn btn-success"><i
                                 class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -119,11 +121,15 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('boq_items.edit'))
                                             <a href="{{ route('admin.boq_items.edit', $item->id) }}"
                                                 class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('boq_items.delete'))
                                             <a class="btn btn-sm btn-danger delete_record"
                                                 data-url="{{ route('admin.boq_items.destroy', $item->id) }}"><i
                                                     class="fas fa-trash"></i></a>
+                                            @endif
 
                                         </td>
                                     </tr>

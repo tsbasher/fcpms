@@ -52,6 +52,9 @@ class ResetPasswordController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill(['password' => $password])->save();
+                if ($user->must_change_password) {
+                    $user->forceFill(['must_change_password' => 0])->save();
+                }
             }
         );
 

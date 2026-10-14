@@ -39,6 +39,6 @@ class Project extends ExtendedModel
 
     public function admins()
     {
-        return $this->belongsToMany(Admin::class, 'admin_project', 'project_id', 'admin_id');
+        return $this->belongsToMany(Admin::class, 'admin_projects', 'project_id', 'admin_id');
     }
 }

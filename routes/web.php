@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminBillController;
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BoqPartController;
 use App\Http\Controllers\Admin\BoqItemController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Admin\ContractorUserController;
 use App\Http\Controllers\Admin\DocumentTypeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SchemeController;
 use App\Http\Controllers\Admin\SchemeOptionController;
 use App\Http\Controllers\Auth\LoginController;
@@ -48,13 +50,19 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->defaults('portal', 'admin')->name('admin.password.reset');
     Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->defaults('portal', 'admin')->name('admin.password.update');
 
-    Route::group(['middleware' => ['admin']], function () {
+    Route::group(['middleware' => ['admin', 'force.password.change', 'check.permission']], function () {
         Route::get('/logout', [LoginController::class, 'admin_logout'])->name('admin.logout');
 
         Route::get('/', [AdminHomeController::class, 'index'])->name('admin.home');
 
         Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile.index');
         Route::post('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+
+        Route::post('/admin-users/{id}/unlock', [AdminUserController::class, 'unlock'])->name('admin.admin_users.unlock');
+        Route::post('/admin-users/{id}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('admin.admin_users.toggle_active');
+        Route::post('/admin-users/{id}/assign-project', [AdminUserController::class, 'assignProject'])->name('admin.admin_users.assign_project');
+        Route::resource('admin-users', AdminUserController::class)->names('admin.admin_users');
+        Route::resource('roles', RoleController::class)->names('admin.roles')->except('show');
         Route::get('/check-existing-boq-version-details', [BoqVersionDetailsController::class, 'existingBoqVersionDetails'])->name('admin.check_existing_boq_version_details');
         Route::get('/boq-version-details/copy/{id}', [BoqVersionDetailsController::class, 'copy'])->name('admin.boq_version_details.copy');
         Route::get('/boq-version-export-import', [BoqVersionExportImportController::class, 'index'])->name('admin.boq_version_export_import.index');
@@ -122,7 +130,7 @@ Route::group(['prefix' => ''], function () {
     Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->defaults('portal', 'user')->middleware('throttle:password')->name('user.password.email');
     Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->defaults('portal', 'user')->name('user.password.reset');
     Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->defaults('portal', 'user')->name('user.password.update');
-    Route::group(['middleware' => ['auth']], function () {
+    Route::group(['middleware' => ['auth', 'force.password.change']], function () {
         Route::get('/logout', [LoginController::class, 'user_logout'])->name('user.logout');
         Route::get('/', [UserHomeController::class, 'index'])->name('user.home');
 

@@ -19,7 +19,9 @@
             <div class="card-header">
                 <h2 class="card-title ">Scheme</h2>
                 <div class="card-tools">
+                    @if ($permAdmin && $permAdmin->hasPermission('schemes.create'))
                     <a href="{{ route('admin.schemes.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                    @endif
                 </div>
             </div>
             <div class="card-body ">
@@ -148,8 +150,12 @@
                                         
                                     </td>
                                     <td>
+                                        @if ($permAdmin && $permAdmin->hasPermission('schemes.edit'))
                                         <a href="{{ route('admin.schemes.edit', $scheme->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                        @endif
+                                        @if ($permAdmin && $permAdmin->hasPermission('schemes.delete'))
                                         <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.schemes.destroy', $scheme->id) }}"><i class="fas fa-trash"></i></a>
+                                        @endif
 
                                     </td>
                                 </tr>

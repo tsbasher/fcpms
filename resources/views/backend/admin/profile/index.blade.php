@@ -14,6 +14,18 @@
                     @csrf
                     <div class="card-body">
 
+                        @if (session('warning') || $admin->must_change_password)
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> {{ session('warning') ?? 'Your password was set by an administrator. Please change your password to continue.' }}
+                        </div>
+                        @endif
+
+                        @if (session('success'))
+                        <div class="alert alert-success">
+                            <i class="fas fa-check"></i> {{ session('success') }}
+                        </div>
+                        @endif
+
                         @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>

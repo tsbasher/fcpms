@@ -93,6 +93,10 @@ class LoginController extends Controller
         ];
         if (Auth::guard('web')->attempt($data, $check['remember'] ?? false)) {
             LoginThrottle::reset($user);
+            $loggedIn = Auth::guard('web')->user();
+            if ($loggedIn && $loggedIn->must_change_password) {
+                return redirect()->route('user.profile.index')->with('warning', 'Please change your password before continuing.');
+            }
             return redirect()->route('user.home');
         }
 
@@ -154,6 +158,10 @@ class LoginController extends Controller
             if ($project) {
                 LoginThrottle::reset($admin);
                 $this->finalize_admin_login($check['project_code']);
+                $loggedIn = Auth::guard('admin')->user();
+                if ($loggedIn && $loggedIn->must_change_password) {
+                    return redirect()->route('admin.profile.index')->with('warning', 'Please change your password before continuing.');
+                }
                 return redirect()->route('admin.home');
             }
 

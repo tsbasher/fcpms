@@ -90,6 +90,10 @@
                             <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" @if (old('is_active', 1)==1) checked @endif>
                             <label class="form-check-label" for="is_active">Is Active</label>
                         </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="must_change_password" name="must_change_password" value="1" @if (old('must_change_password', 1)==1) checked @endif>
+                            <label class="form-check-label" for="must_change_password">Force password reset on first login</label>
+                        </div>
                 </div>
                     <!-- /.card-body -->
 

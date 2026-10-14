@@ -16,9 +16,24 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        
-        if(!Auth::guard('admin')->check())
+        if (!Auth::guard('admin')->check()) {
             return redirect()->route('admin.login');
+        }
+
+        $admin = Auth::guard('admin')->user();
+        if (!$admin->is_active) {
+            Auth::guard('admin')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('admin.login')->with('error', 'Your account has been deactivated. Please contact admin.');
+        }
+
+        if ($admin->last_seen_at === null || $admin->last_seen_at->lt(now()->subMinute())) {
+            $admin->forceFill(['last_seen_at' => now()])->saveQuietly();
+        }
+
+        view()->share('permAdmin', $admin);
+
         return $next($request);
     }
 }

@@ -70,6 +70,7 @@ class ContractorUserController extends Controller
         $project=Project::find($user_data['project_id']);
         $user_data['project_code']=$project ? $project->code : null;
         $user_data['package_id']=$contractor->packages->first() ? $contractor->packages->first()->id : null;
+        $user_data['must_change_password']=$request->boolean('must_change_password');
         User::create($user_data);
         return redirect()->route('admin.contractor_users.index')->with('success','User created successfully.');
     }
@@ -119,6 +120,7 @@ class ContractorUserController extends Controller
         $project=Project::find($user_data['project_id']);
         $user_data['project_code']=$project ? $project->code : null;
         $user_data['package_id']=$contractor->packages->first() ? $contractor->packages->first()->id : null;
+        $user_data['must_change_password']=$request->boolean('must_change_password');
         // dd($contractor->packages);
         $user->update($user_data);
         return redirect()->route('admin.contractor_users.index')->with('success','User updated successfully.');

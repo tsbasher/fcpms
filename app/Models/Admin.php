@@ -32,7 +32,10 @@ class Admin extends Authenticatable
         'password',
         'project_id',
         'project_code',
+        'role_id',
         'is_active',
+        'must_change_password',
+        'last_seen_at',
         'login_attempts',
         'locked_until',
     ];
@@ -57,6 +60,8 @@ class Admin extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
+            'last_seen_at' => 'datetime',
         ];
     }
 
@@ -84,6 +89,11 @@ class Admin extends Authenticatable
     {
         return $this->belongsToMany(Project::class, 'admin_projects', 'admin_id', 'project_id');
     }
+
+    public function getIsOnlineAttribute(): bool
+    {
+        return $this->last_seen_at !== null && $this->last_seen_at->gte(now()->subMinutes(5));
+    }
     
     public function packages()
     {
@@ -92,6 +102,25 @@ class Admin extends Authenticatable
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role !== null && $this->role->is_super_admin;
+    }
+
+    public function hasPermission(string $slug): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->role !== null && $this->role->hasPermission($slug);
     }
 
     public function sendPasswordResetNotification($token)

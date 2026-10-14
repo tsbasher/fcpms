@@ -20,8 +20,10 @@
                 <div class="card-header">
                     <h2 class="card-title ">BOQ Version Details</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('boq_version_details.create'))
                         <a href="{{ route('admin.boq_version_details.create') }}" class="btn btn btn-success"><i
                                 class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -181,13 +183,19 @@
                                         <td class="text-right">{{ number_format($boq_version_detail->rate, 2) }}</td>
                                         <td class="text-right">{{ number_format($boq_version_detail->total_quantity * $boq_version_detail->rate, 2) }}</td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('boq_version_details.edit'))
                                             <a href="{{ route('admin.boq_version_details.edit', $boq_version_detail->id) }}"
                                                 class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('boq_version_details.create'))
                                             <a href="{{ route('admin.boq_version_details.copy', $boq_version_detail->id) }}"
                                                 class="btn btn-sm btn-info"><i class="fa fa-copy"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('boq_version_details.delete'))
                                             <a class="btn btn-sm btn-danger delete_record"
                                                 data-url="{{ route('admin.boq_version_details.destroy', $boq_version_detail->id) }}"><i
                                                     class="fas fa-trash"></i></a>
+                                            @endif
 
                                         </td>
                                     </tr>

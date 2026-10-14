@@ -200,6 +200,7 @@
     <script src="{{ asset('backend/plugins/select2/js/select2.full.js') }}"></script>
 
     <script type="text/javascript">
+        var canEditBill = @json($permAdmin && $permAdmin->hasPermission('bills.edit'));
         $('.datepicker').datepicker({
             dateFormat: 'yy-mm-dd',
             changeMonth: true,
@@ -266,16 +267,18 @@
                     return; // Exit if no bill is selected
                 }
                 debugger;
-                if (calculateWithHeldup == 0) {
-                    $('#heldup').html(
-                        '<a href="" id="change_status" class="btn btn-danger">Not Verify BOQ</a>'
-                    );
+                if (canEditBill) {
+                    if (calculateWithHeldup == 0) {
+                        $('#heldup').html(
+                            '<a href="" id="change_status" class="btn btn-danger">Not Verify BOQ</a>'
+                        );
 
-                } else {
-                    $('#heldup').html(
-                        '<a href="" id="change_status" class="btn btn-warning">Verify BOQ</a>'
-                    );
+                    } else {
+                        $('#heldup').html(
+                            '<a href="" id="change_status" class="btn btn-warning">Verify BOQ</a>'
+                        );
 
+                    }
                 }
 
                 $.ajax({

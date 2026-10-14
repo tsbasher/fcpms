@@ -18,7 +18,9 @@
                 <div class="card-header">
                     <h2 class="card-title ">Scheme Options</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('scheme_options.create'))
                         <a href="{{ route('admin.scheme_options.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -79,8 +81,12 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('scheme_options.edit'))
                                             <a href="{{ route('admin.scheme_options.edit', $scheme_option->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('scheme_options.delete'))
                                             <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.scheme_options.destroy', $scheme_option->id) }}"><i class="fas fa-trash"></i></a>
+                                            @endif
 
                                         </td>
                                     </tr>

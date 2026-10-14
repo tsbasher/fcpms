@@ -18,7 +18,9 @@
                 <div class="card-header">
                     <h2 class="card-title ">Regions</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('regions.create'))
                         <a href="{{ route('admin.regions.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -68,8 +70,12 @@
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $region->name }}</td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('regions.edit'))
                                             <a href="{{ route('admin.regions.edit', $region->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('regions.delete'))
                                             <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.regions.destroy', $region->id) }}"><i class="fas fa-trash"></i></a>
+                                            @endif
 
                                         </td>
                                     </tr>

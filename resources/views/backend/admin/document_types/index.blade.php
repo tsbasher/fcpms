@@ -18,7 +18,9 @@
                 <div class="card-header">
                     <h2 class="card-title ">Document Types</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('document_types.create'))
                         <a href="{{ route('admin.document_types.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -78,8 +80,12 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('document_types.edit'))
                                             <a href="{{ route('admin.document_types.edit', $document_type->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('document_types.delete'))
                                             <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.document_types.destroy', $document_type->id) }}"><i class="fas fa-trash"></i></a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

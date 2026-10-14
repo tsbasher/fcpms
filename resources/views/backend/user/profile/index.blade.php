@@ -14,6 +14,18 @@
                     @csrf
                     <div class="card-body">
 
+                        @if (session('warning') || $user->must_change_password)
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> {{ session('warning') ?? 'Your password was set by an administrator. Please change your password to continue.' }}
+                        </div>
+                        @endif
+
+                        @if (session('success'))
+                        <div class="alert alert-success">
+                            <i class="fas fa-check"></i> {{ session('success') }}
+                        </div>
+                        @endif
+
                         @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
@@ -38,15 +50,15 @@
                         </div>
                         <div class="form-group">
                             <label for="current_password">Current Password</label>
-                            <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Enter Current Password">
+                            <input type="password" class="form-control" name="current_password" id="current_password" placeholder="Enter Current Password" @if ($user->must_change_password) required @endif>
                         </div>
                         <div class="form-group">
                             <label for="password">New Password</label>
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Enter New Password">
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Enter New Password" @if ($user->must_change_password) required @endif>
                         </div>
                         <div class="form-group">
                             <label for="password_confirmation">Confirm New Password</label>
-                            <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Confirm New Password">
+                            <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Confirm New Password" @if ($user->must_change_password) required @endif>
                         </div>
 
                     </div>

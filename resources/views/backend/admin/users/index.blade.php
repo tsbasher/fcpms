@@ -20,7 +20,9 @@
                 <div class="card-header">
                     <h2 class="card-title ">Contractor Users</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('contractor_users.create'))
                         <a href="{{ route('admin.contractor_users.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -101,6 +103,7 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('contractor_users.edit'))
                                             <a href="{{ route('admin.contractor_users.edit', $user->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
                                             @if ($user->locked_until && now()->lessThan($user->locked_until))
                                                 <form method="POST" action="{{ route('admin.contractor_users.unlock', $user->id) }}" style="display:inline">
@@ -119,7 +122,10 @@
                                                     <button type="submit" class="btn btn-sm btn-success" title="Activate user"><i class="fas fa-check"></i></button>
                                                 </form>
                                             @endif
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('contractor_users.delete'))
                                             <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.contractor_users.destroy', $user->id) }}"><i class="fas fa-trash"></i></a>
+                                            @endif
 
                                         </td>
                                     </tr>

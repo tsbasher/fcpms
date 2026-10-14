@@ -9,7 +9,7 @@
 
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link text-bold">{{Auth::guard('admin')->user()->project->name}}</a>
+        <a href="#" class="nav-link text-bold">{{Auth::guard('admin')->user()->project?->name}}</a>
       </li>
     </ul>
 
@@ -53,7 +53,7 @@
                   {{Auth::guard('admin')->user()->name}}
                   <span class="float-right text-sm text-success"><i class="fas fa-star"></i></span>
                 </h3>
-                <p class="text-sm"></p>
+                <p class="text-sm text-primary text-bold"><i class="fas fa-user-tag mr-1"></i> {{ Auth::guard('admin')->user()->role?->name ?? 'No Role' }}</p>
                 <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> Member Since {{date('F-Y',strtotime(Auth::guard('admin')->user()->created_at))}}</p>
               </div>
             </div>

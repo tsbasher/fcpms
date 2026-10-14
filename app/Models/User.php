@@ -35,6 +35,7 @@ class User extends Authenticatable
         'phone',
         'is_active',
         'is_locked',
+        'must_change_password',
         'login_attempts',
         'locked_until',
     ];
@@ -59,6 +60,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
         ];
     }
 

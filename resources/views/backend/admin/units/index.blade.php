@@ -18,7 +18,9 @@
                 <div class="card-header">
                     <h2 class="card-title ">Units</h2>
                     <div class="card-tools">
+                        @if ($permAdmin && $permAdmin->hasPermission('units.create'))
                         <a href="{{ route('admin.units.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body ">
@@ -81,8 +83,12 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if ($permAdmin && $permAdmin->hasPermission('units.edit'))
                                             <a href="{{ route('admin.units.edit', $unit->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                            @if ($permAdmin && $permAdmin->hasPermission('units.delete'))
                                             <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.units.destroy', $unit->id) }}"><i class="fas fa-trash"></i></a>
+                                            @endif
 
                                         </td>
                                     </tr>

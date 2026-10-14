@@ -20,7 +20,9 @@
             <div class="card-header">
                 <h2 class="card-title ">Contractors</h2>
                 <div class="card-tools">
+                    @if ($permAdmin && $permAdmin->hasPermission('contractors.create'))
                     <a href="{{ route('admin.contractors.create') }}" class="btn btn btn-success"><i class="fa fa-plus"></i> Add</a>
+                    @endif
                 </div>
             </div>
             <div class="card-body ">
@@ -87,9 +89,15 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if ($permAdmin && $permAdmin->hasPermission('contractors.edit'))
                                     <a href="{{ route('admin.contractors.edit', $contractor->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                    @endif
+                                    @if ($permAdmin && $permAdmin->hasPermission('contractors.delete'))
                                     <a class="btn btn-sm btn-danger delete_record" data-url="{{ route('admin.contractors.destroy', $contractor->id) }}"><i class="fas fa-trash"></i></a>
+                                    @endif
+                                    @if ($permAdmin && $permAdmin->hasPermission('contractors.edit'))
                                     <a href="{{ route('admin.contractors.add_package', $contractor->id) }}" id="add_package" class="btn btn-sm btn-success add_package"><i class="fa fa-plus"></i> Package</a>
+                                    @endif
 
 
                                 </td>

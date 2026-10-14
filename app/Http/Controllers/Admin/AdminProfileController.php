@@ -41,6 +41,7 @@ class AdminProfileController extends Controller
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->input('password'));
+            $data['must_change_password'] = 0;
         }
 
         $admin->update($data);
