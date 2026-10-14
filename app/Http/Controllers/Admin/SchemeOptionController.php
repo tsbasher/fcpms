@@ -20,7 +20,7 @@ class SchemeOptionController extends Controller
     public function index(Request $request)
     {
         // Fetch scheme options based on search criteria if provided
-        $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id);
+        $scheme_options = SchemeOption::forCurrentProject();
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
             $scheme_options->where('name', 'ilike', "%{$search}%");

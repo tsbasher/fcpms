@@ -190,7 +190,7 @@ class ContractorController extends Controller
     {
         $contractor = Contractor::with('packages')->findOrFail($contractor_id);
 
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->Permitted()->get();
+        $packages = Package::forCurrentProject()->Permitted()->get();
         return view('backend.admin.contractors.add_package', compact('contractor', 'packages'));
     }
     public function store_package(Request $request, $contractor_id)
@@ -221,7 +221,7 @@ class ContractorController extends Controller
     public function add_user($contractor_id)
     {
         $contractor = Contractor::with('packages')->findOrFail($contractor_id);
-        $users = User::where('contractor_id', $contractor->id)->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $users = User::where('contractor_id', $contractor->id)->forCurrentProject()->get();
         return view('backend.admin.contractors.add_user', compact('contractor', 'users'));
     }
     public function store_user(Request $request, $contractor_id)

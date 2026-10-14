@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Helper\ExtendedModel;
+use App\Helper\ProjectScoped;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, ProjectScoped;
 
     protected $guard = 'web';
     protected $keyType = 'string';

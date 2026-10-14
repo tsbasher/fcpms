@@ -24,7 +24,7 @@ class BoqVersionController extends Controller
      */
     public function index(Request $request)
     {
-        $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+        $boq_versions = BoqVersion::forCurrentProject()
             ->with('package');
 
         if ($request->has('search_text')) {
@@ -36,7 +36,7 @@ class BoqVersionController extends Controller
         }
 
         $boq_versions = $boq_versions->paginate(10);
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $packages = Package::forCurrentProject()->permitted()->get();
 
         return view('backend.admin.boq_versions.index', compact('boq_versions', 'packages'));
     }
@@ -46,8 +46,8 @@ class BoqVersionController extends Controller
      */
     public function create()
     {
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
-        $versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+        $packages = Package::forCurrentProject()->permitted()->get();
+        $versions = BoqVersion::forCurrentProject()
             ->get();
         return view('backend.admin.boq_versions.create', compact('packages', 'versions'));
     }
@@ -110,8 +110,8 @@ class BoqVersionController extends Controller
      */
     public function edit(BoqVersion $boqVersion)
     {
-        $boq_version = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqVersion->id);
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $boq_version = BoqVersion::forCurrentProject()->findOrFail($boqVersion->id);
+        $packages = Package::forCurrentProject()->permitted()->get();
         return view('backend.admin.boq_versions.edit', compact('boq_version', 'packages'));
     }
 
@@ -120,7 +120,7 @@ class BoqVersionController extends Controller
      */
     public function update(Request $request, BoqVersion $boqVersion)
     {
-        $boq_version = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqVersion->id);
+        $boq_version = BoqVersion::forCurrentProject()->findOrFail($boqVersion->id);
 
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
@@ -154,7 +154,7 @@ class BoqVersionController extends Controller
 
         try {
 
-            $boq_version = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqVersion->id);
+            $boq_version = BoqVersion::forCurrentProject()->findOrFail($boqVersion->id);
             // Check if the BOQ Version is associated with any other records
             $boq_version->delete();
             $data = new stdClass();
@@ -174,7 +174,7 @@ class BoqVersionController extends Controller
     {
         if ($package_id) {
             $boqVersions = BoqVersion::where('package_id', $package_id)
-                ->where('project_id', Auth::guard('admin')->user()->project_id)
+                ->forCurrentProject()
                 ->get();
             return response()->json($boqVersions);
         }
@@ -183,7 +183,7 @@ class BoqVersionController extends Controller
 
     public function export(Request $request)
     {
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $packages = Package::forCurrentProject()->permitted()->get();
         $boq_versions = [];
         return view('backend.admin.boq_versions.export', compact('packages', 'boq_versions'));
     }
@@ -250,7 +250,7 @@ class BoqVersionController extends Controller
 
         $boq_version_details = BoqVersionDetails::where('boq_version_id', $request->get('boq_version_id'))
             ->where('package_id', $request->get('package_id'))->get();
-        $options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $options = SchemeOption::forCurrentProject()->get();
         // dd($details);
         $project = Auth::guard('admin')->user()->project;
         return view('backend.admin.boq_versions.export_data', compact('boq_version', 'boq_version_details', 'details', 'package', 'options', 'project'));

@@ -17,7 +17,19 @@ class PermittedScheme
     {
         $admin = Admin::with('packages')->where('id', Auth::guard('admin')->user()->id)->first();
         if ($admin) {
-            return Scheme::whereIn('package_id', $admin->packages()->where('is_active', 1)->get()->pluck('id')->toArray())->get()->pluck('id')->toArray();
+            $projectId = Auth::guard('admin')->user()->project_id;
+
+            $packageQuery = $admin->packages()->where('is_active', 1);
+            if ($projectId) {
+                $packageQuery->where('packages.project_id', $projectId);
+            }
+            $packageIds = $packageQuery->get()->pluck('id')->toArray();
+
+            $schemeQuery = Scheme::whereIn('package_id', $packageIds);
+            if ($projectId) {
+                $schemeQuery->where('schemes.project_id', $projectId);
+            }
+            return $schemeQuery->get()->pluck('id')->toArray();
         }
         return [];
     }

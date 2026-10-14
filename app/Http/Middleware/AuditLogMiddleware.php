@@ -22,6 +22,7 @@ class AuditLogMiddleware
         }
 
         [$userType, $userId] = $this->currentActor();
+        $projectId = $this->currentProject();
 
         $response = $next($request);
 
@@ -29,6 +30,7 @@ class AuditLogMiddleware
             AuditLog::create([
                 'user_type' => $userType,
                 'user_id' => $userId,
+                'project_id' => $projectId,
                 'method' => $request->method(),
                 'path' => $request->fullUrl(),
                 'route_name' => $request->route()?->getName(),
@@ -94,6 +96,22 @@ class AuditLogMiddleware
         }
 
         return ['guest', null];
+    }
+
+    /**
+     * Resolve the active project of the current actor (if any).
+     */
+    protected function currentProject(): ?string
+    {
+        if (Auth::guard('admin')->check()) {
+            return Auth::guard('admin')->user()?->project_id;
+        }
+
+        if (Auth::guard('web')->check()) {
+            return Auth::guard('web')->user()?->project_id;
+        }
+
+        return null;
     }
 
     /**

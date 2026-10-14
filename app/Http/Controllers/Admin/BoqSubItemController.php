@@ -21,7 +21,7 @@ class BoqSubItemController extends Controller
     public function index(Request $request)
     {
         // Fetch boq sub items based on search criteria if provided
-        $boq_sub_items = BoqSubItem::where('project_id', Auth::guard('admin')->user()->project_id)->with('boq_part', 'boq_item', 'unit');
+        $boq_sub_items = BoqSubItem::forCurrentProject()->with('boq_part', 'boq_item', 'unit');
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
             $boq_sub_items->where(function ($query) use ($search) {
@@ -44,8 +44,8 @@ class BoqSubItemController extends Controller
         regexp_replace(code, '[^0-9]', '', 'g')::int ASC")
             ->paginate();
 
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderby('code')->get(); // Fetch boq parts for the filter dropdown      
-        $boq_items = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->where('boq_part_id', $request->boq_part_id)->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+        $boq_parts = BoqPart::forCurrentProject()->orderby('code')->get(); // Fetch boq parts for the filter dropdown      
+        $boq_items = BoqItem::forCurrentProject()->where('boq_part_id', $request->boq_part_id)->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
         regexp_replace(code, '[^0-9]', '', 'g')::int ASC")->get(); // Fetch boq items for the filter dropdown
 
 
@@ -60,7 +60,7 @@ class BoqSubItemController extends Controller
      */
     public function create()
     {
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get(); // Fetch boq parts for the dropdown
+        $boq_parts = BoqPart::forCurrentProject()->get(); // Fetch boq parts for the dropdown
         $boq_items = [];
         $units = Unit::all(); // Fetch all units for the dropdown
         return view('backend.admin.boq_sub_items.create', compact('boq_parts', 'boq_items', 'units'));
@@ -105,9 +105,9 @@ class BoqSubItemController extends Controller
      */
     public function edit(BoqSubItem $boqSubItem)
     {
-        $boq_sub_item = BoqSubItem::where('project_id', Auth::guard('admin')->user()->project_id)->findorfail($boqSubItem->id);
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get(); // Fetch boq parts for the dropdown
-        $boq_items = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->where('boq_part_id', $boq_sub_item->boq_part_id)->get(); // Fetch boq items for the dropdown
+        $boq_sub_item = BoqSubItem::forCurrentProject()->findorfail($boqSubItem->id);
+        $boq_parts = BoqPart::forCurrentProject()->get(); // Fetch boq parts for the dropdown
+        $boq_items = BoqItem::forCurrentProject()->where('boq_part_id', $boq_sub_item->boq_part_id)->get(); // Fetch boq items for the dropdown
         $units = Unit::all(); // Fetch all units for the dropdown
         return view('backend.admin.boq_sub_items.edit', compact('boq_sub_item', 'boq_parts', 'boq_items', 'units'));
     }
@@ -118,7 +118,7 @@ class BoqSubItemController extends Controller
     public function update(Request $request, BoqSubItem $boqSubItem)
     {
 
-        $boq_sub_item = BoqSubItem::where('project_id', Auth::guard('admin')->user()->project_id)->findorfail($boqSubItem->id);
+        $boq_sub_item = BoqSubItem::forCurrentProject()->findorfail($boqSubItem->id);
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
         }
@@ -145,7 +145,7 @@ class BoqSubItemController extends Controller
     {
         try {
             // Check if the project is associated with any other records
-            $boq_sub_item = BoqSubItem::where('project_id', Auth::guard('admin')->user()->project_id)->findorfail($boqSubItem->id);
+            $boq_sub_item = BoqSubItem::forCurrentProject()->findorfail($boqSubItem->id);
 
             $boq_sub_item->delete();
             $data = new stdClass();
@@ -167,7 +167,7 @@ class BoqSubItemController extends Controller
             return response()->json([]);
         }
         $boq_sub_items = BoqSubItem::where('boq_item_id', $boq_item_id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->forCurrentProject()
             ->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
         regexp_replace(code, '[^0-9]', '', 'g')::int ASC")
             ->get();

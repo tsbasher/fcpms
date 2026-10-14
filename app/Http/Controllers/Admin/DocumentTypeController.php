@@ -17,7 +17,7 @@ class DocumentTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $document_types = DocumentType::where('project_id', Auth::guard('admin')->user()->project_id);
+        $document_types = DocumentType::forCurrentProject();
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
             $document_types->where('name', 'ilike', "%{$search}%");

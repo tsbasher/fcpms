@@ -127,10 +127,11 @@ class LoginController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'project_code' => 'required|string|max:255',
+            'project_code' => 'nullable|string|max:255',
         ]);
 
         $check = $request->all();
+        $projectCode = trim((string) ($check['project_code'] ?? ''));
 
         $admin = Admin::with('projects')->where('email', $check['email'])->first();
         if (!$admin) {
@@ -151,13 +152,44 @@ class LoginController extends Controller
             'password' => $check['password'],
         ];
         if (Auth::guard('admin')->attempt($data, $check['remember'] ?? false)) {
-            $project = $admin->projects->first(function ($project) use ($check) {
-                return strtoupper($project->code) === strtoupper($check['project_code']);
+            $loggedIn = Auth::guard('admin')->user();
+
+            // Super Admin may log in with any project code, or with none at all.
+            if ($loggedIn->isSuperAdmin()) {
+                if ($projectCode === '') {
+                    LoginThrottle::reset($loggedIn);
+                    Admin::where('id', $loggedIn->id)->update([
+                        'project_id' => null,
+                        'project_code' => null,
+                    ]);
+                    if ($loggedIn->must_change_password) {
+                        return redirect()->route('admin.profile.index')->with('warning', 'Please change your password before continuing.');
+                    }
+                    return redirect()->route('admin.home');
+                }
+
+                $project = Project::whereRaw('UPPER(code) = ?', [strtoupper($projectCode)])->first();
+                if (!$project) {
+                    Auth::guard('admin')->logout();
+                    return redirect()->back()->with('error', 'Project code not found.');
+                }
+
+                LoginThrottle::reset($loggedIn);
+                $this->finalize_admin_login($projectCode);
+                if ($loggedIn->must_change_password) {
+                    return redirect()->route('admin.profile.index')->with('warning', 'Please change your password before continuing.');
+                }
+                return redirect()->route('admin.home');
+            }
+
+            // Regular admins must select one of their assigned projects.
+            $project = $admin->projects->first(function ($project) use ($projectCode) {
+                return strtoupper($project->code) === strtoupper($projectCode);
             });
 
             if ($project) {
                 LoginThrottle::reset($admin);
-                $this->finalize_admin_login($check['project_code']);
+                $this->finalize_admin_login($projectCode);
                 $loggedIn = Auth::guard('admin')->user();
                 if ($loggedIn && $loggedIn->must_change_password) {
                     return redirect()->route('admin.profile.index')->with('warning', 'Please change your password before continuing.');

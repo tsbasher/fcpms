@@ -16,7 +16,12 @@ class PermittedPackage
     {
         $admin = Admin::with('packages')->where('id', Auth::guard('admin')->user()->id)->first();
         if ($admin) {
-            return $admin->packages()->where('is_active', 1)->get()->pluck('id')->toArray();
+            $query = $admin->packages()->where('is_active', 1);
+            $projectId = Auth::guard('admin')->user()->project_id;
+            if ($projectId) {
+                $query->where('packages.project_id', $projectId);
+            }
+            return $query->get()->pluck('id')->toArray();
         }
         return [];
     }

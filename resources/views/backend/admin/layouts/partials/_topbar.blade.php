@@ -1,15 +1,17 @@
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    @php($adminUser = Auth::guard('admin')->user())
+    @php($isSuperAdmin = $adminUser && $adminUser->isSuperAdmin())
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item" style="padding-right: 10px;">
-        <a href="#" class="nav-link bg-success text-bold">{{Auth::guard('admin')->user()->project_code}}</a>
+        <a href="#" class="nav-link bg-success text-bold">{{$adminUser->project_code ?: ($isSuperAdmin ? 'SUPER ADMIN' : '')}}</a>
 
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link text-bold">{{Auth::guard('admin')->user()->project?->name}}</a>
+        <a href="#" class="nav-link text-bold">{{$adminUser->project?->name ?: ($isSuperAdmin ? 'Super Admin' : '')}}</a>
       </li>
     </ul>
 

@@ -27,7 +27,7 @@ class BoqVersionDetailsController extends Controller
     public function index(Request $request)
     {
         // dd(InWordConvertion::convert(123434334)); // Example usage
-        $boq_version_details = BoqVersionDetails::where('project_id', Auth::guard('admin')->user()->project_id)
+        $boq_version_details = BoqVersionDetails::forCurrentProject()
             ->with([
                 'boq_version',
                 'boq_part' => function ($query) {
@@ -45,12 +45,12 @@ class BoqVersionDetailsController extends Controller
                 'unit',
                 'package'
             ]);
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
+        $packages = Package::forCurrentProject()->permitted()->get();
+        $boq_parts = BoqPart::forCurrentProject()->orderBy('code')->get();
         if ($request->has('package_id') && !empty($request->get('package_id'))) {
             $boq_version_details->where('package_id', $request->get('package_id'));
             $boq_versions = BoqVersion::where('package_id', $request->get('package_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+                ->forCurrentProject()->get();
         } else {
             $boq_versions = [];
         }
@@ -61,7 +61,7 @@ class BoqVersionDetailsController extends Controller
         if ($request->has('boq_part_id') && !empty($request->get('boq_part_id'))) {
             $boq_version_details->where('boq_part_id', $request->get('boq_part_id'));
             $boq_items = BoqItem::where('boq_part_id', $request->get('boq_part_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+                ->forCurrentProject()->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
         regexp_replace(code, '[^0-9]', '', 'g')::int ASC")->get();
         } else {
             $boq_items = [];
@@ -69,7 +69,7 @@ class BoqVersionDetailsController extends Controller
         if ($request->has('boq_item_id') && !empty($request->get('boq_item_id'))) {
             $boq_version_details->where('boq_item_id', $request->get('boq_item_id'));
             $boq_sub_items = BoqSubItem::where('boq_item_id', $request->get('boq_item_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
+                ->forCurrentProject()->orderByRaw("regexp_replace(code, '[0-9.]+', '', 'g') ASC,
         regexp_replace(code, '[^0-9]', '', 'g')::int ASC")->get();
         } else {
             $boq_sub_items = [];
@@ -90,11 +90,11 @@ class BoqVersionDetailsController extends Controller
     public function create(Request $request)
     {
         $boq_version = BoqVersion::find($request->get('boq_version_id'));
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
-        $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $packages = Package::forCurrentProject()->permitted()->get();
+        $scheme_options = SchemeOption::forCurrentProject()->get();
 
         $boq_version_detail = [];
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
+        $boq_parts = BoqPart::forCurrentProject()->orderBy('code')->get();
 
         $boq_items = [];
         $boq_sub_items = [];
@@ -103,20 +103,20 @@ class BoqVersionDetailsController extends Controller
 
         if ($request->stored) {
             // dd("Hello");
-            $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderBy('code')->get();
+            $boq_parts = BoqPart::forCurrentProject()->orderBy('code')->get();
 
             $boq_items = BoqItem::where('boq_part_id', $request->get('boq_part_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+                ->forCurrentProject()->get();
             $boq_sub_items = BoqSubItem::where('boq_item_id', $request->get('boq_item_id'))
-                ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
-            $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+                ->forCurrentProject()->get();
+            $boq_versions = BoqVersion::forCurrentProject()
                 ->where('package_id', $request->get('package_id'))->get();
             $units = Unit::get();
             Session::flash('_old_input', $request->all());
             Session::flash('success', 'Boq Version Details Created Successfully.');
-            //         $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+            //         $packages = Package::forCurrentProject()->permitted()->get();
             // $boq_version = BoqVersion::find($request->get('boq_version_id'));
-            // $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+            // $scheme_options = SchemeOption::forCurrentProject()->get();
         }
 
 
@@ -208,17 +208,17 @@ class BoqVersionDetailsController extends Controller
     {
         $boq_version_detail = BoqVersionDetails::find($id);
         $boq_version = BoqVersion::find($boq_version_detail->boq_version_id);
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $packages = Package::forCurrentProject()->permitted()->get();
 
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $boq_parts = BoqPart::forCurrentProject()->get();
 
         $boq_items = BoqItem::where('boq_part_id', $boq_version_detail->boq_part_id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+            ->forCurrentProject()->get();
         $boq_sub_items = BoqSubItem::where('boq_item_id', $boq_version_detail->boq_item_id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
-        $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+            ->forCurrentProject()->get();
+        $boq_versions = BoqVersion::forCurrentProject()
             ->where('package_id', $boq_version_detail->package_id)->get();
-        $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $scheme_options = SchemeOption::forCurrentProject()->get();
         $units = Unit::get();
         return view('backend.admin.boq_version_details.edit', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
     }
@@ -276,7 +276,7 @@ class BoqVersionDetailsController extends Controller
 
         try {
 
-            $boq_version_details = BoqVersionDetails::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($id);
+            $boq_version_details = BoqVersionDetails::forCurrentProject()->findOrFail($id);
             // Check if the BOQ Version is associated with any other records
             $boq_version_details->delete();
             $data = new stdClass();
@@ -293,7 +293,7 @@ class BoqVersionDetailsController extends Controller
     }
     public function existingBoqVersionDetails(Request $request)
     {
-        $boq_version_details = BoqVersionDetails::where('project_id', Auth::guard('admin')->user()->project_id)
+        $boq_version_details = BoqVersionDetails::forCurrentProject()
             ->where('boq_version_id', $request->get('boq_version_id'))
             ->where('package_id', $request->get('package_id'))
             ->where('boq_part_id', $request->get('boq_part_id'))
@@ -325,17 +325,17 @@ class BoqVersionDetailsController extends Controller
     {
         $boq_version_detail = BoqVersionDetails::find($id);
         $boq_version = BoqVersion::find($boq_version_detail->boq_version_id);
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted()->get();
+        $packages = Package::forCurrentProject()->permitted()->get();
 
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $boq_parts = BoqPart::forCurrentProject()->get();
 
         $boq_items = BoqItem::where('boq_part_id', $boq_version_detail->boq_part_id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
+            ->forCurrentProject()->get();
         $boq_sub_items = BoqSubItem::where('boq_item_id', $boq_version_detail->boq_item_id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)->get();
-        $boq_versions = BoqVersion::where('project_id', Auth::guard('admin')->user()->project_id)
+            ->forCurrentProject()->get();
+        $boq_versions = BoqVersion::forCurrentProject()
             ->where('package_id', $boq_version_detail->package_id)->get();
-        $scheme_options = SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $scheme_options = SchemeOption::forCurrentProject()->get();
         $units = Unit::get();
         return view('backend.admin.boq_version_details.copy', compact('boq_version', 'boq_parts', 'packages', 'boq_items', 'boq_sub_items', 'boq_versions', 'scheme_options', 'units', "boq_version_detail"));
     }

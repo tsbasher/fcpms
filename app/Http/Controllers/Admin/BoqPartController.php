@@ -20,7 +20,7 @@ class BoqPartController extends Controller
     public function index(Request $request)
     {
         // Fetch boq parts based on search criteria if provided
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id);
+        $boq_parts = BoqPart::forCurrentProject();
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
             $boq_parts->where('name', 'ilike', "%{$search}%")->orwhere('code','ilike',"%{$search}%");
@@ -35,7 +35,7 @@ class BoqPartController extends Controller
      */
     public function create()
     {
-        $scheme_options= SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $scheme_options= SchemeOption::forCurrentProject()->get();
         return view('backend.admin.boq_parts.create', compact('scheme_options'));
     }
 
@@ -83,8 +83,8 @@ class BoqPartController extends Controller
     public function edit(BoqPart $boqPart)
     {
         
-        $scheme_options= SchemeOption::where('project_id', Auth::guard('admin')->user()->project_id)->get();
-        $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
+        $scheme_options= SchemeOption::forCurrentProject()->get();
+        $boqPart = BoqPart::forCurrentProject()->findOrFail($boqPart->id); // Fetch the boq part by ID
         return view('backend.admin.boq_parts.edit', compact('boqPart', 'scheme_options'));
     }
 
@@ -93,7 +93,7 @@ class BoqPartController extends Controller
      */
     public function update(Request $request, BoqPart $boqPart)
     {
-        $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
+        $boqPart = BoqPart::forCurrentProject()->findOrFail($boqPart->id); // Fetch the boq part by ID
 
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
@@ -125,7 +125,7 @@ class BoqPartController extends Controller
 
         try {
             // Check if the project is associated with any other records
-            $boqPart = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqPart->id); // Fetch the boq part by ID
+            $boqPart = BoqPart::forCurrentProject()->findOrFail($boqPart->id); // Fetch the boq part by ID
 
             $boqPart->delete();
             $data = new stdClass();

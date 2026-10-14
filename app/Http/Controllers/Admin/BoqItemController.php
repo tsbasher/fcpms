@@ -20,7 +20,7 @@ class BoqItemController extends Controller
     public function index(Request $request)
     {
         // Fetch boq items based on search criteria if provided
-        $boq_items = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->with('boq_parts', 'unit');
+        $boq_items = BoqItem::forCurrentProject()->with('boq_parts', 'unit');
         if ($request->has('boq_part_id') && !empty($request->boq_part_id)) {
             $boq_items->where('boq_part_id', $request->boq_part_id);
         }
@@ -37,7 +37,7 @@ class BoqItemController extends Controller
         regexp_replace(code, '[^0-9]', '', 'g')::int ASC")
             ->paginate();
 
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->orderby('code')->get(); // Fetch boq parts for the filter dropdown
+        $boq_parts = BoqPart::forCurrentProject()->orderby('code')->get(); // Fetch boq parts for the filter dropdown
 
         return view('backend.admin.boq_items.index', compact('boq_items', 'boq_parts'));
     }
@@ -47,7 +47,7 @@ class BoqItemController extends Controller
      */
     public function create()
     {
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get(); // Assuming you have a BoqPart model to fetch parts
+        $boq_parts = BoqPart::forCurrentProject()->get(); // Assuming you have a BoqPart model to fetch parts
         $units = Unit::all(); // Fetch all units for the dropdown
         // Return the view for creating a new boq item
         return view('backend.admin.boq_items.create', compact('boq_parts', 'units'));
@@ -95,8 +95,8 @@ class BoqItemController extends Controller
      */
     public function edit(BoqItem $boqItem)
     {
-        $boq_item = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqItem->id); // Fetch the boq item by ID
-        $boq_parts = BoqPart::where('project_id', Auth::guard('admin')->user()->project_id)->get();
+        $boq_item = BoqItem::forCurrentProject()->findOrFail($boqItem->id); // Fetch the boq item by ID
+        $boq_parts = BoqPart::forCurrentProject()->get();
         $units = Unit::all(); // Fetch all units for the dropdown
         return view('backend.admin.boq_items.edit', compact('boq_item', 'boq_parts', 'units'));
     }
@@ -106,7 +106,7 @@ class BoqItemController extends Controller
      */
     public function update(Request $request, BoqItem $boqItem)
     {
-        $boq_item = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqItem->id); // Fetch the boq item by ID
+        $boq_item = BoqItem::forCurrentProject()->findOrFail($boqItem->id); // Fetch the boq item by ID
 
         if (!$request->has('is_active')) {
             $request->merge(['is_active' => 0]);
@@ -140,7 +140,7 @@ class BoqItemController extends Controller
 
         try {
             // Check if the project is associated with any other records
-            $boqItem = BoqItem::where('project_id', Auth::guard('admin')->user()->project_id)->findOrFail($boqItem->id); // Fetch the boq part by ID
+            $boqItem = BoqItem::forCurrentProject()->findOrFail($boqItem->id); // Fetch the boq part by ID
 
             $boqItem->delete();
             $data = new stdClass();
@@ -163,7 +163,7 @@ class BoqItemController extends Controller
         }
 
         $boq_items = BoqItem::where('boq_part_id', $boq_part_id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->forCurrentProject()
             ->get();
         $boq_items = $boq_items->sortBy(function ($item) {
             preg_match('/([A-Za-z]+)(\d+)/', $item->code, $matches);

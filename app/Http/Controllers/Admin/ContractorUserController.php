@@ -132,7 +132,7 @@ class ContractorUserController extends Controller
     public function unlock(string $id)
     {
         $user = User::where('id', $id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->forCurrentProject()
             ->firstOrFail();
 
         $user->login_attempts = 0;
@@ -148,7 +148,7 @@ class ContractorUserController extends Controller
     public function toggleActive(string $id)
     {
         $user = User::where('id', $id)
-            ->where('project_id', Auth::guard('admin')->user()->project_id)
+            ->forCurrentProject()
             ->firstOrFail();
 
         $user->is_active = $user->is_active == 1 ? 0 : 1;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AuditLogController extends Controller
@@ -26,7 +27,7 @@ class AuditLogController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $log = AuditLog::findOrFail($id);
+        $log = AuditLog::forCurrentProject()->findOrFail($id);
 
         return response()->json($log);
     }
@@ -97,6 +98,11 @@ class AuditLogController extends Controller
     protected function baseQuery(Request $request)
     {
         $query = AuditLog::query();
+
+        $projectId = Auth::guard('admin')->user()->project_id ?? null;
+        if ($projectId) {
+            $query->where('project_id', $projectId);
+        }
 
         if ($request->filled('user_type')) {
             $query->where('user_type', $request->input('user_type'));

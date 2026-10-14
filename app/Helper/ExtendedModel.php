@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 class ExtendedModel extends Model
 {
+    use ProjectScoped;
+
     protected $perPage = Constants::PAGINATION_PER_PAGE;
 
     protected static function boot()

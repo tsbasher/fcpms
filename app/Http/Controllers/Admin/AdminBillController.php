@@ -19,15 +19,16 @@ class AdminBillController extends Controller
     public function index(Request $request)
     {
         $packages = Package::whereIn('id', PermittedPackage::getAdminPermittedPackages())
+            ->forCurrentProject()
             ->where('is_active', 1)
             ->get();
-        $package = Package::find($request->package_id);
+        $package = Package::forCurrentProject()->find($request->package_id);
         if ($package)
             $upazilas = Upazila::where('district_id', $package->district_id)->get();
         else
             $upazilas = [];
 
-        $bills = Bill::where('package_id', $request->package_id)->where('status', '!=', 'DRAFT')
+        $bills = Bill::forCurrentProject()->where('package_id', $request->package_id)->where('status', '!=', 'DRAFT')
             ->get();
 
         // dd($bills);
@@ -37,7 +38,7 @@ class AdminBillController extends Controller
     {
         // $bill = Bill::with('schemes')->findOrFail($request->bill_id);
 
-        $this_bill = Bill::findOrFail($request->bill_id);
+        $this_bill = Bill::forCurrentProject()->findOrFail($request->bill_id);
         $project_id = $this_bill->project_id;
         $package_id = $this_bill->boq_version->package_id;
 
@@ -81,12 +82,12 @@ class AdminBillController extends Controller
 
     public function getBillsByPackage($package_id)
     {
-        $bills = Bill::where('package_id', $package_id)->where('status', '!=', 'DRAFT')->get();
+        $bills = Bill::forCurrentProject()->where('package_id', $package_id)->where('status', '!=', 'DRAFT')->get();
         return response()->json($bills);
     }
     public function documents($bill_id)
     {
-        $bill = Bill::with('documents.document_type', 'project', 'package')->findOrFail($bill_id);
+        $bill = Bill::forCurrentProject()->with('documents.document_type', 'project', 'package')->findOrFail($bill_id);
         $documents = $bill->documents->sortByDesc('created_at');
         return view('backend.admin.bill.partials.documents', compact('documents'))->render();
     }
@@ -96,7 +97,7 @@ class AdminBillController extends Controller
         // dd($bill_id);
         DB::transaction(function () use ($bill_id, &$status) {
 
-            $bill = Bill::findOrFail($bill_id);
+            $bill = Bill::forCurrentProject()->findOrFail($bill_id);
             $bill->calculate_with_heldup = $bill->calculate_with_heldup==1 ? 0 : 1;
             $bill->save();
             $status = BillGenerator::regenerate($bill_id, $bill->contractor_id, $bill->project_id, $bill->package_id);

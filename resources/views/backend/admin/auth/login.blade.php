@@ -44,7 +44,7 @@
                     @csrf
                     
                     <div class="input-group mb-3">
-                        <input type="text" name="project_code" class="form-control" placeholder="Project Code" value="{{ old('project_code') }}" required>
+                        <input type="text" name="project_code" class="form-control" placeholder="Project Code" value="{{ old('project_code') }}">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>

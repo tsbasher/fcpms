@@ -10,6 +10,7 @@ use App\Models\BillDetail;
 use App\Models\BillScheme;
 use App\Models\BoqVersion;
 use App\Models\Contractor;
+use App\Models\ContractorPackage;
 use App\Models\Package;
 use App\Models\Project;
 use App\Models\Scheme;
@@ -26,8 +27,10 @@ class AdminHomeController extends Controller
         $permittedPackageIds = PermittedPackage::getAdminPermittedPackages();
         $permittedSchemeIds = PermittedScheme::getAdminPermittedSchemes();
 
-        $totalProjects = Project::count();
-        $activeProjects = Project::where('is_active', 1)->count();
+        $totalProjects = $projectId ? Project::where('id', $projectId)->count() : Project::count();
+        $activeProjects = $projectId
+            ? Project::where('id', $projectId)->where('is_active', 1)->count()
+            : Project::where('is_active', 1)->count();
 
         $totalPackages = Package::whereIn('id', $permittedPackageIds)->count();
         $activePackages = Package::whereIn('id', $permittedPackageIds)->where('is_active', 1)->count();
@@ -35,8 +38,12 @@ class AdminHomeController extends Controller
         $totalSchemes = Scheme::whereIn('id', $permittedSchemeIds)->count();
         $activeSchemes = Scheme::whereIn('id', $permittedSchemeIds)->where('is_active', 1)->count();
 
-        $totalContractors = Contractor::count();
-        $activeContractors = Contractor::where('is_active', 1)->count();
+        $contractorQuery = Contractor::query();
+        if ($projectId) {
+            $contractorQuery->whereIn('contractors.id', ContractorPackage::where('project_id', $projectId)->pluck('contractor_id'));
+        }
+        $totalContractors = (clone $contractorQuery)->count();
+        $activeContractors = (clone $contractorQuery)->where('is_active', 1)->count();
 
         $totalBills = Bill::whereIn('package_id', $permittedPackageIds)->count();
         $currentMonthBills = Bill::whereIn('package_id', $permittedPackageIds)

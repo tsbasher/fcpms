@@ -15,6 +15,7 @@ class AuditLog extends ExtendedModel
         'id',
         'user_type',
         'user_id',
+        'project_id',
         'method',
         'path',
         'route_name',
@@ -43,6 +44,11 @@ class AuditLog extends ExtendedModel
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
     public function getUserNameAttribute(): ?string

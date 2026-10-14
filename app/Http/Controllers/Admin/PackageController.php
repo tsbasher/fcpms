@@ -21,7 +21,7 @@ class PackageController extends Controller
      */
     public function index(Request $request)
     {
-        $packages = Package::where('project_id', Auth::guard('admin')->user()->project_id)->permitted();
+        $packages = Package::forCurrentProject()->permitted();
         if ($request->has('search_text') && !empty($request->search_text)) {
             $search = $request->input('search_text');
             // Get packages based on search criteria

@@ -266,7 +266,7 @@
                                                             @foreach ($schemes as $scheme)
                                                                 <option value="{{ $scheme->id }}"
                                                                     @if (Request::get('schemes') == $scheme->id) selected @endif>
-                                                                    {{ $scheme->code }} - {{ $scheme->name }}</option>
+                                                                    {{ $scheme->code }} - {{ $scheme->name }} ({{$scheme->scheme_option->name}},{{$scheme->pile_type}})</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
