@@ -93,7 +93,7 @@ class BoqVersionDetailsController extends Controller
         $packages = Package::forCurrentProject()->permitted()->get();
         $scheme_options = SchemeOption::forCurrentProject()->get();
 
-        $boq_version_detail = [];
+        $boq_version_detail = new BoqVersionDetails();
         $boq_parts = BoqPart::forCurrentProject()->orderBy('code')->get();
 
         $boq_items = [];

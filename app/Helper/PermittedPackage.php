@@ -2,27 +2,20 @@
 
 namespace App\Helper;
 
-use App\Models\Admin;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Package;
 
 class PermittedPackage
 {
     /**
-     * Get the permitted packages for the authenticated admin.
+     * Get the active package ids for the current project.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return array
      */
     public static function getAdminPermittedPackages()
     {
-        $admin = Admin::with('packages')->where('id', Auth::guard('admin')->user()->id)->first();
-        if ($admin) {
-            $query = $admin->packages()->where('is_active', 1);
-            $projectId = Auth::guard('admin')->user()->project_id;
-            if ($projectId) {
-                $query->where('packages.project_id', $projectId);
-            }
-            return $query->get()->pluck('id')->toArray();
-        }
-        return [];
+        return Package::forCurrentProject()
+            ->where('is_active', 1)
+            ->pluck('id')
+            ->toArray();
     }
 }
